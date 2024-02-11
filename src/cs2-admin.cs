@@ -1,12 +1,13 @@
 using CounterStrikeSharp.API.Core;
 using CounterStrikeSharp.API.Modules.Commands;
+using CounterStrikeSharp.API.Modules.Timers;
 
 namespace Admin;
 
 public partial class Admin : BasePlugin
 {
     public override string ModuleName => "Admin";
-    public override string ModuleVersion => "0.0.1";
+    public override string ModuleVersion => "0.0.2";
     public override string ModuleAuthor => "schwarper";
 
     public override void Load(bool hotReload)
@@ -16,44 +17,12 @@ public partial class Admin : BasePlugin
         AddCommandListener("say", OnCommandSay);
         AddCommandListener("say_team", OnCommandSay);
 
-        RegisterEventHandler<EventPlayerConnectFull>((@event, info) =>
-        {
-            var player = @event.Userid;
-
-            if (player == null || !player.IsValid)
-            {
-                return HookResult.Continue;
-            }
-
-            if(IsPlayerPunished(player, "mute"))
-            {
-                player.VoiceFlags = CounterStrikeSharp.API.VoiceFlags.Muted;
-            }
-
-            return HookResult.Continue;
-        });
-
-        RegisterEventHandler<EventPlayerConnect>((@event, info) =>
-        {
-            var player = @event.Userid;
-
-            if (player == null || !player.IsValid)
-            {
-                return HookResult.Continue;
-            }
-
-            if(IsPlayerPunished(player, "ban"))
-            {
-                KickPlayer(player, string.Empty);
-            }
-
-            return HookResult.Continue;
-        });
+        LoadEvents();
 
         AddTimer(10.0f, () =>
         {
             RemoveExpiredPunishments();
-        }, CounterStrikeSharp.API.Modules.Timers.TimerFlags.REPEAT | CounterStrikeSharp.API.Modules.Timers.TimerFlags.STOP_ON_MAPCHANGE);
+        }, TimerFlags.REPEAT | TimerFlags.STOP_ON_MAPCHANGE);
     }
 
     public override void Unload(bool hotReload)
@@ -73,11 +42,11 @@ public partial class Admin : BasePlugin
 
     public HookResult OnCommandSay(CCSPlayerController? player, CommandInfo info)
     {
-        if(player == null || !player.IsValid)
+        if (player == null || !player.Valid())
         {
             return HookResult.Continue;
         }
 
-        return IsPlayerPunished(player, "gag") ? HookResult.Handled : HookResult.Continue;
+        return IsPlayerPunished(player, "gag") ? HookResult.Stop : HookResult.Continue;
     }
 }

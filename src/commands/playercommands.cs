@@ -38,12 +38,14 @@ public partial class Admin : BasePlugin
 
         if (players.Players.Length == 1)
         {
-            Server.PrintToChatAll(Localizer["Prefix"] + Localizer["css_slap<player>", player == null ? Localizer["Console"] : player.PlayerName, players.TargetName, damage]);
+            Server.PrintToChatAll(Localizer["Prefix"] + Localizer["css_slap<player>", GetPlayerNameOrConsole(player), players.TargetName, damage]);
         }
         else
         {
-            Server.PrintToChatAll(Localizer["Prefix"] + Localizer["css_slap<multiple>", player == null ? Localizer["Console"] : player.PlayerName, players.TargetName, damage]);
+            Server.PrintToChatAll(Localizer["Prefix"] + Localizer["css_slap<multiple>", GetPlayerNameOrConsole(player), players.TargetName, damage]);
         }
+
+        _ = SendDiscordMessage($"[{GetPlayerSteamIdOrConsole(player)}] {GetPlayerNameOrConsole(player)} -> css_slap <{command.GetArg(1)}> <{damage}>");
     }
 
     [ConsoleCommand("css_slay")]
@@ -65,12 +67,14 @@ public partial class Admin : BasePlugin
 
         if (players.Players.Length == 1)
         {
-            Server.PrintToChatAll(Localizer["Prefix"] + Localizer["css_slay<player>", player == null ? Localizer["Console"] : player.PlayerName, players.TargetName]);
+            Server.PrintToChatAll(Localizer["Prefix"] + Localizer["css_slay<player>", GetPlayerNameOrConsole(player), players.TargetName]);
         }
         else
         {
-            Server.PrintToChatAll(Localizer["Prefix"] + Localizer["css_slay<player>", player == null ? Localizer["Console"] : player.PlayerName, players.TargetName]);
+            Server.PrintToChatAll(Localizer["Prefix"] + Localizer["css_slay<player>", GetPlayerNameOrConsole(player), players.TargetName]);
         }
+
+        _ = SendDiscordMessage($"[{GetPlayerSteamIdOrConsole(player)}] {GetPlayerNameOrConsole(player)} -> css_slay <{command.GetArg(1)}>");
     }
 
     [ConsoleCommand("css_rename")]
@@ -78,7 +82,7 @@ public partial class Admin : BasePlugin
     [CommandHelper(minArgs: 2, "<#userid|name> <newname>", whoCanExecute: CommandUsage.CLIENT_AND_SERVER)]
     public void Command_ReName(CCSPlayerController? player, CommandInfo command)
     {
-        CCSPlayerController? target = FindTarget(command, 2);
+        CCSPlayerController? target = FindTarget(command, MultipleFlags.NORMAL, 2);
 
         if (target == null)
         {
@@ -93,8 +97,10 @@ public partial class Admin : BasePlugin
             return;
         }
 
-        Server.PrintToChatAll(Localizer["Prefix"] + Localizer["css_rename", player == null ? Localizer["Console"] : player.PlayerName, target.PlayerName, newname]);
+        Server.PrintToChatAll(Localizer["Prefix"] + Localizer["css_rename", GetPlayerNameOrConsole(player), target.PlayerName, newname]);
 
         target.Rename(newname);
+
+        _ = SendDiscordMessage($"[{GetPlayerSteamIdOrConsole(player)}] {GetPlayerNameOrConsole(player)} -> css_rename <{target.PlayerName}> <{newname}>");
     }
 }

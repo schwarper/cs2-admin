@@ -2,6 +2,7 @@
 	"Prefix": "{red}[CSS] ",
 	"No matching client": "{white}There is no matching client.",
 	"More than one client matched": "{white}There are multiple clients that match.",
+	"You cannot target": "{white}Since this person's immunity level is higher than yours, you cannot target this person.",
 	"Map is not exist": "{white}There is no such map available.",
 	"Weapon is not exist": "{white}There is no such weapon available.",
 	"Cvar is not found": "{white}No such cvar [{red}{0}{white}] found.",
@@ -22,6 +23,7 @@
 
 	"css_ban": "{blue}{0} {white}banned {green}{1} {white}from the server for {green}{2} minutes{white} for {3} reason.",
 	"css_unban": "{blue}{0} {white}unbanned {green}{1}{white}.",
+	"css_addban": "{blue}{0} {white}banned {green}{1} {white}from the server for {green}{2} minutes{white} for {3} reason.",
 
 	"css_say": "{red}[ALL] {blue}{0}{white}: {green}{1}",
 	"css_csay": "{0}: {1}",
@@ -90,6 +92,10 @@
 	"css_unbury<player>": "{blue}{0} {white}unburied {green}{1}{white}.",
 	"css_unbury<multiple>": "{blue}{0} {white}unburied {1}{white}.",
 	"css_clean": "{blue}{0} {white}cleaned up weapons on the ground.",
+	"css_goto": "{blue}{0}{white} teleported to {green}{1}{white}.",
+	"css_bring<player>": "{blue}{0}{white} teleported {green}{1} {white}next to them.",
+	"css_bring<multiple>": "{blue}{0}{white} teleported {green}{1} {white}players next to them.",
+	"css_hrespawn": "{blue}{0}{white} respawned {green}{1}{white} where died.",
 
 	"css_slap<player>": "{blue}{0} {white}slapped {green}{1} {white}and damaged {green}{2}{white}.",
 	"css_slap<multiple>": "{blue}{0} {white}slapped {green}{1} {white}and damaged {green}{2}{white}.",

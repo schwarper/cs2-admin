@@ -2,6 +2,7 @@
 	"Prefix": "{red}[CSS] ",
 	"No matching client": "{white}Eşleşen alıcı bulunamadı.",
 	"More than one client matched": "Verilen biçim düzeniyle birden fazla alıcı eşleşti.",
+	"You cannot target": "{white}Bu kişinin dokunulmazlığı sizinkinden yüksek olduğu için bu kişiye dokunamazsınız.",
 	"Map is not exist": "{white}Böyle bir harita mevcut değil.",
 	"Weapon is not exist": "{white}Böyle bir silah mevcut değil.",
 	"Cvar is not found": "{white}Böyle bir cvar [{red}{0}{white}] bulunamadı.",
@@ -22,6 +23,7 @@
 
 	"css_ban": "{blue}{0}{white}, {green}{1} {white}adlı oyuncuyu {green}{2} dakika{white} {green}{3} {white}nedeniyle sunucudan yasakladı.",
 	"css_unban": "{blue}{0}{white}, {green}{1} {white}steamid'nin sunucu yasağını kaldırdı.",
+	"css_addban": "{blue}{0}{white}, {green}{1} {white}steamid'yi {green}{2} dakika{white} {green}{3} {white}nedeniyle sunucudan yasakladı.",
 
 	"css_say": "{red}[HERKES] {blue}{0}{white}: {green}{1}",
 	"css_csay": "{0}: {1}",
@@ -43,7 +45,7 @@
 	"css_unsilence<multiple>": "{blue}{0}{white}, {green}{1} {white}mikrofon ve yazı yazma yasağını kaldırdı.",
 	"css_smute": "{blue}{0}{white}, {green}{1} {white}adlı oyuncunun mikrofonunu {green}{2} dakika {white}susturdu.",
 	"css_sunmute": "{blue}{0}{white}, {green}{1} {white}adlı oyuncunun süreli mikrofon susturmasını kaldırdı.",
-	"css_sgag": "{blue}{0}{white}, {green}{1} {white}adlı oyuncunun mikrofonunu {green}{2} dakika {white}susturdu.",
+	"css_sgag": "{blue}{0}{white}, {green}{1} {white}adlı oyuncunun yazı yazmasını {green}{2} dakika {white}susturdu.",
 	"css_sungag": "{blue}{0}{white}, {green}{1} {white}adlı oyuncunun süreli yazı yazma yasağını kaldırdı.",
 
 	"css_kick": "{blue}{0}{white}, {green}{1} {white}adlı oyuncuyu {green}{2}{white}nedeniyle sunucudan attı.",
@@ -90,10 +92,15 @@
 	"css_unbury<player>": "{blue}{0}{white}, {green}{1} {white}adlı oyuncuyu kaldırdı.",
 	"css_unbury<multiple>": "{blue}{0}{white}, {1} {white}kaldırdı.",
 	"css_clean": "{blue}{0}{white} yerdeki silahları temizledi.",
+	"css_goto": "{blue}{0}{white}, {green}{1} {white}adlı oyuncuya ışınlandı.",
+	"css_bring<player>": "{blue}{0}{white}, {green}{1} {white}adlı oyuncuyu yanına ışınladı.",
+	"css_bring<multiple>": "{blue}{0}{white}, {green}{1} {white}yanına ışınladı.",
+	"css_hrespawn": "{blue}{0}{white}, {green}{1} {white}adlı oyuncuyu öldüğü yerde canlandırdı.",
 
 	"css_slap<player>": "{blue}{0}{white}, {green}{1} {white}adlı oyuncuyu {green}{2} {white}gücüyle tokatladı.",
 	"css_slap<multiple>": "{blue}{0}{white}, {1} {green}{2} {white}gücüyle tokatladı.",
 	"css_slay<player>": "{blue}{0}{white}, {green}{1} {white}adlı oyuncuyu öldürdü.",
 	"css_slay<multiple>": "{blue}{0}{white}, {1} {white}öldürdü.",
 	"css_rename": "{blue}{0}{white}, {green}{1} {white}adlı oyuncunun ismini {green}{2} {white}olarak değiştirdi."
+
 }

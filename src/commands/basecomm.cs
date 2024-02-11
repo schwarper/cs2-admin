@@ -27,12 +27,14 @@ public partial class Admin : BasePlugin
 
         if (players.Players.Length == 1)
         {
-            Server.PrintToChatAll(Localizer["Prefix"] + Localizer["css_mute<player>", player == null ? Localizer["Console"] : player.PlayerName, players.TargetName]);
+            Server.PrintToChatAll(Localizer["Prefix"] + Localizer["css_mute<player>", GetPlayerNameOrConsole(player), players.TargetName]);
         }
         else
         {
-            Server.PrintToChatAll(Localizer["Prefix"] + Localizer["css_mute<multiple>", player == null ? Localizer["Console"] : player.PlayerName, players.TargetName]);
+            Server.PrintToChatAll(Localizer["Prefix"] + Localizer["css_mute<multiple>", GetPlayerNameOrConsole(player), players.TargetName]);
         }
+
+        _ = SendDiscordMessage($"[{GetPlayerSteamIdOrConsole(player)}] {GetPlayerNameOrConsole(player)} -> css_mute <{command.GetArg(1)}>");
     }
 
     [ConsoleCommand("css_unmute")]
@@ -54,12 +56,14 @@ public partial class Admin : BasePlugin
 
         if (players.Players.Length == 1)
         {
-            Server.PrintToChatAll(Localizer["Prefix"] + Localizer["css_unmute<player>", player == null ? Localizer["Console"] : player.PlayerName, players.TargetName]);
+            Server.PrintToChatAll(Localizer["Prefix"] + Localizer["css_unmute<player>", GetPlayerNameOrConsole(player), players.TargetName]);
         }
         else
         {
-            Server.PrintToChatAll(Localizer["Prefix"] + Localizer["css_unmute<multiple>", player == null ? Localizer["Console"] : player.PlayerName, players.TargetName]);
+            Server.PrintToChatAll(Localizer["Prefix"] + Localizer["css_unmute<multiple>", GetPlayerNameOrConsole(player), players.TargetName]);
         }
+
+        _ = SendDiscordMessage($"[{GetPlayerSteamIdOrConsole(player)}] {GetPlayerNameOrConsole(player)} -> css_unmute <{command.GetArg(1)}>");
     }
 
     [ConsoleCommand("css_gag")]
@@ -81,12 +85,14 @@ public partial class Admin : BasePlugin
 
         if (players.Players.Length == 1)
         {
-            Server.PrintToChatAll(Localizer["Prefix"] + Localizer["css_gag<player>", player == null ? Localizer["Console"] : player.PlayerName, players.TargetName]);
+            Server.PrintToChatAll(Localizer["Prefix"] + Localizer["css_gag<player>", GetPlayerNameOrConsole(player), players.TargetName]);
         }
         else
         {
-            Server.PrintToChatAll(Localizer["Prefix"] + Localizer["css_gag<multiple>", player == null ? Localizer["Console"] : player.PlayerName, players.TargetName]);
+            Server.PrintToChatAll(Localizer["Prefix"] + Localizer["css_gag<multiple>", GetPlayerNameOrConsole(player), players.TargetName]);
         }
+
+        _ = SendDiscordMessage($"[{GetPlayerSteamIdOrConsole(player)}] {GetPlayerNameOrConsole(player)} -> css_gag <{command.GetArg(1)}>");
     }
 
     [ConsoleCommand("css_ungag")]
@@ -108,12 +114,14 @@ public partial class Admin : BasePlugin
 
         if (players.Players.Length == 1)
         {
-            Server.PrintToChatAll(Localizer["Prefix"] + Localizer["css_ungag<player>", player == null ? Localizer["Console"] : player.PlayerName, players.TargetName]);
+            Server.PrintToChatAll(Localizer["Prefix"] + Localizer["css_ungag<player>", GetPlayerNameOrConsole(player), players.TargetName]);
         }
         else
         {
-            Server.PrintToChatAll(Localizer["Prefix"] + Localizer["css_ungag<multiple>", player == null ? Localizer["Console"] : player.PlayerName, players.TargetName]);
+            Server.PrintToChatAll(Localizer["Prefix"] + Localizer["css_ungag<multiple>", GetPlayerNameOrConsole(player), players.TargetName]);
         }
+
+        _ = SendDiscordMessage($"[{GetPlayerSteamIdOrConsole(player)}] {GetPlayerNameOrConsole(player)} -> css_ungag <{command.GetArg(1)}>");
     }
 
     [ConsoleCommand("css_silence")]
@@ -137,12 +145,14 @@ public partial class Admin : BasePlugin
 
         if (players.Players.Length == 1)
         {
-            Server.PrintToChatAll(Localizer["Prefix"] + Localizer["css_silence<player>", player == null ? Localizer["Console"] : player.PlayerName, players.TargetName]);
+            Server.PrintToChatAll(Localizer["Prefix"] + Localizer["css_silence<player>", GetPlayerNameOrConsole(player), players.TargetName]);
         }
         else
         {
-            Server.PrintToChatAll(Localizer["Prefix"] + Localizer["css_silence<multiple>", player == null ? Localizer["Console"] : player.PlayerName, players.TargetName]);
+            Server.PrintToChatAll(Localizer["Prefix"] + Localizer["css_silence<multiple>", GetPlayerNameOrConsole(player), players.TargetName]);
         }
+
+        _ = SendDiscordMessage($"[{GetPlayerSteamIdOrConsole(player)}] {GetPlayerNameOrConsole(player)} -> css_silence <{command.GetArg(1)}>");
     }
 
     [ConsoleCommand("css_unsilence")]
@@ -166,12 +176,14 @@ public partial class Admin : BasePlugin
 
         if (players.Players.Length == 1)
         {
-            Server.PrintToChatAll(Localizer["Prefix"] + Localizer["css_unsilence<player>", player == null ? Localizer["Console"] : player.PlayerName, players.TargetName]);
+            Server.PrintToChatAll(Localizer["Prefix"] + Localizer["css_unsilence<player>", GetPlayerNameOrConsole(player), players.TargetName]);
         }
         else
         {
-            Server.PrintToChatAll(Localizer["Prefix"] + Localizer["css_unsilence<multiple>", player == null ? Localizer["Console"] : player.PlayerName, players.TargetName]);
+            Server.PrintToChatAll(Localizer["Prefix"] + Localizer["css_unsilence<multiple>", GetPlayerNameOrConsole(player), players.TargetName]);
         }
+
+        _ = SendDiscordMessage($"[{GetPlayerSteamIdOrConsole(player)}] {GetPlayerNameOrConsole(player)} -> css_unsilence <{command.GetArg(1)}>");
     }
 
     [ConsoleCommand("css_smute")]
@@ -211,7 +223,7 @@ public partial class Admin : BasePlugin
     }
     public void HandleTGagMuteSilence(CCSPlayerController? player, CommandInfo command, string punishment, string localizer, int argcount)
     {
-        CCSPlayerController? target = FindTarget(command, argcount);
+        CCSPlayerController? target = FindTarget(command, MultipleFlags.NORMAL, argcount);
 
         if (target == null)
         {
@@ -226,11 +238,13 @@ public partial class Admin : BasePlugin
 
         SetPunishmentForPlayer(player, target, punishment, "", time, true);
 
-        Server.PrintToChatAll(Localizer["Prefix"] + Localizer[localizer, player == null ? Localizer["Console"] : player.PlayerName, target.PlayerName, time]);
+        Server.PrintToChatAll(Localizer["Prefix"] + Localizer[localizer, GetPlayerNameOrConsole(player), target.PlayerName, time]);
+
+        _ = SendDiscordMessage($"[{GetPlayerSteamIdOrConsole(player)}] {GetPlayerNameOrConsole(player)} -> {localizer} <{target.PlayerName}> <time>");
     }
     public void HandleTUnGagMuteSilence(CCSPlayerController? player, CommandInfo command, string punishment, string localizer, int argcount)
     {
-        CCSPlayerController? target = FindTarget(command, argcount);
+        CCSPlayerController? target = FindTarget(command, MultipleFlags.NORMAL, argcount);
 
         if (target == null)
         {
@@ -239,6 +253,8 @@ public partial class Admin : BasePlugin
 
         RemovePunishment(target.SteamID, punishment, true);
 
-        Server.PrintToChatAll(Localizer["Prefix"] + Localizer[localizer, player == null ? Localizer["Console"] : player.PlayerName, target.PlayerName]);
+        Server.PrintToChatAll(Localizer["Prefix"] + Localizer[localizer, GetPlayerNameOrConsole(player), target.PlayerName]);
+
+        _ = SendDiscordMessage($"[{GetPlayerSteamIdOrConsole(player)}] {GetPlayerNameOrConsole(player)} -> {localizer} <{target.PlayerName}>");
     }
 }

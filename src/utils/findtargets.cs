@@ -3,13 +3,12 @@ using CounterStrikeSharp.API.Core;
 using CounterStrikeSharp.API.Modules.Commands;
 using CounterStrikeSharp.API.Modules.Commands.Targeting;
 using CounterStrikeSharp.API.Modules.Utils;
-using Dapper;
 
 namespace Admin;
 
 public partial class Admin : BasePlugin
 {
-    private CCSPlayerController? FindTarget(CommandInfo command, int minArgCount)
+    private CCSPlayerController? FindTarget(CommandInfo command, MultipleFlags flags, int minArgCount)
     {
         if(command.ArgCount < minArgCount)
         {
@@ -31,7 +30,12 @@ public partial class Admin : BasePlugin
 
         CCSPlayerController target = targetresult.First();
 
-        return target.IsValid ? target : null;
+        if(!CheckFlags(target, flags))
+        {
+            return null;
+        }
+
+        return target.Valid() ? target : null;
     }
     private Target? FindTargets(CCSPlayerController? player, CommandInfo command, MultipleFlags flags, int minArgCount)
     {
@@ -46,21 +50,21 @@ public partial class Admin : BasePlugin
         {
             return arg[1] switch
             {
-                'm' => HandlePlayer(player, command, flags),
+                'm' => HandlePlayer(FindTarget(command, flags, minArgCount), command),
                 't' => HandleTeam(command, CsTeam.Terrorist, Localizer["t team players"], flags),
                 'c' => HandleTeam(command,CsTeam.CounterTerrorist, Localizer["ct team players"], flags),
                 'd' => HandleAliveDead(command, alive: false, Localizer["dead players"], flags),
                 'a' => arg[3] == 'i' ? HandleAliveDead(command, alive: false, Localizer["dead players"], flags) : HandleAll(command, Localizer["all players"], flags),
-                _ => HandlePlayer(FindTarget(command, minArgCount), command, flags)
+                _ => HandlePlayer(FindTarget(command, flags, minArgCount), command)
             };
         }
 
-        return HandlePlayer(FindTarget(command, minArgCount), command, flags);
+        return HandlePlayer(FindTarget(command, flags, minArgCount), command);
     }
 
-    private Target? HandlePlayer(CCSPlayerController? player, CommandInfo command, MultipleFlags flags)
+    private Target? HandlePlayer(CCSPlayerController? player, CommandInfo command)
     {
-        if(player == null || !CheckFlags(player, flags))
+        if(player == null)
         {
             command.ReplyToCommand(Localizer["Prefix"] + Localizer["No matching client"]);
             return null;
@@ -75,7 +79,7 @@ public partial class Admin : BasePlugin
 
     private Target? HandleTeam(CommandInfo command, CsTeam team, string targetname, MultipleFlags flags)
     {
-        CCSPlayerController[] players = Utilities.GetPlayers().Where(target => target is { IsValid: true } && target.Team == team && CheckFlags(target, flags)).ToArray();
+        CCSPlayerController[] players = Utilities.GetPlayers().Where(target => target.Valid() && target.Team == team && CheckFlags(target, flags)).ToArray();
 
         if (players.Length == 1)
         {
@@ -95,7 +99,7 @@ public partial class Admin : BasePlugin
     }
     private Target? HandleAliveDead(CommandInfo command, bool alive, string targetname, MultipleFlags flags)
     {
-        CCSPlayerController[] players = Utilities.GetPlayers().Where(target => target is { IsValid: true } && target.PawnIsAlive == alive && CheckFlags(target, flags)).ToArray();
+        CCSPlayerController[] players = Utilities.GetPlayers().Where(target => target.Valid() && target.PawnIsAlive == alive && CheckFlags(target, flags)).ToArray();
 
         if (players.Length == 1)
         {
@@ -115,7 +119,7 @@ public partial class Admin : BasePlugin
     }
     private Target? HandleAll(CommandInfo command, string targetname, MultipleFlags flags)
     {
-        CCSPlayerController[] players = Utilities.GetPlayers().Where(target => target is { IsValid: true } && CheckFlags(target, flags)).ToArray();
+        CCSPlayerController[] players = Utilities.GetPlayers().Where(target => target.Valid() && CheckFlags(target, flags)).ToArray();
 
         if (players.Length == 1)
         {

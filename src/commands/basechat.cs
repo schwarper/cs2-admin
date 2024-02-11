@@ -5,6 +5,7 @@ using CounterStrikeSharp.API.Modules.Commands;
 using CounterStrikeSharp.API;
 using CounterStrikeSharp.API.Modules.Memory;
 using CounterStrikeSharp.API.Modules.Utils;
+using CounterStrikeSharp.API.Modules.Commands.Targeting;
 
 namespace Admin;
 
@@ -23,7 +24,8 @@ public partial class Admin : BasePlugin
         string arg = command.GetCommandString;
         string message = arg[arg.IndexOf(' ')..];
 
-        Server.PrintToChatAll(Localizer["css_say", player == null ? Localizer["Console"] : player.PlayerName, message]);
+        Server.PrintToChatAll(Localizer["css_say", GetPlayerNameOrConsole(player), message]);
+        _ = SendDiscordMessage($"[{GetPlayerSteamIdOrConsole(player)}] [{GetPlayerSteamIdOrConsole(player)}] {GetPlayerNameOrConsole(player)} -> css_say <{message}>");
     }
 
     [ConsoleCommand("css_csay")]
@@ -41,8 +43,14 @@ public partial class Admin : BasePlugin
 
         Utilities.GetPlayers().ForEach(target =>
         {
-            target.PrintToCenter(Localizer["css_csay", player == null ? Localizer["Console"] : player.PlayerName, message]);
+            if(!target.Valid())
+            {
+                return;
+            }
+
+            target.PrintToCenter(Localizer["css_csay", GetPlayerNameOrConsole(player), message]);
         });
+        _ = SendDiscordMessage($"[{GetPlayerSteamIdOrConsole(player)}] {GetPlayerNameOrConsole(player)} -> css_csay <{message}>");
     }
 
     [ConsoleCommand("css_dsay")]
@@ -60,8 +68,10 @@ public partial class Admin : BasePlugin
         string message = arg[arg.IndexOf(' ')..];
 
         VirtualFunctions.ClientPrintAll(HudDestination.Alert,
-            Localizer["css_csay", player == null ? Localizer["Console"] : player.PlayerName, message],
+            Localizer["css_csay", GetPlayerNameOrConsole(player), message],
             0, 0, 0, 0);
+
+        _ = SendDiscordMessage($"[{GetPlayerSteamIdOrConsole(player)}] {GetPlayerNameOrConsole(player)} -> css_csay <{message}>");
     }
 
     [ConsoleCommand("css_asay")]
@@ -78,10 +88,12 @@ public partial class Admin : BasePlugin
         string arg = command.GetCommandString;
         string message = arg[arg.IndexOf(' ')..];
 
-        foreach (CCSPlayerController target in Utilities.GetPlayers().Where(p => p is { IsValid: true } && AdminManager.PlayerHasPermissions(p, "@css/chat")))
+        foreach (CCSPlayerController target in Utilities.GetPlayers().Where(p => p.Valid() && AdminManager.PlayerHasPermissions(p, "@css/chat")))
         {
-            target.PrintToChat(Localizer["css_asay", player == null ? Localizer["Console"] : player.PlayerName, message]);
+            target.PrintToChat(Localizer["css_asay", GetPlayerNameOrConsole(player), message]);
         }
+
+        _ = SendDiscordMessage($"[{GetPlayerSteamIdOrConsole(player)}] {GetPlayerNameOrConsole(player)} -> css_asay <{message}>");
     }
 
     [ConsoleCommand("css_psay")]
@@ -89,7 +101,7 @@ public partial class Admin : BasePlugin
     [CommandHelper(minArgs: 2, "<#userid|name> <message> - sends private message", whoCanExecute: CommandUsage.CLIENT_AND_SERVER)]
     public void Command_PSay(CCSPlayerController? player, CommandInfo command)
     {
-        CCSPlayerController? target = FindTarget(command, 2);
+        CCSPlayerController? target = FindTarget(command, MultipleFlags.NORMAL, 2);
 
         if(target == null)
         {
@@ -99,7 +111,9 @@ public partial class Admin : BasePlugin
         string arg = command.GetCommandString;
         string message = arg[arg.IndexOf(' ')..];
 
-        command.ReplyToCommand(Localizer["css_psay", player == null ? Localizer["Console"] : player.PlayerName, target.PlayerName, message]);
-        target.PrintToChat(Localizer["css_psay", player == null ? Localizer["Console"] : player.PlayerName, target.PlayerName, message]);
+        command.ReplyToCommand(Localizer["css_psay", GetPlayerNameOrConsole(player), target.PlayerName, message]);
+        target.PrintToChat(Localizer["css_psay", GetPlayerNameOrConsole(player), target.PlayerName, message]);
+
+        _ = SendDiscordMessage($"[{GetPlayerSteamIdOrConsole(player)}] {GetPlayerNameOrConsole(player)} -> css_psay <{target.PlayerName}> <{message}>");
     }
 }

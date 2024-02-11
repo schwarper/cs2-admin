@@ -1,16 +1,18 @@
 using CounterStrikeSharp.API.Core;
+using CounterStrikeSharp.API.Modules.Utils;
 using MySqlConnector;
 
 namespace Admin;
 
 public partial class Admin : BasePlugin
 {
-    public Admin? GlobalBasePlugin;
+    public required Admin GlobalBasePlugin;
     public AdminConfig Config { get; set; } = new AdminConfig();
 
     private readonly List<Punishment> GlobalPunishList = new();
     private readonly Dictionary<string, int> GlobalVoteAnswers = new();
     private readonly List<CCSPlayerController> GlobalVotePlayers = new();
+    private readonly Dictionary<CCSPlayerController, Vector> GlobalHRespawnPlayers = new();
 
     private bool GlobalVoteInProgress { get; set; } = false;
     private MySqlConnection GlobalDatabase = null!;

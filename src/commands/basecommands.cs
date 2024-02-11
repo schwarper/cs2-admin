@@ -14,10 +14,16 @@ public partial class Admin : BasePlugin
     [CommandHelper(minArgs: 1, "<#userid|name> <reason>", whoCanExecute: CommandUsage.CLIENT_AND_SERVER)]
     public void Command_Kick(CCSPlayerController? player, CommandInfo command)
     {
-        CCSPlayerController? target = FindTarget(command, 1);
+        CCSPlayerController? target = FindTarget(command, MultipleFlags.NORMAL, 1);
 
         if (target == null)
         {
+            return;
+        }
+
+        if (!AdminManager.CanPlayerTarget(player, target))
+        {
+            command.ReplyToCommand(Localizer["Prefix"] + Localizer["You cannot target"]);
             return;
         }
 
@@ -25,7 +31,9 @@ public partial class Admin : BasePlugin
 
         KickPlayer(target, reason);
 
-        Server.PrintToChatAll(Localizer["Prefix"] + Localizer["css_kick", player == null ? Localizer["Console"] : player.PlayerName, target.PlayerName, reason]);
+        Server.PrintToChatAll(Localizer["Prefix"] + Localizer["css_kick", GetPlayerNameOrConsole(player), target.PlayerName, reason]);
+
+        _ = SendDiscordMessage($"[{GetPlayerSteamIdOrConsole(player)}] {GetPlayerNameOrConsole(player)} -> css_kick <{target.PlayerName}> <{reason}>");
     }
 
     [ConsoleCommand("css_changemap")]
@@ -59,7 +67,9 @@ public partial class Admin : BasePlugin
                 Server.ExecuteCommand(mapname);
             });
 
-            Server.PrintToChatAll(Localizer["Prefix"] + Localizer["css_wsmap", player == null ? Localizer["Console"] : player.PlayerName, map]);
+            Server.PrintToChatAll(Localizer["Prefix"] + Localizer["css_wsmap", GetPlayerNameOrConsole(player), map]);
+
+            _ = SendDiscordMessage($"[{GetPlayerSteamIdOrConsole(player)}] {GetPlayerNameOrConsole(player)} -> css_wsmap <{map}>");
 
             return;
         }
@@ -75,7 +85,9 @@ public partial class Admin : BasePlugin
             Server.ExecuteCommand($"changelevel {map}");
         });
 
-        Server.PrintToChatAll(Localizer["Prefix"] + Localizer["css_map", player == null ? Localizer["Console"] : player.PlayerName, map]);
+        Server.PrintToChatAll(Localizer["Prefix"] + Localizer["css_map", GetPlayerNameOrConsole(player), map]);
+
+        _ = SendDiscordMessage($"[{GetPlayerSteamIdOrConsole(player)}] {GetPlayerNameOrConsole(player)} -> css_map <{map}>");
     }
 
     [ConsoleCommand("css_wsmap")]
@@ -106,7 +118,9 @@ public partial class Admin : BasePlugin
             Server.ExecuteCommand(mapname);
         });
 
-        Server.PrintToChatAll(Localizer["Prefix"] + Localizer["css_wsmap", player == null ? Localizer["Console"] : player.PlayerName, map]);
+        Server.PrintToChatAll(Localizer["Prefix"] + Localizer["css_wsmap", GetPlayerNameOrConsole(player), map]);
+
+        _ = SendDiscordMessage($"[{GetPlayerSteamIdOrConsole(player)}] {GetPlayerNameOrConsole(player)} -> css_wsmap <{map}>");
     }
 
     [ConsoleCommand("css_rcon")]
@@ -123,7 +137,9 @@ public partial class Admin : BasePlugin
 
         Server.ExecuteCommand(arg);
 
-        Server.PrintToChatAll(Localizer["Prefix"] + Localizer["css_rcon", player == null ? Localizer["Console"] : player.PlayerName, arg]);
+        Server.PrintToChatAll(Localizer["Prefix"] + Localizer["css_rcon", GetPlayerNameOrConsole(player), arg]);
+
+        _ = SendDiscordMessage($"[{GetPlayerSteamIdOrConsole(player)}] {GetPlayerNameOrConsole(player)} -> css_rcon <{arg}>");
     }
 
     [ConsoleCommand("css_cvar")]
@@ -166,7 +182,9 @@ public partial class Admin : BasePlugin
 
         Server.ExecuteCommand($"{cvarname} {value}");
 
-        Server.PrintToChatAll(Localizer["Prefix"] + Localizer["css_cvar", player == null ? Localizer["Console"] : player.PlayerName, cvar.Name, value]);
+        Server.PrintToChatAll(Localizer["Prefix"] + Localizer["css_cvar", GetPlayerNameOrConsole(player), cvar.Name, value]);
+
+        _ = SendDiscordMessage($"[{GetPlayerSteamIdOrConsole(player)}] {GetPlayerNameOrConsole(player)} -> css_cvar <{cvar.Name}> <{value}");
     }
 
     [ConsoleCommand("css_exec")]
@@ -182,7 +200,10 @@ public partial class Admin : BasePlugin
         string cfg = command.ArgString;
 
         Server.ExecuteCommand($"exec {cfg}");
-        Server.PrintToChatAll(Localizer["Prefix"] + Localizer["css_exec", player == null ? Localizer["Console"] : player.PlayerName, cfg]);
+
+        Server.PrintToChatAll(Localizer["Prefix"] + Localizer["css_exec", GetPlayerNameOrConsole(player), cfg]);
+
+        _ = SendDiscordMessage($"[{GetPlayerSteamIdOrConsole(player)}] {GetPlayerNameOrConsole(player)} -> css_exec <{cfg}>");
     }
 
     [ConsoleCommand("css_who")]
@@ -190,7 +211,7 @@ public partial class Admin : BasePlugin
     [CommandHelper(minArgs: 1, "<#userid|name>", whoCanExecute: CommandUsage.CLIENT_AND_SERVER)]
     public void Command_Who(CCSPlayerController? player, CommandInfo command)
     {
-        CCSPlayerController? target = FindTarget(command, 1);
+        CCSPlayerController? target = FindTarget(command, MultipleFlags.NORMAL, 1);
 
         if (target == null)
         {
@@ -213,5 +234,7 @@ public partial class Admin : BasePlugin
             targetConsolePrint(Localizer["css_who<permission>", permissionflags]);
             targetConsolePrint(Localizer["css_who<immunitylevel>", AdminManager.GetPlayerImmunity(target)]);
         });
+
+        _ = SendDiscordMessage($"[{GetPlayerSteamIdOrConsole(player)}] {GetPlayerNameOrConsole(player)} -> css_who <{target.PlayerName}>");
     }
 }

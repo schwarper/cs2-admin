@@ -6,6 +6,8 @@ using CounterStrikeSharp.API;
 using CounterStrikeSharp.API.Modules.Menu;
 using CounterStrikeSharp.API.Modules.Timers;
 using System.Drawing;
+using System.Text;
+using System;
 
 namespace Admin;
 public partial class Admin : BasePlugin
@@ -37,22 +39,27 @@ public partial class Admin : BasePlugin
         };
 
         string answer;
+        StringBuilder arg = new ();
 
         for (int i = 2; i < answersCount; i++)
         {
             answer = command.GetArg(i);
+
+            arg.Append($" <{command.GetArg(i)}>");
 
             GlobalVoteAnswers.Add(answer, 0);
 
             menu.AddMenuOption(Localizer["css_vote<optiontext>", answer, 0], HandleVote);
         }
 
-        foreach (CCSPlayerController target in Utilities.GetPlayers().Where(p => p is { IsValid: true, IsBot: false }))
+        foreach (CCSPlayerController target in Utilities.GetPlayers().Where(p => p.Valid()))
         {
-            MenuManager.OpenCenterHtmlMenu(GlobalBasePlugin!, target, menu);
+            MenuManager.OpenCenterHtmlMenu(GlobalBasePlugin, target, menu);
         }
 
-        Server.PrintToChatAll(Localizer["Prefix"] + Localizer["css_vote", player == null ? Localizer["Console"] : player.PlayerName, question]);
+        Server.PrintToChatAll(Localizer["Prefix"] + Localizer["css_vote", GetPlayerNameOrConsole(player), question]);
+
+        _ = SendDiscordMessage($"[{GetPlayerSteamIdOrConsole(player)}] {GetPlayerNameOrConsole(player)} -> css_vote {arg}");
 
         GlobalVoteInProgress = true;
 
@@ -85,7 +92,6 @@ public partial class Admin : BasePlugin
 
             GlobalVotePlayers.Add(player);
             GlobalVoteAnswers[optiontexts[0]]++;
-            option.Disabled = true;
 
             option.Text = Localizer["css_vote<optiontext>", optiontexts[0], GlobalVoteAnswers[optiontexts[0]]];
         }

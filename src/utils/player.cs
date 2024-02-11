@@ -1,12 +1,18 @@
 using CounterStrikeSharp.API;
 using CounterStrikeSharp.API.Core;
+using CounterStrikeSharp.API.Modules.Commands.Targeting;
 using CounterStrikeSharp.API.Modules.Memory;
 using CounterStrikeSharp.API.Modules.Utils;
+using static Admin.Admin;
 
 namespace Admin;
 
 public static class PlayerUtils
 {
+    static public bool Valid(this CCSPlayerController player)
+    {
+        return player.IsValid && player.SteamID.ToString().Length == 17;
+    }
     static public void Kick(this CCSPlayerController player, string reason)
     {
         Server.ExecuteCommand($"kickid \"{player.UserId}\" \"{reason}\";");
@@ -114,7 +120,23 @@ public static class PlayerUtils
     }
     static public void Rename(this CCSPlayerController player, string newname)
     {
-        Admin.SchemaString<CBasePlayerController> playerName = new(player, "m_iszPlayerName");
+        SchemaString<CBasePlayerController> playerName = new(player, "m_iszPlayerName");
         playerName.Set(newname);
+
+        Utilities.SetStateChanged(player, "CBasePlayerController", "m_iszPlayerName");
+    }
+    static public void TeleportToPlayer(this CCSPlayerPawn playerPawn, CCSPlayerPawn targetPawn)
+    {
+        var position = targetPawn.AbsOrigin;
+        var angle = targetPawn.AbsRotation;
+
+        if(position == null || angle == null)
+        {
+            return;
+        }
+
+        var velocity = targetPawn.AbsVelocity;
+
+        playerPawn.Teleport(position, angle, velocity);
     }
 }

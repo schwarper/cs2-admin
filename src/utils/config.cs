@@ -15,6 +15,7 @@ public class AdminConfig : BasePluginConfig
     [JsonPropertyName("give_knife_after_strip")] public bool GiveKnifeAfterStrip { get; set; } = true;
     [JsonPropertyName("sethp_max_100")] public bool SetHpMax100 { get; set; } = false;
     [JsonPropertyName("respawn_only_dead")] public bool RespawnOnlyDead { get; set; } = true;
+    [JsonPropertyName("discord_webhook")] public string DiscordWebhook { get; set; } = "";
 }
 
 public partial class Admin : BasePlugin, IPluginConfig<AdminConfig>

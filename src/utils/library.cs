@@ -1,7 +1,6 @@
 using CounterStrikeSharp.API;
 using CounterStrikeSharp.API.Core;
 using CounterStrikeSharp.API.Modules.Cvars;
-using CounterStrikeSharp.API.Modules.Entities;
 using CounterStrikeSharp.API.Modules.Utils;
 using System.Drawing;
 using System.Numerics;
@@ -24,7 +23,7 @@ public partial class Admin : BasePlugin
             PlayerSteamid = target.SteamID,
             PlayerName = target.PlayerName,
             AdminSteamid = player == null ? 0 : player.SteamID,
-            AdminName = player == null ? Localizer["Console"] : player.PlayerName,
+            AdminName = GetPlayerNameOrConsole(player),
             PunishmentName = punishmentname,
             Reason = reason,
             Duration = duration,
@@ -39,6 +38,36 @@ public partial class Admin : BasePlugin
         {
             SaveDatabase(p, punishmentname == "ban" ? "baseban" : "basecomm");
         } 
+    }
+    public void AddPunishmentForPlayer(CCSPlayerController? player, ulong steamid, string punishmentname, string reason, int duration, bool savedatabase)
+    {
+        if (duration <= 0)
+        {
+            duration = -1;
+        }
+
+        DateTime now = DateTime.Now;
+
+        Punishment p = new()
+        {
+            PlayerSteamid = steamid,
+            PlayerName = "null",
+            AdminSteamid = player == null ? 0 : player.SteamID,
+            AdminName = GetPlayerNameOrConsole(player),
+            PunishmentName = punishmentname,
+            Reason = reason,
+            Duration = duration,
+            End = (duration == -1) ? DateTime.MinValue : now.AddMinutes(duration),
+            Created = now,
+            SaveDatabase = savedatabase
+        };
+
+        GlobalPunishList.Add(p);
+
+        if (savedatabase)
+        {
+            SaveDatabase(p, punishmentname == "ban" ? "baseban" : "basecomm");
+        }
     }
     public void RemovePunishment(ulong steamid, string punishmentname, bool savedatabase)
     {
@@ -107,5 +136,15 @@ public partial class Admin : BasePlugin
                 }
             }
         }
+    }
+
+    public string GetPlayerNameOrConsole(CCSPlayerController? player)
+    {
+        return player == null ? Localizer["Console"] : player.PlayerName;
+    }
+
+    public static string GetPlayerSteamIdOrConsole(CCSPlayerController? player)
+    {
+        return player == null ? "[CONSOLE]" : player.SteamID.ToString();
     }
 }
