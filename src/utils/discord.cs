@@ -8,7 +8,7 @@ public partial class Admin : BasePlugin
 {
     public async Task SendDiscordMessage(string message)
     {
-        if(string.IsNullOrEmpty(Config.DiscordWebhook))
+        if (string.IsNullOrEmpty(Config.DiscordWebhook))
         {
             return;
         }

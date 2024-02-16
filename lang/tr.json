@@ -1,5 +1,6 @@
 {
 	"Prefix": "{red}[CSS] ",
+
 	"No matching client": "{white}Eşleşen alıcı bulunamadı.",
 	"More than one client matched": "Verilen biçim düzeniyle birden fazla alıcı eşleşti.",
 	"You cannot target": "{white}Bu kişinin dokunulmazlığı sizinkinden yüksek olduğu için bu kişiye dokunamazsınız.",
@@ -20,6 +21,11 @@
 	"dead players": "{green}ölü {white}oyuncuları",
 	"Console": "Panel",
 	"Unknown": "bilinmeyen",
+
+	"css_addadmin": "{white}Admin eklendi.",
+	"css_removeadmin": "{white}Admin silindi.",
+	"css_adminnotfound": "{white}Admin bulunamadı.",
+	"css_adminisexist": "{white}Böyle bir admin zaten var.",
 
 	"css_ban": "{blue}{0}{white}, {green}{1} {white}adlı oyuncuyu {green}{2} dakika{white} {green}{3} {white}nedeniyle sunucudan yasakladı.",
 	"css_unban": "{blue}{0}{white}, {green}{1} {white}steamid'nin sunucu yasağını kaldırdı.",
@@ -102,5 +108,4 @@
 	"css_slay<player>": "{blue}{0}{white}, {green}{1} {white}adlı oyuncuyu öldürdü.",
 	"css_slay<multiple>": "{blue}{0}{white}, {1} {white}öldürdü.",
 	"css_rename": "{blue}{0}{white}, {green}{1} {white}adlı oyuncunun ismini {green}{2} {white}olarak değiştirdi."
-
 }

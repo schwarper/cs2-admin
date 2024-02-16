@@ -1,11 +1,10 @@
-using CounterStrikeSharp.API.Core.Attributes.Registration;
+using CounterStrikeSharp.API;
 using CounterStrikeSharp.API.Core;
+using CounterStrikeSharp.API.Core.Attributes.Registration;
 using CounterStrikeSharp.API.Modules.Admin;
 using CounterStrikeSharp.API.Modules.Commands;
-using CounterStrikeSharp.API;
 using CounterStrikeSharp.API.Modules.Memory;
 using CounterStrikeSharp.API.Modules.Utils;
-using CounterStrikeSharp.API.Modules.Commands.Targeting;
 
 namespace Admin;
 
@@ -16,7 +15,7 @@ public partial class Admin : BasePlugin
     [CommandHelper(minArgs: 1, "<message> - sends message to all players", whoCanExecute: CommandUsage.CLIENT_AND_SERVER)]
     public void Command_Say(CCSPlayerController? player, CommandInfo command)
     {
-        if(command.ArgCount < 1)
+        if (command.ArgCount < 1)
         {
             return;
         }
@@ -43,7 +42,7 @@ public partial class Admin : BasePlugin
 
         Utilities.GetPlayers().ForEach(target =>
         {
-            if(!target.Valid())
+            if (!target.Valid())
             {
                 return;
             }
@@ -103,7 +102,7 @@ public partial class Admin : BasePlugin
     {
         CCSPlayerController? target = FindTarget(command, MultipleFlags.NORMAL, 2);
 
-        if(target == null)
+        if (target == null)
         {
             return;
         }

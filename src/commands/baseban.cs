@@ -1,10 +1,9 @@
-using CounterStrikeSharp.API.Core.Attributes.Registration;
+using CounterStrikeSharp.API;
 using CounterStrikeSharp.API.Core;
+using CounterStrikeSharp.API.Core.Attributes.Registration;
 using CounterStrikeSharp.API.Modules.Admin;
 using CounterStrikeSharp.API.Modules.Commands;
-using CounterStrikeSharp.API;
 using CounterStrikeSharp.API.Modules.Entities;
-using CounterStrikeSharp.API.Modules.Commands.Targeting;
 
 namespace Admin;
 
@@ -22,7 +21,7 @@ public partial class Admin : BasePlugin
             return;
         }
 
-        if(!AdminManager.CanPlayerTarget(player, target))
+        if (!AdminManager.CanPlayerTarget(player, target))
         {
             command.ReplyToCommand(Localizer["Prefix"] + Localizer["You cannot target"]);
             return;
@@ -40,7 +39,7 @@ public partial class Admin : BasePlugin
 
         KickPlayer(target, reason);
 
-        Server.PrintToChatAll(Localizer["Prefix"] + Localizer["css_ban", GetPlayerNameOrConsole(player), target.PlayerName, time, reason]);
+        PrintToChatAll("css_ban", GetPlayerNameOrConsole(player), target.PlayerName, time, reason);
         _ = SendDiscordMessage($"[{GetPlayerSteamIdOrConsole(player)}] {GetPlayerNameOrConsole(player)} -> css_ban <{target.PlayerName}> <{time}> <{reason}>");
     }
 
@@ -56,7 +55,7 @@ public partial class Admin : BasePlugin
 
         var steamid = command.GetArg(1);
 
-        if(!SteamID.TryParse(steamid, out SteamID? steamId) || steamId == null)
+        if (!SteamID.TryParse(steamid, out SteamID? steamId) || steamId == null)
         {
             command.ReplyToCommand(Localizer["Prefix"] + Localizer["Must be a steamid"]);
             return;
@@ -64,7 +63,7 @@ public partial class Admin : BasePlugin
 
         RemovePunishment(steamId.SteamId64, "ban", true);
 
-        Server.PrintToChatAll(Localizer["Prefix"] + Localizer["css_unban", GetPlayerNameOrConsole(player), steamid]);
+        PrintToChatAll("css_unban", GetPlayerNameOrConsole(player), steamid);
         _ = SendDiscordMessage($"[{GetPlayerSteamIdOrConsole(player)}] {GetPlayerNameOrConsole(player)} -> css_unban <{steamid}>");
     }
 
@@ -86,7 +85,7 @@ public partial class Admin : BasePlugin
             return;
         }
 
-        if(AdminManager.GetPlayerImmunity(player) < AdminManager.GetPlayerImmunity(steamId))
+        if (AdminManager.GetPlayerImmunity(player) < AdminManager.GetPlayerImmunity(steamId))
         {
             command.ReplyToCommand(Localizer["Prefix"] + Localizer["You cannot target"]);
             return;
@@ -102,20 +101,20 @@ public partial class Admin : BasePlugin
 
         CCSPlayerController? target = Utilities.GetPlayerFromSteamId(steamId.SteamId64);
 
-        if(target != null && target.Valid())
+        if (target != null && target.Valid())
         {
             SetPunishmentForPlayer(player, target, "ban", reason, time, true);
 
             KickPlayer(target, reason);
 
-            Server.PrintToChatAll(Localizer["Prefix"] + Localizer["css_ban", GetPlayerNameOrConsole(player), target.PlayerName, time, reason]);
+            PrintToChatAll("css_ban", GetPlayerNameOrConsole(player), target.PlayerName, time, reason);
             _ = SendDiscordMessage($"[{GetPlayerSteamIdOrConsole(player)}] {GetPlayerNameOrConsole(player)} -> css_addban <{target.PlayerName}> <{time}> <{reason}>");
         }
         else
         {
-            AddPunishmentForPlayer(player, steamId.SteamId64, "ban", reason, time, true);
+            AddPunishmentForPlayer(player, steamId.SteamId64, reason, time, true);
 
-            Server.PrintToChatAll(Localizer["Prefix"] + Localizer["css_addban", GetPlayerNameOrConsole(player), steamId.SteamId64, time, reason]);
+            PrintToChatAll("css_addban", GetPlayerNameOrConsole(player), steamId.SteamId64, time, reason);
             _ = SendDiscordMessage($"[{GetPlayerSteamIdOrConsole(player)}] {GetPlayerNameOrConsole(player)} -> css_addban <{steamId.SteamId64}> <{time}> <{reason}>");
         }
     }

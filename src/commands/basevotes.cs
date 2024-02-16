@@ -1,15 +1,14 @@
-using CounterStrikeSharp.API.Core.Attributes.Registration;
+using CounterStrikeSharp.API;
 using CounterStrikeSharp.API.Core;
+using CounterStrikeSharp.API.Core.Attributes.Registration;
 using CounterStrikeSharp.API.Modules.Admin;
 using CounterStrikeSharp.API.Modules.Commands;
-using CounterStrikeSharp.API;
 using CounterStrikeSharp.API.Modules.Menu;
 using CounterStrikeSharp.API.Modules.Timers;
-using System.Drawing;
 using System.Text;
-using System;
 
 namespace Admin;
+
 public partial class Admin : BasePlugin
 {
     [ConsoleCommand("css_vote")]
@@ -22,7 +21,7 @@ public partial class Admin : BasePlugin
             return;
         }
 
-        if(GlobalVoteInProgress)
+        if (GlobalVoteInProgress)
         {
             command.ReplyToCommand(Localizer["Prefix"] + Localizer["css_vote<inprogress>"]);
             return;
@@ -39,7 +38,7 @@ public partial class Admin : BasePlugin
         };
 
         string answer;
-        StringBuilder arg = new ();
+        StringBuilder arg = new();
 
         for (int i = 2; i < answersCount; i++)
         {
@@ -57,7 +56,7 @@ public partial class Admin : BasePlugin
             MenuManager.OpenCenterHtmlMenu(GlobalBasePlugin, target, menu);
         }
 
-        Server.PrintToChatAll(Localizer["Prefix"] + Localizer["css_vote", GetPlayerNameOrConsole(player), question]);
+        PrintToChatAll("css_vote", GetPlayerNameOrConsole(player), question);
 
         _ = SendDiscordMessage($"[{GetPlayerSteamIdOrConsole(player)}] {GetPlayerNameOrConsole(player)} -> css_vote {arg}");
 
@@ -65,11 +64,11 @@ public partial class Admin : BasePlugin
 
         AddTimer(30.0f, () =>
         {
-            Server.PrintToChatAll(Localizer["Prefix"] + Localizer["css_vote<results>", question]);
+            PrintToChatAll("css_vote<results>", question);
 
             foreach (KeyValuePair<string, int> kvp in GlobalVoteAnswers)
             {
-                Server.PrintToChatAll(Localizer["Prefix"] + Localizer["css_vote<resultsanswer>", kvp.Key, kvp.Value]);
+                PrintToChatAll("css_vote<resultsanswer>", kvp.Key, kvp.Value);
             }
 
             GlobalVoteAnswers.Clear();

@@ -14,7 +14,9 @@ public class AdminConfig : BasePluginConfig
     [JsonPropertyName("changemap_delay")] public float ChangeMapDelay { get; set; } = 2.0f;
     [JsonPropertyName("give_knife_after_strip")] public bool GiveKnifeAfterStrip { get; set; } = true;
     [JsonPropertyName("sethp_max_100")] public bool SetHpMax100 { get; set; } = false;
-    [JsonPropertyName("respawn_only_dead")] public bool RespawnOnlyDead { get; set; } = true;
+    [JsonPropertyName("hide_console_msg")] public bool HideConsoleMsg { get; set; } = true;
+    [JsonPropertyName("show_name_commands")] public string[] ShowNameCommands { get; set; } = { "css_slap", "css_slay" };
+    [JsonPropertyName("show_name_flag")] public string ShowNameFlag { get; set; } = "@css/generic";
     [JsonPropertyName("discord_webhook")] public string DiscordWebhook { get; set; } = "";
 }
 

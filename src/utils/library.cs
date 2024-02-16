@@ -1,9 +1,12 @@
 using CounterStrikeSharp.API;
 using CounterStrikeSharp.API.Core;
+using CounterStrikeSharp.API.Core.Translations;
+using CounterStrikeSharp.API.Modules.Admin;
 using CounterStrikeSharp.API.Modules.Cvars;
 using CounterStrikeSharp.API.Modules.Utils;
 using System.Drawing;
 using System.Numerics;
+using System.Text;
 
 namespace Admin;
 
@@ -34,12 +37,17 @@ public partial class Admin : BasePlugin
 
         GlobalPunishList.Add(p);
 
-        if(savedatabase)
+        if (savedatabase)
         {
             SaveDatabase(p, punishmentname == "ban" ? "baseban" : "basecomm");
-        } 
+        }
+
+        if (punishmentname == "gag")
+        {
+            Server.ExecuteCommand($"css_tag_mute {target.SteamID}");
+        }
     }
-    public void AddPunishmentForPlayer(CCSPlayerController? player, ulong steamid, string punishmentname, string reason, int duration, bool savedatabase)
+    public void AddPunishmentForPlayer(CCSPlayerController? player, ulong steamid, string reason, int duration, bool savedatabase)
     {
         if (duration <= 0)
         {
@@ -54,7 +62,7 @@ public partial class Admin : BasePlugin
             PlayerName = "null",
             AdminSteamid = player == null ? 0 : player.SteamID,
             AdminName = GetPlayerNameOrConsole(player),
-            PunishmentName = punishmentname,
+            PunishmentName = "baseban",
             Reason = reason,
             Duration = duration,
             End = (duration == -1) ? DateTime.MinValue : now.AddMinutes(duration),
@@ -66,21 +74,40 @@ public partial class Admin : BasePlugin
 
         if (savedatabase)
         {
-            SaveDatabase(p, punishmentname == "ban" ? "baseban" : "basecomm");
+            SaveDatabase(p, "baseban");
         }
     }
     public void RemovePunishment(ulong steamid, string punishmentname, bool savedatabase)
     {
         GlobalPunishList.RemoveAll(p => p.PlayerSteamid == steamid && p.PunishmentName == punishmentname && p.SaveDatabase == savedatabase);
 
-        if(savedatabase)
+        if (savedatabase)
         {
             RemoveFromDatabase(steamid, punishmentname == "ban" ? "baseban" : "basecomm");
+        }
+
+        if (punishmentname == "gag")
+        {
+            Server.ExecuteCommand($"css_tag_unmute {steamid}");
         }
     }
     public void RemoveExpiredPunishments()
     {
-        if(GlobalPunishList.RemoveAll(p => p.End < DateTime.Now && p.Duration != -1 && p.SaveDatabase == true) > 0)
+        bool remove = false;
+
+        foreach (var punishment in GlobalPunishList.Where(p => p.End < DateTime.Now && p.Duration != -1 && p.SaveDatabase == true))
+        {
+            remove = true;
+
+            if (punishment.PunishmentName == "gag")
+            {
+                Server.ExecuteCommand($"css_tag_unmute {punishment.PlayerSteamid}");
+            }
+
+            GlobalPunishList.Remove(punishment);
+        }
+
+        if (remove)
         {
             RemoveExpiredFromDatabase();
         }
@@ -122,29 +149,70 @@ public partial class Admin : BasePlugin
         };
     }
 
-    public void RemoveWeaponsOnTheGround()
+    public static void RemoveWeaponsOnTheGround()
     {
-        foreach (string weapon in GlobalWeaponGroundList)
-        {
-            var entities = Utilities.FindAllEntitiesByDesignerName<CCSWeaponBaseGun>("weapon_" + weapon);
+        var entities = Utilities.FindAllEntitiesByDesignerName<CCSWeaponBaseGun>("weapon_");
 
-            foreach (var entity in entities)
+        foreach (var entity in entities)
+        {
+            if (!entity.IsValid)
             {
-                if (entity.State == CSWeaponState_t.WEAPON_NOT_CARRIED)
-                {
-                    entity.Remove();
-                }
+                continue;
             }
+
+            if (entity.State != CSWeaponState_t.WEAPON_NOT_CARRIED)
+            {
+                continue;
+            }
+
+            if (entity.DesignerName.StartsWith("weapon_") == false)
+            {
+                continue;
+            }
+
+            entity.Remove();
         }
     }
 
-    public string GetPlayerNameOrConsole(CCSPlayerController? player)
+    public static string GetPlayerNameOrConsole(CCSPlayerController? player)
     {
-        return player == null ? Localizer["Console"] : player.PlayerName;
+        return player == null ? "Console" : player.PlayerName;
     }
 
     public static string GetPlayerSteamIdOrConsole(CCSPlayerController? player)
     {
         return player == null ? "[CONSOLE]" : player.SteamID.ToString();
+    }
+
+    public void PrintToChatAll(string message, params object[] args)
+    {
+        foreach (CCSPlayerController player in Utilities.GetPlayers().Where(p => p != null && p.Valid()))
+        {
+            object[] modifiedArgs = args;
+
+            if (args.Length > 0 && args[0]?.ToString() == "Console")
+            {
+                if (Config.HideConsoleMsg)
+                {
+                    continue;
+                }
+
+                modifiedArgs = new string[args.Length];
+                Array.Copy(args, modifiedArgs, args.Length);
+                modifiedArgs[0] = Localizer["Console"];
+            }
+
+            if (Config.ShowNameCommands.Contains(message.Split('<').First()) && Config.ShowNameFlag != string.Empty && !AdminManager.PlayerHasPermissions(player, Config.ShowNameFlag))
+            {
+                modifiedArgs[0] = Localizer["Console"];
+            }
+
+            using (new WithTemporaryCulture(player.GetLanguage()))
+            {
+                StringBuilder builder = new(Localizer["Prefix"]);
+                builder.AppendFormat(Localizer[message], modifiedArgs);
+                player.PrintToChat(builder.ToString());
+            }
+        }
     }
 }

@@ -7,7 +7,7 @@ namespace Admin;
 public partial class Admin : BasePlugin
 {
     public override string ModuleName => "Admin";
-    public override string ModuleVersion => "0.0.2";
+    public override string ModuleVersion => "0.0.3";
     public override string ModuleAuthor => "schwarper";
 
     public override void Load(bool hotReload)
@@ -29,7 +29,7 @@ public partial class Admin : BasePlugin
     {
         foreach (Punishment @punishment in GlobalPunishList.Where(p => p is { SaveDatabase: true }))
         {
-            if(@punishment.PunishmentName == "ban")
+            if (@punishment.PunishmentName == "ban")
             {
                 SaveDatabase(@punishment, "baseban");
             }
@@ -42,11 +42,11 @@ public partial class Admin : BasePlugin
 
     public HookResult OnCommandSay(CCSPlayerController? player, CommandInfo info)
     {
-        if (player == null || !player.Valid())
+        if (player == null || !player.Valid() || info.GetArg(1).Length == 0)
         {
             return HookResult.Continue;
         }
 
-        return IsPlayerPunished(player, "gag") ? HookResult.Stop : HookResult.Continue;
+        return IsPlayerPunished(player, "gag") ? HookResult.Handled : HookResult.Continue;
     }
 }

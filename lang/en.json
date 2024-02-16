@@ -1,5 +1,6 @@
 {
 	"Prefix": "{red}[CSS] ",
+
 	"No matching client": "{white}There is no matching client.",
 	"More than one client matched": "{white}There are multiple clients that match.",
 	"You cannot target": "{white}Since this person's immunity level is higher than yours, you cannot target this person.",
@@ -20,6 +21,11 @@
 	"dead players": "{green}dead {white}players",
 	"Console": "Console",
 	"Unknown": "unknown",
+
+	"css_addadmin": "{white}Admin is added",
+	"css_removeadmin": "{white}Admin is removed.",
+	"css_adminnotfound": "{white}Admin is not found.",
+	"css_adminisexist": "{white}Admin is already exist.",
 
 	"css_ban": "{blue}{0} {white}banned {green}{1} {white}from the server for {green}{2} minutes{white} for {3} reason.",
 	"css_unban": "{blue}{0} {white}unbanned {green}{1}{white}.",

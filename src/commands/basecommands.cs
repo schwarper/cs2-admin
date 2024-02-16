@@ -1,8 +1,8 @@
-using CounterStrikeSharp.API.Core.Attributes.Registration;
+using CounterStrikeSharp.API;
 using CounterStrikeSharp.API.Core;
+using CounterStrikeSharp.API.Core.Attributes.Registration;
 using CounterStrikeSharp.API.Modules.Admin;
 using CounterStrikeSharp.API.Modules.Commands;
-using CounterStrikeSharp.API;
 using CounterStrikeSharp.API.Modules.Cvars;
 
 namespace Admin;
@@ -31,7 +31,7 @@ public partial class Admin : BasePlugin
 
         KickPlayer(target, reason);
 
-        Server.PrintToChatAll(Localizer["Prefix"] + Localizer["css_kick", GetPlayerNameOrConsole(player), target.PlayerName, reason]);
+        PrintToChatAll("css_kick", GetPlayerNameOrConsole(player), target.PlayerName, reason);
 
         _ = SendDiscordMessage($"[{GetPlayerSteamIdOrConsole(player)}] {GetPlayerNameOrConsole(player)} -> css_kick <{target.PlayerName}> <{reason}>");
     }
@@ -67,7 +67,7 @@ public partial class Admin : BasePlugin
                 Server.ExecuteCommand(mapname);
             });
 
-            Server.PrintToChatAll(Localizer["Prefix"] + Localizer["css_wsmap", GetPlayerNameOrConsole(player), map]);
+            PrintToChatAll("css_wsmap", GetPlayerNameOrConsole(player), map);
 
             _ = SendDiscordMessage($"[{GetPlayerSteamIdOrConsole(player)}] {GetPlayerNameOrConsole(player)} -> css_wsmap <{map}>");
 
@@ -85,7 +85,7 @@ public partial class Admin : BasePlugin
             Server.ExecuteCommand($"changelevel {map}");
         });
 
-        Server.PrintToChatAll(Localizer["Prefix"] + Localizer["css_map", GetPlayerNameOrConsole(player), map]);
+        PrintToChatAll("css_map", GetPlayerNameOrConsole(player), map);
 
         _ = SendDiscordMessage($"[{GetPlayerSteamIdOrConsole(player)}] {GetPlayerNameOrConsole(player)} -> css_map <{map}>");
     }
@@ -118,7 +118,7 @@ public partial class Admin : BasePlugin
             Server.ExecuteCommand(mapname);
         });
 
-        Server.PrintToChatAll(Localizer["Prefix"] + Localizer["css_wsmap", GetPlayerNameOrConsole(player), map]);
+        PrintToChatAll("css_wsmap", GetPlayerNameOrConsole(player), map);
 
         _ = SendDiscordMessage($"[{GetPlayerSteamIdOrConsole(player)}] {GetPlayerNameOrConsole(player)} -> css_wsmap <{map}>");
     }
@@ -137,7 +137,7 @@ public partial class Admin : BasePlugin
 
         Server.ExecuteCommand(arg);
 
-        Server.PrintToChatAll(Localizer["Prefix"] + Localizer["css_rcon", GetPlayerNameOrConsole(player), arg]);
+        PrintToChatAll("css_rcon", GetPlayerNameOrConsole(player), arg);
 
         _ = SendDiscordMessage($"[{GetPlayerSteamIdOrConsole(player)}] {GetPlayerNameOrConsole(player)} -> css_rcon <{arg}>");
     }
@@ -182,7 +182,7 @@ public partial class Admin : BasePlugin
 
         Server.ExecuteCommand($"{cvarname} {value}");
 
-        Server.PrintToChatAll(Localizer["Prefix"] + Localizer["css_cvar", GetPlayerNameOrConsole(player), cvar.Name, value]);
+        PrintToChatAll("css_cvar", GetPlayerNameOrConsole(player), cvar.Name, value);
 
         _ = SendDiscordMessage($"[{GetPlayerSteamIdOrConsole(player)}] {GetPlayerNameOrConsole(player)} -> css_cvar <{cvar.Name}> <{value}");
     }
@@ -201,7 +201,7 @@ public partial class Admin : BasePlugin
 
         Server.ExecuteCommand($"exec {cfg}");
 
-        Server.PrintToChatAll(Localizer["Prefix"] + Localizer["css_exec", GetPlayerNameOrConsole(player), cfg]);
+        PrintToChatAll("css_exec", GetPlayerNameOrConsole(player), cfg);
 
         _ = SendDiscordMessage($"[{GetPlayerSteamIdOrConsole(player)}] {GetPlayerNameOrConsole(player)} -> css_exec <{cfg}>");
     }

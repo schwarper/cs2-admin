@@ -85,9 +85,6 @@ public partial class Admin : BasePlugin
     {
         Task.Run(async () =>
         {
-            GlobalDatabase.Query(@"DELETE FROM basecomm WHERE end < CURRENT_TIMESTAMP;");
-            GlobalDatabase.Query(@"DELETE FROM baseban WHERE end < CURRENT_TIMESTAMP;");
-
             dynamic? result = await GlobalDatabase.QueryFirstOrDefaultAsync(@"SELECT * FROM basecomm UNION SELECT * FROM baseban;");
 
             Server.NextFrame(() =>

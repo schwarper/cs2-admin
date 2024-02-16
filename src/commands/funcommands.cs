@@ -1,8 +1,8 @@
-using CounterStrikeSharp.API.Core.Attributes.Registration;
+using CounterStrikeSharp.API;
 using CounterStrikeSharp.API.Core;
+using CounterStrikeSharp.API.Core.Attributes.Registration;
 using CounterStrikeSharp.API.Modules.Admin;
 using CounterStrikeSharp.API.Modules.Commands;
-using CounterStrikeSharp.API;
 using CounterStrikeSharp.API.Modules.Cvars;
 using CounterStrikeSharp.API.Modules.Entities.Constants;
 using CounterStrikeSharp.API.Modules.Utils;
@@ -22,14 +22,14 @@ public partial class Admin : BasePlugin
             return;
         }
 
-        if(!float.TryParse(command.GetArg(2), out float value) || value <= 0.0)
+        if (!float.TryParse(command.GetArg(2), out float value) || value <= 0.0)
         {
             value = -1.0f;
         }
 
         foreach (var targetPawn in players.Players.Select(p => p.Pawn.Value))
         {
-            if(targetPawn == null)
+            if (targetPawn == null)
             {
                 continue;
             }
@@ -47,11 +47,11 @@ public partial class Admin : BasePlugin
 
         if (players.Players.Length == 1)
         {
-            Server.PrintToChatAll(Localizer["Prefix"] + Localizer["css_freeze<player>", GetPlayerNameOrConsole(player), players.TargetName, value]);
+            PrintToChatAll("css_freeze<player>", GetPlayerNameOrConsole(player), players.TargetName, value);
         }
         else
         {
-            Server.PrintToChatAll(Localizer["Prefix"] + Localizer["css_freeze<multiple>", GetPlayerNameOrConsole(player), players.TargetName, value]);
+            PrintToChatAll("css_freeze<multiple>", GetPlayerNameOrConsole(player), players.TargetName, value);
         }
 
         _ = SendDiscordMessage($"[{GetPlayerSteamIdOrConsole(player)}] {GetPlayerNameOrConsole(player)} -> css_freeze <{command.GetArg(1)}> <{value}>");
@@ -81,11 +81,11 @@ public partial class Admin : BasePlugin
 
         if (players.Players.Length == 1)
         {
-            Server.PrintToChatAll(Localizer["Prefix"] + Localizer["css_unfreeze<player>", GetPlayerNameOrConsole(player), players.TargetName]);
+            PrintToChatAll("css_unfreeze<player>", GetPlayerNameOrConsole(player), players.TargetName);
         }
         else
         {
-            Server.PrintToChatAll(Localizer["Prefix"] + Localizer["css_unfreeze<multiple>", GetPlayerNameOrConsole(player), players.TargetName]);
+            PrintToChatAll("css_unfreeze<multiple>", GetPlayerNameOrConsole(player), players.TargetName);
         }
 
         _ = SendDiscordMessage($"[{GetPlayerSteamIdOrConsole(player)}] {GetPlayerNameOrConsole(player)} -> css_unfreeze {command.GetArg(1)}");
@@ -101,7 +101,7 @@ public partial class Admin : BasePlugin
             return;
         }
 
-        if(!int.TryParse(command.GetArg(1), out int value))
+        if (!int.TryParse(command.GetArg(1), out int value))
         {
             command.ReplyToCommand(Localizer["Prefix"] + Localizer["Must be an integer"]);
             return;
@@ -117,18 +117,17 @@ public partial class Admin : BasePlugin
 
         Server.ExecuteCommand($"sv_gravity {value}");
 
-        Server.PrintToChatAll(Localizer["Prefix"] + Localizer["css_cvar", GetPlayerNameOrConsole(player), "sv_gravity", value]);
+        PrintToChatAll("css_cvar", GetPlayerNameOrConsole(player), "sv_gravity", value);
 
         _ = SendDiscordMessage($"[{GetPlayerSteamIdOrConsole(player)}] {GetPlayerNameOrConsole(player)} -> css_gravity <{value}>");
     }
 
     [ConsoleCommand("css_revive")]
-    [ConsoleCommand("css_respawn")]
     [RequiresPermissions("@css/cheats")]
     [CommandHelper(minArgs: 1, "<#userid|name|all @ commands>", whoCanExecute: CommandUsage.CLIENT_AND_SERVER)]
-    public void Command_Respawn(CCSPlayerController? player, CommandInfo command)
+    public void Command_Revive(CCSPlayerController? player, CommandInfo command)
     {
-        Target? players = FindTargets(player, command, Config.RespawnOnlyDead ? MultipleFlags.IGNORE_ALIVE_PLAYERS : MultipleFlags.NORMAL, 1);
+        Target? players = FindTargets(player, command, MultipleFlags.NORMAL, 1);
 
         if (players == null)
         {
@@ -142,11 +141,40 @@ public partial class Admin : BasePlugin
 
         if (players.Players.Length == 1)
         {
-            Server.PrintToChatAll(Localizer["Prefix"] + Localizer["css_respawn<player>", GetPlayerNameOrConsole(player), players.TargetName]);
+            PrintToChatAll("css_respawn<player>", GetPlayerNameOrConsole(player), players.TargetName);
         }
         else
         {
-            Server.PrintToChatAll(Localizer["Prefix"] + Localizer["css_respawn<multiple>", GetPlayerNameOrConsole(player), players.TargetName]);
+            PrintToChatAll("css_respawn<multiple>", GetPlayerNameOrConsole(player), players.TargetName);
+        }
+
+        _ = SendDiscordMessage($"[{GetPlayerSteamIdOrConsole(player)}] {GetPlayerNameOrConsole(player)} -> css_respawn <{command.GetArg(1)}>");
+    }
+
+    [ConsoleCommand("css_respawn")]
+    [RequiresPermissions("@css/cheats")]
+    [CommandHelper(minArgs: 1, "<#userid|name|all @ commands>", whoCanExecute: CommandUsage.CLIENT_AND_SERVER)]
+    public void Command_Respawn(CCSPlayerController? player, CommandInfo command)
+    {
+        Target? players = FindTargets(player, command, MultipleFlags.IGNORE_ALIVE_PLAYERS, 1);
+
+        if (players == null)
+        {
+            return;
+        }
+
+        foreach (var target in players.Players)
+        {
+            target.Respawn();
+        }
+
+        if (players.Players.Length == 1)
+        {
+            PrintToChatAll("css_respawn<player>", GetPlayerNameOrConsole(player), players.TargetName);
+        }
+        else
+        {
+            PrintToChatAll("css_respawn<multiple>", GetPlayerNameOrConsole(player), players.TargetName);
         }
 
         _ = SendDiscordMessage($"[{GetPlayerSteamIdOrConsole(player)}] {GetPlayerNameOrConsole(player)} -> css_respawn <{command.GetArg(1)}>");
@@ -166,7 +194,7 @@ public partial class Admin : BasePlugin
 
         bool succeed = int.TryParse(command.GetArg(2), out int value);
 
-        if(succeed)
+        if (succeed)
         {
             value = Math.Max(0, Math.Min(1, value));
 
@@ -184,11 +212,11 @@ public partial class Admin : BasePlugin
 
             if (players.Players.Length == 1)
             {
-                Server.PrintToChatAll(Localizer["Prefix"] + Localizer["css_noclip<player>", GetPlayerNameOrConsole(player), players.TargetName, value]);
+                PrintToChatAll("css_noclip<player>", GetPlayerNameOrConsole(player), players.TargetName, value);
             }
             else
             {
-                Server.PrintToChatAll(Localizer["Prefix"] + Localizer["css_noclip<multiple>", GetPlayerNameOrConsole(player), players.TargetName, value]);
+                PrintToChatAll("css_noclip<multiple>", GetPlayerNameOrConsole(player), players.TargetName, value);
             }
 
             _ = SendDiscordMessage($"[{GetPlayerSteamIdOrConsole(player)}] {GetPlayerNameOrConsole(player)} -> css_noclip <{command.GetArg(1)}> <{value}>");
@@ -212,7 +240,7 @@ public partial class Admin : BasePlugin
 
             targetPawn.Noclip(Convert.ToBoolean(value));
 
-            Server.PrintToChatAll(Localizer["Prefix"] + Localizer["css_noclip<player>", GetPlayerNameOrConsole(player), players.TargetName, value]);
+            PrintToChatAll("css_noclip<player>", GetPlayerNameOrConsole(player), players.TargetName, value);
 
             _ = SendDiscordMessage($"[{GetPlayerSteamIdOrConsole(player)}] {GetPlayerNameOrConsole(player)} -> css_noclip <{command.GetArg(1)}>");
         }
@@ -266,11 +294,11 @@ public partial class Admin : BasePlugin
 
         if (players.Players.Length == 1)
         {
-            Server.PrintToChatAll(Localizer["Prefix"] + Localizer["css_weapon<player>", GetPlayerNameOrConsole(player), players.TargetName, weaponname]);
+            PrintToChatAll("css_weapon<player>", GetPlayerNameOrConsole(player), players.TargetName, weaponname);
         }
         else
         {
-            Server.PrintToChatAll(Localizer["Prefix"] + Localizer["css_weapon<multiple>", GetPlayerNameOrConsole(player), players.TargetName, weaponname]);
+            PrintToChatAll("css_weapon<multiple>", GetPlayerNameOrConsole(player), players.TargetName, weaponname);
         }
 
         _ = SendDiscordMessage($"[{GetPlayerSteamIdOrConsole(player)}] {GetPlayerNameOrConsole(player)} -> css_weapon <{command.GetArg(1)}> <{weaponname}>");
@@ -300,11 +328,11 @@ public partial class Admin : BasePlugin
 
         if (players.Players.Length == 1)
         {
-            Server.PrintToChatAll(Localizer["Prefix"] + Localizer["css_strip<player>", GetPlayerNameOrConsole(player), players.TargetName]);
+            PrintToChatAll("css_strip<player>", GetPlayerNameOrConsole(player), players.TargetName);
         }
         else
         {
-            Server.PrintToChatAll(Localizer["Prefix"] + Localizer["css_strip<multiple>", GetPlayerNameOrConsole(player), players.TargetName]);
+            PrintToChatAll("css_strip<multiple>", GetPlayerNameOrConsole(player), players.TargetName);
         }
 
         _ = SendDiscordMessage($"[{GetPlayerSteamIdOrConsole(player)}] {GetPlayerNameOrConsole(player)} -> css_strip <{command.GetArg(1)}>");
@@ -347,11 +375,11 @@ public partial class Admin : BasePlugin
 
         if (players.Players.Length == 1)
         {
-            Server.PrintToChatAll(Localizer["Prefix"] + Localizer["css_sethp<player>", GetPlayerNameOrConsole(player), players.TargetName, value]);
+            PrintToChatAll("css_sethp<player>", GetPlayerNameOrConsole(player), players.TargetName, value);
         }
         else
         {
-            Server.PrintToChatAll(Localizer["Prefix"] + Localizer["css_sethp<multiple>", GetPlayerNameOrConsole(player), players.TargetName, value]);
+            PrintToChatAll("css_sethp<multiple>", GetPlayerNameOrConsole(player), players.TargetName, value);
         }
 
         _ = SendDiscordMessage($"[{GetPlayerSteamIdOrConsole(player)}] {GetPlayerNameOrConsole(player)} -> css_sethp <{command.GetArg(1)}> <{value}>");
@@ -387,11 +415,11 @@ public partial class Admin : BasePlugin
 
         if (players.Players.Length == 1)
         {
-            Server.PrintToChatAll(Localizer["Prefix"] + Localizer["css_speed<player>", GetPlayerNameOrConsole(player), players.TargetName, value]);
+            PrintToChatAll("css_speed<player>", GetPlayerNameOrConsole(player), players.TargetName, value);
         }
         else
         {
-            Server.PrintToChatAll(Localizer["Prefix"] + Localizer["css_speed<multiple>", GetPlayerNameOrConsole(player), players.TargetName, value]);
+            PrintToChatAll("css_speed<multiple>", GetPlayerNameOrConsole(player), players.TargetName, value);
         }
 
         _ = SendDiscordMessage($"[{GetPlayerSteamIdOrConsole(player)}] {GetPlayerNameOrConsole(player)} -> css_speed <{command.GetArg(1)}> <{value}>");
@@ -431,11 +459,11 @@ public partial class Admin : BasePlugin
 
         if (players.Players.Length == 1)
         {
-            Server.PrintToChatAll(Localizer["Prefix"] + Localizer["css_god<player>", GetPlayerNameOrConsole(player), players.TargetName, value]);
+            PrintToChatAll("css_god<player>", GetPlayerNameOrConsole(player), players.TargetName, value);
         }
         else
         {
-            Server.PrintToChatAll(Localizer["Prefix"] + Localizer["css_god<multiple>", GetPlayerNameOrConsole(player), players.TargetName, value]);
+            PrintToChatAll("css_god<multiple>", GetPlayerNameOrConsole(player), players.TargetName, value);
         }
 
         _ = SendDiscordMessage($"[{GetPlayerSteamIdOrConsole(player)}] {GetPlayerNameOrConsole(player)} -> css_god <{command.GetArg(1)}> <{value}>");
@@ -498,11 +526,11 @@ public partial class Admin : BasePlugin
 
         if (players.Players.Length == 1)
         {
-            Server.PrintToChatAll(Localizer["Prefix"] + Localizer["css_team<player>", GetPlayerNameOrConsole(player), players.TargetName, teamname]);
+            PrintToChatAll("css_team<player>", GetPlayerNameOrConsole(player), players.TargetName, teamname);
         }
         else
         {
-            Server.PrintToChatAll(Localizer["Prefix"] + Localizer["css_team<multiple>", GetPlayerNameOrConsole(player), players.TargetName, teamname]);
+            PrintToChatAll("css_team<multiple>", GetPlayerNameOrConsole(player), players.TargetName, teamname);
         }
 
         _ = SendDiscordMessage($"[{GetPlayerSteamIdOrConsole(player)}] {GetPlayerNameOrConsole(player)} -> css_team <{command.GetArg(1)}> <{teamname}>");
@@ -532,11 +560,11 @@ public partial class Admin : BasePlugin
 
         if (players.Players.Length == 1)
         {
-            Server.PrintToChatAll(Localizer["Prefix"] + Localizer["css_bury<player>", GetPlayerNameOrConsole(player), players.TargetName]);
+            PrintToChatAll("css_bury<player>", GetPlayerNameOrConsole(player), players.TargetName);
         }
         else
         {
-            Server.PrintToChatAll(Localizer["Prefix"] + Localizer["css_bury<multiple>", GetPlayerNameOrConsole(player), players.TargetName]);
+            PrintToChatAll("css_bury<multiple>", GetPlayerNameOrConsole(player), players.TargetName);
         }
 
         _ = SendDiscordMessage($"[{GetPlayerSteamIdOrConsole(player)}] {GetPlayerNameOrConsole(player)} -> css_bury <{command.GetArg(1)}>");
@@ -566,11 +594,11 @@ public partial class Admin : BasePlugin
 
         if (players.Players.Length == 1)
         {
-            Server.PrintToChatAll(Localizer["Prefix"] + Localizer["css_unbury<player>", GetPlayerNameOrConsole(player), players.TargetName]);
+            PrintToChatAll("css_unbury<player>", GetPlayerNameOrConsole(player), players.TargetName);
         }
         else
         {
-            Server.PrintToChatAll(Localizer["Prefix"] + Localizer["css_unbury<multiple>", GetPlayerNameOrConsole(player), players.TargetName]);
+            PrintToChatAll("css_unbury<multiple>", GetPlayerNameOrConsole(player), players.TargetName);
         }
 
         _ = SendDiscordMessage($"[{GetPlayerSteamIdOrConsole(player)}] {GetPlayerNameOrConsole(player)} -> css_unbury <{command.GetArg(1)}>");
@@ -583,7 +611,7 @@ public partial class Admin : BasePlugin
     {
         RemoveWeaponsOnTheGround();
 
-        Server.PrintToChatAll(Localizer["Prefix"] + Localizer["css_clean", GetPlayerNameOrConsole(player)]);
+        PrintToChatAll("css_clean", GetPlayerNameOrConsole(player));
 
         _ = SendDiscordMessage($"[{GetPlayerSteamIdOrConsole(player)}] {GetPlayerNameOrConsole(player)} -> css_clean");
     }
@@ -593,14 +621,14 @@ public partial class Admin : BasePlugin
     [CommandHelper(minArgs: 1, "<#userid|name> - Teleport player to a player's position", whoCanExecute: CommandUsage.CLIENT_ONLY)]
     public void Command_Goto(CCSPlayerController? player, CommandInfo command)
     {
-        if(player == null)
+        if (player == null)
         {
             return;
         }
 
         CCSPlayerController? target = FindTarget(command, MultipleFlags.IGNORE_DEAD_PLAYERS, 1);
 
-        if(target == null)
+        if (target == null)
         {
             return;
         }
@@ -615,7 +643,7 @@ public partial class Admin : BasePlugin
 
         playerPlayerPawn.TeleportToPlayer(targetPlayerPawn);
 
-        Server.PrintToChatAll(Localizer["Prefix"] + Localizer["css_goto", player.PlayerName, target.PlayerName]);
+        PrintToChatAll("css_goto", player.PlayerName, target.PlayerName);
 
         _ = SendDiscordMessage($"[{GetPlayerSteamIdOrConsole(player)}] {GetPlayerNameOrConsole(player)} -> css_goto <{command.GetArg(1)}>");
     }
@@ -625,7 +653,7 @@ public partial class Admin : BasePlugin
     [CommandHelper(minArgs: 1, "<#userid|name|all @ commands> - Teleport players to a player's position", whoCanExecute: CommandUsage.CLIENT_ONLY)]
     public void Command_Bring(CCSPlayerController? player, CommandInfo command)
     {
-        if(player == null)
+        if (player == null)
         {
             return;
         }
@@ -639,14 +667,14 @@ public partial class Admin : BasePlugin
 
         var playerPlayerPawn = player.PlayerPawn.Value;
 
-        if(playerPlayerPawn == null)
+        if (playerPlayerPawn == null)
         {
             return;
         }
 
         foreach (var targetPlayerPawn in players.Players.Select(p => p.PlayerPawn.Value))
         {
-            if(targetPlayerPawn == null)
+            if (targetPlayerPawn == null)
             {
                 continue;
             }
@@ -656,11 +684,11 @@ public partial class Admin : BasePlugin
 
         if (players.Players.Length == 1)
         {
-            Server.PrintToChatAll(Localizer["Prefix"] + Localizer["css_bring<player>", GetPlayerNameOrConsole(player), players.TargetName]);
+            PrintToChatAll("css_bring<player>", GetPlayerNameOrConsole(player), players.TargetName);
         }
         else
         {
-            Server.PrintToChatAll(Localizer["Prefix"] + Localizer["css_bring<multiple>", GetPlayerNameOrConsole(player), players.TargetName]);
+            PrintToChatAll("css_bring<multiple>", GetPlayerNameOrConsole(player), players.TargetName);
         }
 
         _ = SendDiscordMessage($"[{GetPlayerSteamIdOrConsole(player)}] {GetPlayerNameOrConsole(player)} -> css_bring <{command.GetArg(1)}>");
@@ -686,7 +714,7 @@ public partial class Admin : BasePlugin
 
         var targetPawn = target.PlayerPawn.Value;
 
-        if(targetPawn == null || targetPawn.AbsRotation == null)
+        if (targetPawn == null || targetPawn.AbsRotation == null)
         {
             return;
         }
@@ -696,7 +724,7 @@ public partial class Admin : BasePlugin
         target.Respawn();
         targetPawn.Teleport(position, targetPawn.AbsRotation, targetPawn.AbsVelocity);
 
-        Server.PrintToChatAll(Localizer["Prefix"] + Localizer["css_hrespawn", GetPlayerNameOrConsole(player), target.PlayerName]);
+        PrintToChatAll("css_hrespawn", GetPlayerNameOrConsole(player), target.PlayerName);
 
         _ = SendDiscordMessage($"[{GetPlayerSteamIdOrConsole(player)}] {GetPlayerNameOrConsole(player)} -> css_hrespawn <{command.GetArg(1)}>");
     }

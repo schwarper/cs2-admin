@@ -1,6 +1,5 @@
 using CounterStrikeSharp.API;
 using CounterStrikeSharp.API.Core;
-using CounterStrikeSharp.API.Modules.Commands.Targeting;
 using CounterStrikeSharp.API.Modules.Memory;
 using CounterStrikeSharp.API.Modules.Utils;
 using static Admin.Admin;
@@ -33,7 +32,7 @@ public static class PlayerUtils
     }
     static public void Noclip(this CBasePlayerPawn pawn, bool noclip)
     {
-        if(noclip)
+        if (noclip)
         {
             pawn.MoveType = MoveType_t.MOVETYPE_NOCLIP;
 
@@ -130,7 +129,7 @@ public static class PlayerUtils
         var position = targetPawn.AbsOrigin;
         var angle = targetPawn.AbsRotation;
 
-        if(position == null || angle == null)
+        if (position == null || angle == null)
         {
             return;
         }

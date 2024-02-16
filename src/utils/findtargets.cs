@@ -10,7 +10,7 @@ public partial class Admin : BasePlugin
 {
     private CCSPlayerController? FindTarget(CommandInfo command, MultipleFlags flags, int minArgCount)
     {
-        if(command.ArgCount < minArgCount)
+        if (command.ArgCount < minArgCount)
         {
             return null;
         }
@@ -30,7 +30,7 @@ public partial class Admin : BasePlugin
 
         CCSPlayerController target = targetresult.First();
 
-        if(!CheckFlags(target, flags))
+        if (!CheckFlags(target, flags))
         {
             return null;
         }
@@ -52,7 +52,7 @@ public partial class Admin : BasePlugin
             {
                 'm' => HandlePlayer(FindTarget(command, flags, minArgCount), command),
                 't' => HandleTeam(command, CsTeam.Terrorist, Localizer["t team players"], flags),
-                'c' => HandleTeam(command,CsTeam.CounterTerrorist, Localizer["ct team players"], flags),
+                'c' => HandleTeam(command, CsTeam.CounterTerrorist, Localizer["ct team players"], flags),
                 'd' => HandleAliveDead(command, alive: false, Localizer["dead players"], flags),
                 'a' => arg[3] == 'i' ? HandleAliveDead(command, alive: false, Localizer["dead players"], flags) : HandleAll(command, Localizer["all players"], flags),
                 _ => HandlePlayer(FindTarget(command, flags, minArgCount), command)
@@ -64,7 +64,7 @@ public partial class Admin : BasePlugin
 
     private Target? HandlePlayer(CCSPlayerController? player, CommandInfo command)
     {
-        if(player == null)
+        if (player == null)
         {
             command.ReplyToCommand(Localizer["Prefix"] + Localizer["No matching client"]);
             return null;
@@ -85,7 +85,7 @@ public partial class Admin : BasePlugin
         {
             targetname = players.First().PlayerName;
         }
-        else if(players.Length == 0)
+        else if (players.Length == 0)
         {
             command.ReplyToCommand(Localizer["Prefix"] + Localizer["No matching client"]);
             return null;
