@@ -22,7 +22,7 @@ public partial class Admin : BasePlugin
         AddTimer(10.0f, () =>
         {
             RemoveExpiredPunishments();
-        }, TimerFlags.REPEAT | TimerFlags.STOP_ON_MAPCHANGE);
+        }, TimerFlags.REPEAT);
     }
 
     public override void Unload(bool hotReload)
