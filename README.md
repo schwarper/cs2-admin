@@ -5,6 +5,10 @@ An admin command plugin with mysql support
 
 # Commands
 ```js
+//admin
+♦ css_addadmin <steamid> <group> <immunity>
+♦ css_removeadmin <steamid>
+
 //baseban
 ♦ css_ban <player> <time> <reason>
 ♦ css_unban <steamid>
