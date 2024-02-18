@@ -53,7 +53,7 @@ public partial class Admin : BasePlugin
             return;
         }
 
-        var steamid = command.GetArg(1);
+        string steamid = command.GetArg(1);
 
         if (!SteamID.TryParse(steamid, out SteamID? steamId) || steamId == null)
         {
@@ -77,7 +77,7 @@ public partial class Admin : BasePlugin
             return;
         }
 
-        var steamid = command.GetArg(1);
+        string steamid = command.GetArg(1);
 
         if (!SteamID.TryParse(steamid, out SteamID? steamId) || steamId == null)
         {

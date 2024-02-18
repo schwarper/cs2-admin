@@ -27,7 +27,7 @@ public partial class Admin : BasePlugin
             value = -1.0f;
         }
 
-        foreach (var targetPawn in players.Players.Select(p => p.Pawn.Value))
+        foreach (CBasePlayerPawn? targetPawn in players.Players.Select(p => p.Pawn.Value))
         {
             if (targetPawn == null)
             {
@@ -69,7 +69,7 @@ public partial class Admin : BasePlugin
             return;
         }
 
-        foreach (var targetPawn in players.Players.Select(p => p.Pawn.Value))
+        foreach (CBasePlayerPawn? targetPawn in players.Players.Select(p => p.Pawn.Value))
         {
             if (targetPawn == null)
             {
@@ -134,7 +134,7 @@ public partial class Admin : BasePlugin
             return;
         }
 
-        foreach (var target in players.Players)
+        foreach (CCSPlayerController target in players.Players)
         {
             target.Respawn();
         }
@@ -163,7 +163,7 @@ public partial class Admin : BasePlugin
             return;
         }
 
-        foreach (var target in players.Players)
+        foreach (CCSPlayerController target in players.Players)
         {
             target.Respawn();
         }
@@ -200,7 +200,7 @@ public partial class Admin : BasePlugin
 
             bool noclip = Convert.ToBoolean(value);
 
-            foreach (var targetPawn in players.Players.Select(p => p.Pawn.Value))
+            foreach (CBasePlayerPawn? targetPawn in players.Players.Select(p => p.Pawn.Value))
             {
                 if (targetPawn == null)
                 {
@@ -229,7 +229,7 @@ public partial class Admin : BasePlugin
                 return;
             }
 
-            var targetPawn = players.Players.First().Pawn.Value;
+            CBasePlayerPawn? targetPawn = players.Players.First().Pawn.Value;
 
             if (targetPawn == null)
             {
@@ -259,35 +259,15 @@ public partial class Admin : BasePlugin
             return;
         }
 
-        string weaponname = command.GetArg(2);
+        string weapon = command.GetArg(2);
 
-        if (!GlobalWeaponAllList.Contains(weaponname))
+        if (!GlobalWeaponDictionary.TryGetValue(weapon, out CsItem weaponname))
         {
-            switch (weaponname.ToLower())
-            {
-                case "kevlar":
-                    {
-                        weaponname = "item_kevlar";
-                        break;
-                    }
-                case "assaultsuit":
-                    {
-                        weaponname = "item_assaultsuit";
-                        break;
-                    }
-                default:
-                    {
-                        command.ReplyToCommand(Localizer["Prefix"] + Localizer["Weapon is not exist"]);
-                        return;
-                    }
-            }
-        }
-        else
-        {
-            weaponname = "weapon_" + weaponname;
+            command.ReplyToCommand(Localizer["Prefix"] + Localizer["Weapon is not exist"]);
+            return;
         }
 
-        foreach (var target in players.Players)
+        foreach (CCSPlayerController target in players.Players)
         {
             target.GiveNamedItem(weaponname);
         }
@@ -316,7 +296,7 @@ public partial class Admin : BasePlugin
             return;
         }
 
-        foreach (var target in players.Players)
+        foreach (CCSPlayerController target in players.Players)
         {
             target.RemoveWeapons();
 
@@ -368,7 +348,7 @@ public partial class Admin : BasePlugin
             value = 100;
         }
 
-        foreach (var target in players.Players)
+        foreach (CCSPlayerController target in players.Players)
         {
             target.Health(value);
         }
@@ -403,7 +383,7 @@ public partial class Admin : BasePlugin
             return;
         }
 
-        foreach (var targetPlayerPawn in players.Players.Select(p => p.PlayerPawn.Value))
+        foreach (CCSPlayerPawn? targetPlayerPawn in players.Players.Select(p => p.PlayerPawn.Value))
         {
             if (targetPlayerPawn == null)
             {
@@ -447,7 +427,7 @@ public partial class Admin : BasePlugin
 
         bool godmode = Convert.ToBoolean(value);
 
-        foreach (var targetPlayerPawn in players.Players.Select(p => p.PlayerPawn.Value))
+        foreach (CCSPlayerPawn? targetPlayerPawn in players.Players.Select(p => p.PlayerPawn.Value))
         {
             if (targetPlayerPawn == null)
             {
@@ -519,7 +499,7 @@ public partial class Admin : BasePlugin
                 }
         }
 
-        foreach (var target in players.Players)
+        foreach (CCSPlayerController target in players.Players)
         {
             target.ChangeTeam(team);
         }
@@ -548,7 +528,7 @@ public partial class Admin : BasePlugin
             return;
         }
 
-        foreach (var targetPawn in players.Players.Select(p => p.Pawn.Value))
+        foreach (CBasePlayerPawn? targetPawn in players.Players.Select(p => p.Pawn.Value))
         {
             if (targetPawn == null)
             {
@@ -582,7 +562,7 @@ public partial class Admin : BasePlugin
             return;
         }
 
-        foreach (var targetPawn in players.Players.Select(p => p.Pawn.Value))
+        foreach (CBasePlayerPawn? targetPawn in players.Players.Select(p => p.Pawn.Value))
         {
             if (targetPawn?.AbsOrigin == null || targetPawn.AbsRotation == null)
             {
@@ -633,8 +613,8 @@ public partial class Admin : BasePlugin
             return;
         }
 
-        var targetPlayerPawn = target.PlayerPawn.Value;
-        var playerPlayerPawn = player.PlayerPawn.Value;
+        CCSPlayerPawn? targetPlayerPawn = target.PlayerPawn.Value;
+        CCSPlayerPawn? playerPlayerPawn = player.PlayerPawn.Value;
 
         if (targetPlayerPawn == null || playerPlayerPawn == null)
         {
@@ -665,14 +645,14 @@ public partial class Admin : BasePlugin
             return;
         }
 
-        var playerPlayerPawn = player.PlayerPawn.Value;
+        CCSPlayerPawn? playerPlayerPawn = player.PlayerPawn.Value;
 
         if (playerPlayerPawn == null)
         {
             return;
         }
 
-        foreach (var targetPlayerPawn in players.Players.Select(p => p.PlayerPawn.Value))
+        foreach (CCSPlayerPawn? targetPlayerPawn in players.Players.Select(p => p.PlayerPawn.Value))
         {
             if (targetPlayerPawn == null)
             {
@@ -712,7 +692,7 @@ public partial class Admin : BasePlugin
             return;
         }
 
-        var targetPawn = target.PlayerPawn.Value;
+        CCSPlayerPawn? targetPawn = target.PlayerPawn.Value;
 
         if (targetPawn == null || targetPawn.AbsRotation == null)
         {

@@ -20,7 +20,7 @@ public partial class Admin : BasePlugin
             return;
         }
 
-        foreach (var target in players.Players)
+        foreach (CCSPlayerController target in players.Players)
         {
             target.VoiceFlags = VoiceFlags.Muted;
         }
@@ -49,7 +49,7 @@ public partial class Admin : BasePlugin
             return;
         }
 
-        foreach (var target in players.Players)
+        foreach (CCSPlayerController target in players.Players)
         {
             target.VoiceFlags = VoiceFlags.Normal;
         }
@@ -78,7 +78,7 @@ public partial class Admin : BasePlugin
             return;
         }
 
-        foreach (var target in players.Players)
+        foreach (CCSPlayerController target in players.Players)
         {
             SetPunishmentForPlayer(player, target, "gag", "", -1, false);
         }
@@ -107,7 +107,7 @@ public partial class Admin : BasePlugin
             return;
         }
 
-        foreach (var target in players.Players)
+        foreach (CCSPlayerController target in players.Players)
         {
             RemovePunishment(target.SteamID, "gag", false);
         }
@@ -136,7 +136,7 @@ public partial class Admin : BasePlugin
             return;
         }
 
-        foreach (var target in players.Players)
+        foreach (CCSPlayerController target in players.Players)
         {
             target.VoiceFlags = VoiceFlags.Muted;
 
@@ -167,7 +167,7 @@ public partial class Admin : BasePlugin
             return;
         }
 
-        foreach (var target in players.Players)
+        foreach (CCSPlayerController target in players.Players)
         {
             target.VoiceFlags = VoiceFlags.Normal;
 

@@ -49,6 +49,7 @@ public partial class Admin : BasePlugin
 
             target.PrintToCenter(Localizer["css_csay", GetPlayerNameOrConsole(player), message]);
         });
+
         _ = SendDiscordMessage($"[{GetPlayerSteamIdOrConsole(player)}] {GetPlayerNameOrConsole(player)} -> css_csay <{message}>");
     }
 

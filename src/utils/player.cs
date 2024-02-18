@@ -126,15 +126,15 @@ public static class PlayerUtils
     }
     static public void TeleportToPlayer(this CCSPlayerPawn playerPawn, CCSPlayerPawn targetPawn)
     {
-        var position = targetPawn.AbsOrigin;
-        var angle = targetPawn.AbsRotation;
+        Vector? position = targetPawn.AbsOrigin;
+        QAngle? angle = targetPawn.AbsRotation;
 
         if (position == null || angle == null)
         {
             return;
         }
 
-        var velocity = targetPawn.AbsVelocity;
+        Vector velocity = targetPawn.AbsVelocity;
 
         playerPawn.Teleport(position, angle, velocity);
     }

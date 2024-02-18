@@ -15,7 +15,7 @@ public partial class Admin : BasePlugin
     [CommandHelper(minArgs: 2, "<steamid> <group> <immunity>", whoCanExecute: CommandUsage.CLIENT_AND_SERVER)]
     public void Command_Addadmin(CCSPlayerController? player, CommandInfo command)
     {
-        var steamid = command.GetArg(1);
+        string steamid = command.GetArg(1);
 
         if (!SteamID.TryParse(steamid, out SteamID? steamId) || steamId == null)
         {
@@ -23,7 +23,7 @@ public partial class Admin : BasePlugin
             return;
         }
 
-        var group = command.GetArg(2);
+        string group = command.GetArg(2);
 
         if (!int.TryParse(command.GetArg(3), out int immunity))
         {
@@ -32,7 +32,6 @@ public partial class Admin : BasePlugin
 
         try
         {
-
             dynamic newItem = new
             {
                 groups = new[] { $"#{group}" },
@@ -85,7 +84,7 @@ public partial class Admin : BasePlugin
     [CommandHelper(minArgs: 1, "<steamid>", whoCanExecute: CommandUsage.CLIENT_AND_SERVER)]
     public void Command_Removeadmin(CCSPlayerController? player, CommandInfo command)
     {
-        var steamid = command.GetArg(1);
+        string steamid = command.GetArg(1);
 
         if (!SteamID.TryParse(steamid, out SteamID? steamId) || steamId == null)
         {

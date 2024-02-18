@@ -24,7 +24,7 @@ public partial class Admin : BasePlugin
             damage = 0;
         }
 
-        foreach (var targetPawn in players.Players.Select(p => p.Pawn.Value))
+        foreach (CBasePlayerPawn? targetPawn in players.Players.Select(p => p.Pawn.Value))
         {
             if (targetPawn == null)
             {
@@ -58,7 +58,7 @@ public partial class Admin : BasePlugin
             return;
         }
 
-        foreach (var target in players.Players)
+        foreach (CCSPlayerController target in players.Players)
         {
             target.CommitSuicide(false, true);
         }

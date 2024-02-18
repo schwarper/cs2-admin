@@ -88,14 +88,23 @@ public partial class Admin : BasePlugin
 
         if (punishmentname == "gag")
         {
-            Server.ExecuteCommand($"css_tag_unmute {steamid}");
+            Punishment? tgag = GlobalPunishList.FirstOrDefault(p => p.PlayerSteamid == steamid && p.PunishmentName == "gag" && p.SaveDatabase);
+
+            if (tgag == null || !savedatabase)
+            {
+                Server.ExecuteCommand($"css_tag_unmute {steamid}");
+            }
         }
     }
     public void RemoveExpiredPunishments()
     {
         bool remove = false;
 
-        foreach (var punishment in GlobalPunishList.Where(p => p.End < DateTime.Now && p.Duration != -1 && p.SaveDatabase == true))
+        List<Punishment> punishmentsToRemove = GlobalPunishList
+            .Where(p => p.End < DateTime.Now && p.Duration != -1 && p.SaveDatabase)
+            .ToList();
+
+        foreach (Punishment? punishment in punishmentsToRemove)
         {
             remove = true;
 
@@ -151,9 +160,9 @@ public partial class Admin : BasePlugin
 
     public static void RemoveWeaponsOnTheGround()
     {
-        var entities = Utilities.FindAllEntitiesByDesignerName<CCSWeaponBaseGun>("weapon_");
+        IEnumerable<CCSWeaponBaseGun> entities = Utilities.FindAllEntitiesByDesignerName<CCSWeaponBaseGun>("weapon_");
 
-        foreach (var entity in entities)
+        foreach (CCSWeaponBaseGun entity in entities)
         {
             if (!entity.IsValid)
             {

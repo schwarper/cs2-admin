@@ -17,6 +17,7 @@ public class AdminConfig : BasePluginConfig
     [JsonPropertyName("hide_console_msg")] public bool HideConsoleMsg { get; set; } = true;
     [JsonPropertyName("show_name_commands")] public string[] ShowNameCommands { get; set; } = { "css_slap", "css_slay" };
     [JsonPropertyName("show_name_flag")] public string ShowNameFlag { get; set; } = "@css/generic";
+    [JsonPropertyName("workshop_map_name")] public Dictionary<string, ulong> WorkshopMapName { get; set; } = new();
     [JsonPropertyName("discord_webhook")] public string DiscordWebhook { get; set; } = "";
 }
 

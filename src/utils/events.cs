@@ -9,7 +9,7 @@ public partial class Admin : BasePlugin
     {
         RegisterEventHandler<EventPlayerConnectFull>((@event, info) =>
         {
-            var player = @event.Userid;
+            CCSPlayerController player = @event.Userid;
 
             if (player == null || !player.Valid())
             {
@@ -26,7 +26,7 @@ public partial class Admin : BasePlugin
 
         RegisterEventHandler<EventPlayerConnect>((@event, info) =>
         {
-            var player = @event.Userid;
+            CCSPlayerController player = @event.Userid;
 
             if (player == null || !player.Valid())
             {
@@ -43,14 +43,14 @@ public partial class Admin : BasePlugin
 
         RegisterEventHandler<EventPlayerDeath>((@event, info) =>
         {
-            var player = @event.Userid;
+            CCSPlayerController player = @event.Userid;
 
             if (player == null || !player.Valid())
             {
                 return HookResult.Continue;
             }
 
-            var playerPawn = player.Pawn.Value;
+            CBasePlayerPawn? playerPawn = player.Pawn.Value;
 
             if (playerPawn == null || playerPawn.AbsOrigin == null)
             {
@@ -66,7 +66,7 @@ public partial class Admin : BasePlugin
 
         RegisterEventHandler<EventPlayerSpawn>((@event, info) =>
         {
-            var player = @event.Userid;
+            CCSPlayerController player = @event.Userid;
 
             if (player == null || !player.Valid())
             {

@@ -43,51 +43,23 @@ public partial class Admin : BasePlugin
     public void Command_Map(CCSPlayerController? player, CommandInfo command)
     {
         if (command.ArgCount < 1)
-        {
             return;
-        }
 
         string map = command.GetArg(1);
 
-        if (map.StartsWith("ws:"))
-        {
-            string mapname;
-
-            if (long.TryParse(map, out long mapId))
-            {
-                mapname = $"host_workshop_map {mapId}";
-            }
-            else
-            {
-                mapname = $"ds_workshop_changelevel {map}";
-            }
-
-            AddTimer(Config.ChangeMapDelay, () =>
-            {
-                Server.ExecuteCommand(mapname);
-            });
-
-            PrintToChatAll("css_wsmap", GetPlayerNameOrConsole(player), map);
-
-            _ = SendDiscordMessage($"[{GetPlayerSteamIdOrConsole(player)}] {GetPlayerNameOrConsole(player)} -> css_wsmap <{map}>");
-
-            return;
-        }
-
         if (!Server.IsMapValid(map))
         {
+            if (Config.WorkshopMapName.TryGetValue(map, out ulong workshopMapId))
+            {
+                ExecuteMapCommand($"host_workshop_map {workshopMapId}", player, map);
+                return;
+            }
+
             command.ReplyToCommand(Localizer["Prefix"] + Localizer["Map is not exist"]);
             return;
         }
 
-        AddTimer(Config.ChangeMapDelay, () =>
-        {
-            Server.ExecuteCommand($"changelevel {map}");
-        });
-
-        PrintToChatAll("css_map", GetPlayerNameOrConsole(player), map);
-
-        _ = SendDiscordMessage($"[{GetPlayerSteamIdOrConsole(player)}] {GetPlayerNameOrConsole(player)} -> css_map <{map}>");
+        ExecuteMapCommand($"changelevel {map}", player, map);
     }
 
     [ConsoleCommand("css_wsmap")]
@@ -102,25 +74,40 @@ public partial class Admin : BasePlugin
         }
 
         string map = command.GetArg(1);
-        string mapname;
+        string mapCommand;
 
-        if (long.TryParse(map, out long mapId))
+        if (!ulong.TryParse(map, out ulong workshopMapId))
         {
-            mapname = $"host_workshop_map {mapId}";
+            mapCommand = $"ds_workshop_changelevel {map}";
         }
         else
         {
-            mapname = $"ds_workshop_changelevel {map}";
+            string workshopName = Config.WorkshopMapName.FirstOrDefault(p => p.Value == workshopMapId).Key;
+
+            if (workshopName == null)
+            {
+                mapCommand = $"host_workshop_map {map}";
+            }
+            else
+            {
+                mapCommand = $"host_workshop_map {workshopMapId}";
+                map = workshopName;
+            }
         }
+
+        ExecuteMapCommand(mapCommand, player, map);
+    }
+
+    private void ExecuteMapCommand(string mapCommand, CCSPlayerController? player, string map)
+    {
+        PrintToChatAll(mapCommand.Contains("workshop") ? "css_wsmap" : "css_map", GetPlayerNameOrConsole(player), map);
+
+        _ = SendDiscordMessage($"[{GetPlayerSteamIdOrConsole(player)}] {GetPlayerNameOrConsole(player)} -> {mapCommand}");
 
         AddTimer(Config.ChangeMapDelay, () =>
         {
-            Server.ExecuteCommand(mapname);
+            Server.ExecuteCommand(mapCommand);
         });
-
-        PrintToChatAll("css_wsmap", GetPlayerNameOrConsole(player), map);
-
-        _ = SendDiscordMessage($"[{GetPlayerSteamIdOrConsole(player)}] {GetPlayerNameOrConsole(player)} -> css_wsmap <{map}>");
     }
 
     [ConsoleCommand("css_rcon")]
@@ -226,7 +213,7 @@ public partial class Admin : BasePlugin
 
         Server.NextFrame(() =>
         {
-            var targetConsolePrint = (player != null) ? (Action<string>)player.PrintToConsole : Server.PrintToConsole;
+            Action<string> targetConsolePrint = (player != null) ? player.PrintToConsole : Server.PrintToConsole;
 
             targetConsolePrint(Localizer["css_who<title>", target.PlayerName]);
             targetConsolePrint(Localizer["css_who<steamid>", target.SteamID]);
