@@ -14,12 +14,14 @@ public partial class Admin : BasePlugin
     [CommandHelper(minArgs: 2, "<#userid|name> <time> <reason>", whoCanExecute: CommandUsage.CLIENT_AND_SERVER)]
     public void Command_Ban(CCSPlayerController? player, CommandInfo command)
     {
-        CCSPlayerController? target = FindTarget(command, MultipleFlags.NORMAL, 2);
+        (List<CCSPlayerController> players, string targetname) = FindTarget(player, command, 2, true, true, MultipleFlags.NORMAL);
 
-        if (target == null)
+        if (players.Count == 0)
         {
             return;
         }
+
+        CCSPlayerController target = players.Single();
 
         if (!AdminManager.CanPlayerTarget(player, target))
         {
@@ -39,8 +41,8 @@ public partial class Admin : BasePlugin
 
         KickPlayer(target, reason);
 
-        PrintToChatAll("css_ban", GetPlayerNameOrConsole(player), target.PlayerName, time, reason);
-        _ = SendDiscordMessage($"[{GetPlayerSteamIdOrConsole(player)}] {GetPlayerNameOrConsole(player)} -> css_ban <{target.PlayerName}> <{time}> <{reason}>");
+        PrintToChatAll("css_ban", GetPlayerNameOrConsole(player), targetname, time, reason);
+        _ = SendDiscordMessage($"[{GetPlayerSteamIdOrConsole(player)}] {GetPlayerNameOrConsole(player)} -> css_ban <{targetname}> <{time}> <{reason}>");
     }
 
     [ConsoleCommand("css_unban")]

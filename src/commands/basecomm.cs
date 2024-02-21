@@ -13,25 +13,25 @@ public partial class Admin : BasePlugin
     [CommandHelper(minArgs: 1, "<#userid|name|all @ commands>", whoCanExecute: CommandUsage.CLIENT_AND_SERVER)]
     public void Command_Mute(CCSPlayerController? player, CommandInfo command)
     {
-        Target? players = FindTargets(player, command, MultipleFlags.NORMAL, 1);
+        (List<CCSPlayerController> players, string targetname) = FindTarget(player, command, 1, false, true, MultipleFlags.NORMAL);
 
-        if (players == null)
+        if (players.Count == 0)
         {
             return;
         }
 
-        foreach (CCSPlayerController target in players.Players)
+        foreach (CCSPlayerController target in players)
         {
             target.VoiceFlags = VoiceFlags.Muted;
         }
 
-        if (players.Players.Length == 1)
+        if (players.Count == 1)
         {
-            PrintToChatAll("css_mute<player>", GetPlayerNameOrConsole(player), players.TargetName);
+            PrintToChatAll("css_mute<player>", GetPlayerNameOrConsole(player), targetname);
         }
         else
         {
-            PrintToChatAll("css_mute<multiple>", GetPlayerNameOrConsole(player), players.TargetName);
+            PrintToChatAll("css_mute<multiple>", GetPlayerNameOrConsole(player), targetname);
         }
 
         _ = SendDiscordMessage($"[{GetPlayerSteamIdOrConsole(player)}] {GetPlayerNameOrConsole(player)} -> css_mute <{command.GetArg(1)}>");
@@ -42,25 +42,25 @@ public partial class Admin : BasePlugin
     [CommandHelper(minArgs: 1, "<#userid|name|all @ commands>", whoCanExecute: CommandUsage.CLIENT_AND_SERVER)]
     public void Command_UnMute(CCSPlayerController? player, CommandInfo command)
     {
-        Target? players = FindTargets(player, command, MultipleFlags.NORMAL, 1);
+        (List<CCSPlayerController> players, string targetname) = FindTarget(player, command, 1, false, true, MultipleFlags.NORMAL);
 
-        if (players == null)
+        if (players.Count == 0)
         {
             return;
         }
 
-        foreach (CCSPlayerController target in players.Players)
+        foreach (CCSPlayerController target in players)
         {
             target.VoiceFlags = VoiceFlags.Normal;
         }
 
-        if (players.Players.Length == 1)
+        if (players.Count == 1)
         {
-            PrintToChatAll("css_unmute<player>", GetPlayerNameOrConsole(player), players.TargetName);
+            PrintToChatAll("css_unmute<player>", GetPlayerNameOrConsole(player), targetname);
         }
         else
         {
-            PrintToChatAll("css_unmute<multiple>", GetPlayerNameOrConsole(player), players.TargetName);
+            PrintToChatAll("css_unmute<multiple>", GetPlayerNameOrConsole(player), targetname);
         }
 
         _ = SendDiscordMessage($"[{GetPlayerSteamIdOrConsole(player)}] {GetPlayerNameOrConsole(player)} -> css_unmute <{command.GetArg(1)}>");
@@ -71,25 +71,25 @@ public partial class Admin : BasePlugin
     [CommandHelper(minArgs: 1, "<#userid|name|all @ commands>", whoCanExecute: CommandUsage.CLIENT_AND_SERVER)]
     public void Command_Gag(CCSPlayerController? player, CommandInfo command)
     {
-        Target? players = FindTargets(player, command, MultipleFlags.NORMAL, 1);
+        (List<CCSPlayerController> players, string targetname) = FindTarget(player, command, 1, false, true, MultipleFlags.NORMAL);
 
-        if (players == null)
+        if (players.Count == 0)
         {
             return;
         }
 
-        foreach (CCSPlayerController target in players.Players)
+        foreach (CCSPlayerController target in players)
         {
             SetPunishmentForPlayer(player, target, "gag", "", -1, false);
         }
 
-        if (players.Players.Length == 1)
+        if (players.Count == 1)
         {
-            PrintToChatAll("css_gag<player>", GetPlayerNameOrConsole(player), players.TargetName);
+            PrintToChatAll("css_gag<player>", GetPlayerNameOrConsole(player), targetname);
         }
         else
         {
-            PrintToChatAll("css_gag<multiple>", GetPlayerNameOrConsole(player), players.TargetName);
+            PrintToChatAll("css_gag<multiple>", GetPlayerNameOrConsole(player), targetname);
         }
 
         _ = SendDiscordMessage($"[{GetPlayerSteamIdOrConsole(player)}] {GetPlayerNameOrConsole(player)} -> css_gag <{command.GetArg(1)}>");
@@ -100,25 +100,25 @@ public partial class Admin : BasePlugin
     [CommandHelper(minArgs: 1, "<#userid|name|all @ commands>", whoCanExecute: CommandUsage.CLIENT_AND_SERVER)]
     public void Command_UnGag(CCSPlayerController? player, CommandInfo command)
     {
-        Target? players = FindTargets(player, command, MultipleFlags.NORMAL, 1);
+        (List<CCSPlayerController> players, string targetname) = FindTarget(player, command, 1, false, true, MultipleFlags.NORMAL);
 
-        if (players == null)
+        if (players.Count == 0)
         {
             return;
         }
 
-        foreach (CCSPlayerController target in players.Players)
+        foreach (CCSPlayerController target in players)
         {
             RemovePunishment(target.SteamID, "gag", false);
         }
 
-        if (players.Players.Length == 1)
+        if (players.Count == 1)
         {
-            PrintToChatAll("css_ungag<player>", GetPlayerNameOrConsole(player), players.TargetName);
+            PrintToChatAll("css_ungag<player>", GetPlayerNameOrConsole(player), targetname);
         }
         else
         {
-            PrintToChatAll("css_ungag<multiple>", GetPlayerNameOrConsole(player), players.TargetName);
+            PrintToChatAll("css_ungag<multiple>", GetPlayerNameOrConsole(player), targetname);
         }
 
         _ = SendDiscordMessage($"[{GetPlayerSteamIdOrConsole(player)}] {GetPlayerNameOrConsole(player)} -> css_ungag <{command.GetArg(1)}>");
@@ -129,27 +129,27 @@ public partial class Admin : BasePlugin
     [CommandHelper(minArgs: 1, "<#userid|name|all @ commands>", whoCanExecute: CommandUsage.CLIENT_AND_SERVER)]
     public void Command_Silence(CCSPlayerController? player, CommandInfo command)
     {
-        Target? players = FindTargets(player, command, MultipleFlags.NORMAL, 1);
+        (List<CCSPlayerController> players, string targetname) = FindTarget(player, command, 1, false, true, MultipleFlags.NORMAL);
 
-        if (players == null)
+        if (players.Count == 0)
         {
             return;
         }
 
-        foreach (CCSPlayerController target in players.Players)
+        foreach (CCSPlayerController target in players)
         {
             target.VoiceFlags = VoiceFlags.Muted;
 
             SetPunishmentForPlayer(player, target, "gag", "", -1, false);
         }
 
-        if (players.Players.Length == 1)
+        if (players.Count == 1)
         {
-            PrintToChatAll("css_silence<player>", GetPlayerNameOrConsole(player), players.TargetName);
+            PrintToChatAll("css_silence<player>", GetPlayerNameOrConsole(player), targetname);
         }
         else
         {
-            PrintToChatAll("css_silence<multiple>", GetPlayerNameOrConsole(player), players.TargetName);
+            PrintToChatAll("css_silence<multiple>", GetPlayerNameOrConsole(player), targetname);
         }
 
         _ = SendDiscordMessage($"[{GetPlayerSteamIdOrConsole(player)}] {GetPlayerNameOrConsole(player)} -> css_silence <{command.GetArg(1)}>");
@@ -160,27 +160,27 @@ public partial class Admin : BasePlugin
     [CommandHelper(minArgs: 1, "<#userid|name|all @ commands>", whoCanExecute: CommandUsage.CLIENT_AND_SERVER)]
     public void Command_UnSilence(CCSPlayerController? player, CommandInfo command)
     {
-        Target? players = FindTargets(player, command, MultipleFlags.NORMAL, 1);
+        (List<CCSPlayerController> players, string targetname) = FindTarget(player, command, 1, false, true, MultipleFlags.NORMAL);
 
-        if (players == null)
+        if (players.Count == 0)
         {
             return;
         }
 
-        foreach (CCSPlayerController target in players.Players)
+        foreach (CCSPlayerController target in players)
         {
             target.VoiceFlags = VoiceFlags.Normal;
 
             RemovePunishment(target.SteamID, "gag", false);
         }
 
-        if (players.Players.Length == 1)
+        if (players.Count == 1)
         {
-            PrintToChatAll("css_unsilence<player>", GetPlayerNameOrConsole(player), players.TargetName);
+            PrintToChatAll("css_unsilence<player>", GetPlayerNameOrConsole(player), targetname);
         }
         else
         {
-            PrintToChatAll("css_unsilence<multiple>", GetPlayerNameOrConsole(player), players.TargetName);
+            PrintToChatAll("css_unsilence<multiple>", GetPlayerNameOrConsole(player), targetname);
         }
 
         _ = SendDiscordMessage($"[{GetPlayerSteamIdOrConsole(player)}] {GetPlayerNameOrConsole(player)} -> css_unsilence <{command.GetArg(1)}>");
@@ -223,12 +223,14 @@ public partial class Admin : BasePlugin
     }
     public void HandleTGagMuteSilence(CCSPlayerController? player, CommandInfo command, string punishment, string localizer, int argcount)
     {
-        CCSPlayerController? target = FindTarget(command, MultipleFlags.NORMAL, argcount);
+        (List<CCSPlayerController> players, string targetname) = FindTarget(player, command, argcount, true, true, MultipleFlags.NORMAL);
 
-        if (target == null)
+        if (players.Count == 0)
         {
             return;
         }
+
+        CCSPlayerController target = players.Single();
 
         if (!int.TryParse(command.GetArg(2), out int time))
         {
@@ -238,23 +240,25 @@ public partial class Admin : BasePlugin
 
         SetPunishmentForPlayer(player, target, punishment, "", time, true);
 
-        PrintToChatAll(localizer, GetPlayerNameOrConsole(player), target.PlayerName, time);
+        PrintToChatAll(localizer, GetPlayerNameOrConsole(player), targetname, time);
 
-        _ = SendDiscordMessage($"[{GetPlayerSteamIdOrConsole(player)}] {GetPlayerNameOrConsole(player)} -> {localizer} <{target.PlayerName}> <time>");
+        _ = SendDiscordMessage($"[{GetPlayerSteamIdOrConsole(player)}] {GetPlayerNameOrConsole(player)} -> {localizer} <{targetname}> <time>");
     }
     public void HandleTUnGagMuteSilence(CCSPlayerController? player, CommandInfo command, string punishment, string localizer, int argcount)
     {
-        CCSPlayerController? target = FindTarget(command, MultipleFlags.NORMAL, argcount);
+        (List<CCSPlayerController> players, string targetname) = FindTarget(player, command, argcount, true, true, MultipleFlags.NORMAL);
 
-        if (target == null)
+        if (players.Count == 0)
         {
             return;
         }
 
+        CCSPlayerController target = players.Single();
+
         RemovePunishment(target.SteamID, punishment, true);
 
-        PrintToChatAll(localizer, GetPlayerNameOrConsole(player), target.PlayerName);
+        PrintToChatAll(localizer, GetPlayerNameOrConsole(player), targetname);
 
-        _ = SendDiscordMessage($"[{GetPlayerSteamIdOrConsole(player)}] {GetPlayerNameOrConsole(player)} -> {localizer} <{target.PlayerName}>");
+        _ = SendDiscordMessage($"[{GetPlayerSteamIdOrConsole(player)}] {GetPlayerNameOrConsole(player)} -> {localizer} <{targetname}>");
     }
 }

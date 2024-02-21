@@ -14,12 +14,14 @@ public partial class Admin : BasePlugin
     [CommandHelper(minArgs: 1, "<#userid|name> <reason>", whoCanExecute: CommandUsage.CLIENT_AND_SERVER)]
     public void Command_Kick(CCSPlayerController? player, CommandInfo command)
     {
-        CCSPlayerController? target = FindTarget(command, MultipleFlags.NORMAL, 1);
+        (List<CCSPlayerController> players, string targetname) = FindTarget(player, command, 1, true, true, MultipleFlags.NORMAL);
 
-        if (target == null)
+        if (players.Count == 0)
         {
             return;
         }
+
+        CCSPlayerController target = players.Single();
 
         if (!AdminManager.CanPlayerTarget(player, target))
         {
@@ -31,9 +33,9 @@ public partial class Admin : BasePlugin
 
         KickPlayer(target, reason);
 
-        PrintToChatAll("css_kick", GetPlayerNameOrConsole(player), target.PlayerName, reason);
+        PrintToChatAll("css_kick", GetPlayerNameOrConsole(player), targetname, reason);
 
-        _ = SendDiscordMessage($"[{GetPlayerSteamIdOrConsole(player)}] {GetPlayerNameOrConsole(player)} -> css_kick <{target.PlayerName}> <{reason}>");
+        _ = SendDiscordMessage($"[{GetPlayerSteamIdOrConsole(player)}] {GetPlayerNameOrConsole(player)} -> css_kick <{targetname}> <{reason}>");
     }
 
     [ConsoleCommand("css_changemap")]
@@ -198,12 +200,14 @@ public partial class Admin : BasePlugin
     [CommandHelper(minArgs: 1, "<#userid|name>", whoCanExecute: CommandUsage.CLIENT_AND_SERVER)]
     public void Command_Who(CCSPlayerController? player, CommandInfo command)
     {
-        CCSPlayerController? target = FindTarget(command, MultipleFlags.NORMAL, 1);
+        (List<CCSPlayerController> players, string targetname) = FindTarget(player, command, 1, true, true, MultipleFlags.NORMAL);
 
-        if (target == null)
+        if (players.Count == 0)
         {
             return;
         }
+
+        CCSPlayerController target = players.Single();
 
         AdminData? data = AdminManager.GetPlayerAdminData(target);
 
@@ -215,13 +219,13 @@ public partial class Admin : BasePlugin
         {
             Action<string> targetConsolePrint = (player != null) ? player.PrintToConsole : Server.PrintToConsole;
 
-            targetConsolePrint(Localizer["css_who<title>", target.PlayerName]);
+            targetConsolePrint(Localizer["css_who<title>", targetname]);
             targetConsolePrint(Localizer["css_who<steamid>", target.SteamID]);
             targetConsolePrint(Localizer["css_who<ip>", target.IpAddress ?? Localizer["Unknown"]]);
             targetConsolePrint(Localizer["css_who<permission>", permissionflags]);
             targetConsolePrint(Localizer["css_who<immunitylevel>", AdminManager.GetPlayerImmunity(target)]);
         });
 
-        _ = SendDiscordMessage($"[{GetPlayerSteamIdOrConsole(player)}] {GetPlayerNameOrConsole(player)} -> css_who <{target.PlayerName}>");
+        _ = SendDiscordMessage($"[{GetPlayerSteamIdOrConsole(player)}] {GetPlayerNameOrConsole(player)} -> css_who <{targetname}>");
     }
 }

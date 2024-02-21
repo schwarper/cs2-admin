@@ -53,7 +53,7 @@ public partial class Admin : BasePlugin
 
         foreach (CCSPlayerController target in Utilities.GetPlayers().Where(p => p.Valid()))
         {
-            MenuManager.OpenCenterHtmlMenu(GlobalBasePlugin, target, menu);
+            MenuManager.OpenCenterHtmlMenu(Plugin, target, menu);
         }
 
         PrintToChatAll("css_vote", GetPlayerNameOrConsole(player), question);

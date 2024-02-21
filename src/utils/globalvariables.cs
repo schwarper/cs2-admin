@@ -1,5 +1,6 @@
 using CounterStrikeSharp.API;
 using CounterStrikeSharp.API.Core;
+using CounterStrikeSharp.API.Modules.Commands.Targeting;
 using CounterStrikeSharp.API.Modules.Entities.Constants;
 using CounterStrikeSharp.API.Modules.Utils;
 using MySqlConnector;
@@ -8,7 +9,7 @@ namespace Admin;
 
 public partial class Admin : BasePlugin
 {
-    public required Admin GlobalBasePlugin;
+    public static Admin Plugin { get; private set; } = new();
     public AdminConfig Config { get; set; } = new AdminConfig();
 
     private readonly List<Punishment> GlobalPunishList = new();
@@ -95,11 +96,24 @@ public partial class Admin : BasePlugin
         { "assaultsuit", CsItem.AssaultSuit }
     };
 
-
-    enum MultipleFlags
+    public enum MultipleFlags
     {
         NORMAL = 0,
         IGNORE_DEAD_PLAYERS,
         IGNORE_ALIVE_PLAYERS
     }
+
+    private static readonly Dictionary<string, TargetType> TargetTypeMap = new(StringComparer.OrdinalIgnoreCase)
+    {
+        { "@all", TargetType.GroupAll },
+        { "@bots", TargetType.GroupBots },
+        { "@human", TargetType.GroupHumans },
+        { "@alive", TargetType.GroupAlive },
+        { "@dead", TargetType.GroupDead },
+        { "@!me", TargetType.GroupNotMe },
+        { "@me", TargetType.PlayerMe },
+        { "@ct", TargetType.TeamCt },
+        { "@t", TargetType.TeamT },
+        { "@spec", TargetType.TeamSpec }
+    };
 }

@@ -1,5 +1,4 @@
 using CounterStrikeSharp.API.Core;
-using CounterStrikeSharp.API.Modules.Commands;
 using CounterStrikeSharp.API.Modules.Timers;
 
 namespace Admin;
@@ -7,15 +6,12 @@ namespace Admin;
 public partial class Admin : BasePlugin
 {
     public override string ModuleName => "Admin";
-    public override string ModuleVersion => "0.0.4";
+    public override string ModuleVersion => "0.0.5";
     public override string ModuleAuthor => "schwarper";
 
     public override void Load(bool hotReload)
     {
-        GlobalBasePlugin = this;
-
-        AddCommandListener("say", OnCommandSay);
-        AddCommandListener("say_team", OnCommandSay);
+        Plugin = this;
 
         LoadEvents();
 
@@ -38,15 +34,5 @@ public partial class Admin : BasePlugin
                 SaveDatabase(@punishment, "basecomm");
             }
         }
-    }
-
-    public HookResult OnCommandSay(CCSPlayerController? player, CommandInfo info)
-    {
-        if (player == null || !player.Valid() || info.GetArg(1).Length == 0)
-        {
-            return HookResult.Continue;
-        }
-
-        return IsPlayerPunished(player, "gag") ? HookResult.Handled : HookResult.Continue;
     }
 }

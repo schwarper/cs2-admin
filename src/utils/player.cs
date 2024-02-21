@@ -2,6 +2,7 @@ using CounterStrikeSharp.API;
 using CounterStrikeSharp.API.Core;
 using CounterStrikeSharp.API.Modules.Memory;
 using CounterStrikeSharp.API.Modules.Utils;
+using System.Drawing;
 using static Admin.Admin;
 
 namespace Admin;
@@ -11,6 +12,16 @@ public static class PlayerUtils
     static public bool Valid(this CCSPlayerController player)
     {
         return player.IsValid && player.SteamID.ToString().Length == 17;
+    }
+    static public bool CheckFlag(this CCSPlayerController player, MultipleFlags flags)
+    {
+        return flags switch
+        {
+            MultipleFlags.IGNORE_DEAD_PLAYERS => player.PawnIsAlive,
+            MultipleFlags.IGNORE_ALIVE_PLAYERS => !player.PawnIsAlive,
+            MultipleFlags.NORMAL => true,
+            _ => true
+        };
     }
     static public void Kick(this CCSPlayerController player, string reason)
     {
@@ -37,15 +48,15 @@ public static class PlayerUtils
             pawn.MoveType = MoveType_t.MOVETYPE_NOCLIP;
 
             Schema.SetSchemaValue(pawn.Handle, "CBaseEntity", "m_nActualMoveType", 8);
-            Utilities.SetStateChanged(pawn, "CBaseEntity", "m_MoveType");
         }
         else
         {
             pawn.MoveType = MoveType_t.MOVETYPE_WALK;
 
             Schema.SetSchemaValue(pawn.Handle, "CBaseEntity", "m_nActualMoveType", 2);
-            Utilities.SetStateChanged(pawn, "CBaseEntity", "m_MoveType");
         }
+
+        Utilities.SetStateChanged(pawn, "CBaseEntity", "m_MoveType");
     }
     static public void Health(this CCSPlayerController player, int health)
     {
@@ -137,5 +148,12 @@ public static class PlayerUtils
         Vector velocity = targetPawn.AbsVelocity;
 
         playerPawn.Teleport(position, angle, velocity);
+    }
+    static public void Color(this CCSPlayerPawn playerPawn, Color color)
+    {
+        playerPawn.RenderMode = RenderMode_t.kRenderTransColor;
+        playerPawn.Render = color;
+
+        Utilities.SetStateChanged(playerPawn, "CBaseModelEntity", "m_clrRender");
     }
 }

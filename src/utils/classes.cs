@@ -22,12 +22,6 @@ public partial class Admin : BasePlugin
         public bool SaveDatabase { get; set; }
     }
 
-    private class Target
-    {
-        public required CCSPlayerController[] Players { get; set; }
-        public required string TargetName { get; set; }
-    }
-
     public class SchemaString<SchemaClass> : NativeObject where SchemaClass : NativeObject
     {
         public SchemaString(SchemaClass instance, string member) : base(Schema.GetSchemaValue<nint>(instance.Handle, typeof(SchemaClass).Name!, member))

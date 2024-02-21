@@ -1,4 +1,5 @@
 using CounterStrikeSharp.API.Core;
+using CounterStrikeSharp.API.Modules.Commands;
 using CounterStrikeSharp.API.Modules.Utils;
 
 namespace Admin;
@@ -7,6 +8,9 @@ public partial class Admin : BasePlugin
 {
     public void LoadEvents()
     {
+        AddCommandListener("say", OnCommandSay);
+        AddCommandListener("say_team", OnCommandSay);
+
         RegisterEventHandler<EventPlayerConnectFull>((@event, info) =>
         {
             CCSPlayerController player = @event.Userid;
@@ -77,5 +81,15 @@ public partial class Admin : BasePlugin
 
             return HookResult.Continue;
         });
+    }
+
+    public HookResult OnCommandSay(CCSPlayerController? player, CommandInfo info)
+    {
+        if (player == null || !player.Valid() || info.GetArg(1).Length == 0)
+        {
+            return HookResult.Continue;
+        }
+
+        return IsPlayerPunished(player, "gag") ? HookResult.Handled : HookResult.Continue;
     }
 }

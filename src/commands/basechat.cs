@@ -101,19 +101,21 @@ public partial class Admin : BasePlugin
     [CommandHelper(minArgs: 2, "<#userid|name> <message> - sends private message", whoCanExecute: CommandUsage.CLIENT_AND_SERVER)]
     public void Command_PSay(CCSPlayerController? player, CommandInfo command)
     {
-        CCSPlayerController? target = FindTarget(command, MultipleFlags.NORMAL, 2);
+        (List<CCSPlayerController> players, string targetname) = FindTarget(player, command, 2, true, false, MultipleFlags.NORMAL);
 
-        if (target == null)
+        if (players.Count == 0)
         {
             return;
         }
 
+        CCSPlayerController target = players.Single();
+
         string arg = command.GetCommandString;
         string message = arg[arg.IndexOf(' ')..];
 
-        command.ReplyToCommand(Localizer["css_psay", GetPlayerNameOrConsole(player), target.PlayerName, message]);
-        target.PrintToChat(Localizer["css_psay", GetPlayerNameOrConsole(player), target.PlayerName, message]);
+        command.ReplyToCommand(Localizer["css_psay", GetPlayerNameOrConsole(player), targetname, message]);
+        target.PrintToChat(Localizer["css_psay", GetPlayerNameOrConsole(player), targetname, message]);
 
-        _ = SendDiscordMessage($"[{GetPlayerSteamIdOrConsole(player)}] {GetPlayerNameOrConsole(player)} -> css_psay <{target.PlayerName}> <{message}>");
+        _ = SendDiscordMessage($"[{GetPlayerSteamIdOrConsole(player)}] {GetPlayerNameOrConsole(player)} -> css_psay <{targetname}> <{message}>");
     }
 }

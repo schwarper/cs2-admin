@@ -12,9 +12,9 @@ public partial class Admin : BasePlugin
     [CommandHelper(minArgs: 1, "<#userid|name|all @ commands> <damage>", whoCanExecute: CommandUsage.CLIENT_AND_SERVER)]
     public void Command_Slap(CCSPlayerController? player, CommandInfo command)
     {
-        Target? players = FindTargets(player, command, MultipleFlags.IGNORE_DEAD_PLAYERS, 1);
+        (List<CCSPlayerController> players, string targetname) = FindTarget(player, command, 1, false, true, MultipleFlags.IGNORE_DEAD_PLAYERS);
 
-        if (players == null)
+        if (players.Count == 0)
         {
             return;
         }
@@ -24,7 +24,7 @@ public partial class Admin : BasePlugin
             damage = 0;
         }
 
-        foreach (CBasePlayerPawn? targetPawn in players.Players.Select(p => p.Pawn.Value))
+        foreach (CBasePlayerPawn? targetPawn in players.Select(p => p.Pawn.Value))
         {
             if (targetPawn == null)
             {
@@ -34,13 +34,13 @@ public partial class Admin : BasePlugin
             targetPawn.Slap(damage);
         }
 
-        if (players.Players.Length == 1)
+        if (players.Count == 1)
         {
-            PrintToChatAll("css_slap<player>", GetPlayerNameOrConsole(player), players.TargetName, damage);
+            PrintToChatAll("css_slap<player>", GetPlayerNameOrConsole(player), targetname, damage);
         }
         else
         {
-            PrintToChatAll("css_slap<multiple>", GetPlayerNameOrConsole(player), players.TargetName, damage);
+            PrintToChatAll("css_slap<multiple>", GetPlayerNameOrConsole(player), targetname, damage);
         }
 
         _ = SendDiscordMessage($"[{GetPlayerSteamIdOrConsole(player)}] {GetPlayerNameOrConsole(player)} -> css_slap <{command.GetArg(1)}> <{damage}>");
@@ -51,25 +51,25 @@ public partial class Admin : BasePlugin
     [CommandHelper(minArgs: 1, "<#userid|name|all @ commands>", whoCanExecute: CommandUsage.CLIENT_AND_SERVER)]
     public void Command_Slay(CCSPlayerController? player, CommandInfo command)
     {
-        Target? players = FindTargets(player, command, MultipleFlags.IGNORE_DEAD_PLAYERS, 1);
+        (List<CCSPlayerController> players, string targetname) = FindTarget(player, command, 1, false, true, MultipleFlags.IGNORE_DEAD_PLAYERS);
 
-        if (players == null)
+        if (players.Count == 0)
         {
             return;
         }
 
-        foreach (CCSPlayerController target in players.Players)
+        foreach (CCSPlayerController target in players)
         {
             target.CommitSuicide(false, true);
         }
 
-        if (players.Players.Length == 1)
+        if (players.Count == 1)
         {
-            PrintToChatAll("css_slay<player>", GetPlayerNameOrConsole(player), players.TargetName);
+            PrintToChatAll("css_slay<player>", GetPlayerNameOrConsole(player), targetname);
         }
         else
         {
-            PrintToChatAll("css_slay<player>", GetPlayerNameOrConsole(player), players.TargetName);
+            PrintToChatAll("css_slay<player>", GetPlayerNameOrConsole(player), targetname);
         }
 
         _ = SendDiscordMessage($"[{GetPlayerSteamIdOrConsole(player)}] {GetPlayerNameOrConsole(player)} -> css_slay <{command.GetArg(1)}>");
@@ -80,12 +80,14 @@ public partial class Admin : BasePlugin
     [CommandHelper(minArgs: 2, "<#userid|name> <newname>", whoCanExecute: CommandUsage.CLIENT_AND_SERVER)]
     public void Command_ReName(CCSPlayerController? player, CommandInfo command)
     {
-        CCSPlayerController? target = FindTarget(command, MultipleFlags.NORMAL, 2);
+        (List<CCSPlayerController> players, string targetname) = FindTarget(player, command, 2, true, true, MultipleFlags.NORMAL);
 
-        if (target == null)
+        if (players.Count == 0)
         {
             return;
         }
+
+        CCSPlayerController target = players.Single();
 
         string newname = command.GetArg(2);
 
@@ -95,10 +97,10 @@ public partial class Admin : BasePlugin
             return;
         }
 
-        PrintToChatAll("css_rename", GetPlayerNameOrConsole(player), target.PlayerName, newname);
+        PrintToChatAll("css_rename", GetPlayerNameOrConsole(player), targetname, newname);
 
         target.Rename(newname);
 
-        _ = SendDiscordMessage($"[{GetPlayerSteamIdOrConsole(player)}] {GetPlayerNameOrConsole(player)} -> css_rename <{target.PlayerName}> <{newname}>");
+        _ = SendDiscordMessage($"[{GetPlayerSteamIdOrConsole(player)}] {GetPlayerNameOrConsole(player)} -> css_rename <{targetname}> <{newname}>");
     }
 }

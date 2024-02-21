@@ -160,25 +160,11 @@ public partial class Admin : BasePlugin
 
     public static void RemoveWeaponsOnTheGround()
     {
-        IEnumerable<CCSWeaponBaseGun> entities = Utilities.FindAllEntitiesByDesignerName<CCSWeaponBaseGun>("weapon_");
+        IEnumerable<CCSWeaponBaseGun> entities = Utilities.FindAllEntitiesByDesignerName<CCSWeaponBaseGun>("weapon_")
+            .Where(entity => entity is { IsValid: true, State: CSWeaponState_t.WEAPON_NOT_CARRIED } && entity.DesignerName.StartsWith("weapon_"));
 
-        foreach (CCSWeaponBaseGun entity in entities)
+        foreach(CCSWeaponBaseGun entity in entities)
         {
-            if (!entity.IsValid)
-            {
-                continue;
-            }
-
-            if (entity.State != CSWeaponState_t.WEAPON_NOT_CARRIED)
-            {
-                continue;
-            }
-
-            if (entity.DesignerName.StartsWith("weapon_") == false)
-            {
-                continue;
-            }
-
             entity.Remove();
         }
     }
