@@ -66,9 +66,11 @@ An admin command plugin with mysql support
 ♦ css_speed <#userid|name|all @ commands> <value>
 ♦ css_god <#userid|name|all @ commands> <value>
 ♦ css_team <#userid|name|all @ commands> <value>
+♦ css_swap <#userid|name>
 ♦ css_bury <#userid|name|all @ commands>
 ♦ css_unbury <#userid|name|all @ commands>
 ♦ css_clean - Clean weapons on the ground
+♦ css_glow <#userid|name|all @ commands> <color>
 
 //playercommands
 ♦ css_slap <#userid|name|all @ commands> <damage>
