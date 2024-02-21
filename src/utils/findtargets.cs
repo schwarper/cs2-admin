@@ -52,7 +52,7 @@ public partial class Admin : BasePlugin
 
             if (targetresult.Players.Count == 0)
             {
-                command.ReplyToCommand(Localizer["Prefix"] + Localizer["You can target only dead players"]);
+                command.ReplyToCommand(Localizer["Prefix"] + Localizer["You can target only alive players"]);
                 return (new List<CCSPlayerController>(), string.Empty);
             }
         }
@@ -62,7 +62,7 @@ public partial class Admin : BasePlugin
 
             if (targetresult.Players.Count == 0)
             {
-                command.ReplyToCommand(Localizer["Prefix"] + Localizer["You can target only alive players"]);
+                command.ReplyToCommand(Localizer["Prefix"] + Localizer["You can target only dead players"]);
                 return (new List<CCSPlayerController>(), string.Empty);
             }
         }
