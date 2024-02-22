@@ -47,7 +47,7 @@ An admin command plugin with mysql support
 ♦ css_rcon <args>
 ♦ css_cvar <cvar> <value>
 ♦ css_exec <exec>
-♦ css_who <#userid|name>
+♦ css_who <#userid|name or empty for all>
 
 //basevotes
 ♦ css_vote <question> [... Options ...]
@@ -61,7 +61,7 @@ An admin command plugin with mysql support
 ♦ css_noclip <#userid|name|all @ commands> <value>
 ♦ css_weapon <#userid|name|all @ commands> <weapon>
 ♦ css_strip <#userid|name|all @ commands>
-♦ css_sethp <#userid|name|all @ commands> <health>
+♦ css_sethp <team> <health> - Sets team players' spawn health
 ♦ css_hp <#userid|name|all @ commands> <health>
 ♦ css_speed <#userid|name|all @ commands> <value>
 ♦ css_god <#userid|name|all @ commands> <value>
@@ -71,6 +71,7 @@ An admin command plugin with mysql support
 ♦ css_unbury <#userid|name|all @ commands>
 ♦ css_clean - Clean weapons on the ground
 ♦ css_glow <#userid|name|all @ commands> <color>
+♦ css_beacon <#userid|name|all @ commands> <value>
 
 //playercommands
 ♦ css_slap <#userid|name|all @ commands> <damage>
