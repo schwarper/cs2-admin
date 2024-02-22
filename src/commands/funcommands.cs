@@ -17,7 +17,7 @@ public partial class Admin : BasePlugin
     [CommandHelper(minArgs: 1, "<#userid|name|all @ commands> <time>", whoCanExecute: CommandUsage.CLIENT_AND_SERVER)]
     public void Command_Freeze(CCSPlayerController? player, CommandInfo command)
     {
-        (List<CCSPlayerController> players, string targetname) = FindTarget(player, command, 1, true, true, MultipleFlags.IGNORE_DEAD_PLAYERS);
+        (List<CCSPlayerController> players, string targetname) = FindTarget(player, command, 1, false, true, MultipleFlags.IGNORE_DEAD_PLAYERS);
 
         if (players.Count == 0)
         {
@@ -64,7 +64,7 @@ public partial class Admin : BasePlugin
     [CommandHelper(minArgs: 1, "<#userid|name|all @ commands>", whoCanExecute: CommandUsage.CLIENT_AND_SERVER)]
     public void Command_UnFreeze(CCSPlayerController? player, CommandInfo command)
     {
-        (List<CCSPlayerController> players, string targetname) = FindTarget(player, command, 1, true, true, MultipleFlags.IGNORE_DEAD_PLAYERS);
+        (List<CCSPlayerController> players, string targetname) = FindTarget(player, command, 1, false, true, MultipleFlags.IGNORE_DEAD_PLAYERS);
 
         if (players.Count == 0)
         {
@@ -419,7 +419,7 @@ public partial class Admin : BasePlugin
     [CommandHelper(minArgs: 2, "<#userid|name|all @ commands> <value>", whoCanExecute: CommandUsage.CLIENT_AND_SERVER)]
     public void Command_Speed(CCSPlayerController? player, CommandInfo command)
     {
-        (List<CCSPlayerController> players, string targetname) = FindTarget(player, command, 2, true, true, MultipleFlags.IGNORE_DEAD_PLAYERS);
+        (List<CCSPlayerController> players, string targetname) = FindTarget(player, command, 2, false, true, MultipleFlags.IGNORE_DEAD_PLAYERS);
 
         if (players.Count == 0)
         {
@@ -459,7 +459,7 @@ public partial class Admin : BasePlugin
     [CommandHelper(minArgs: 2, "<#userid|name|all @ commands> <value>", whoCanExecute: CommandUsage.CLIENT_AND_SERVER)]
     public void Command_God(CCSPlayerController? player, CommandInfo command)
     {
-        (List<CCSPlayerController> players, string targetname) = FindTarget(player, command, 2, true, true, MultipleFlags.IGNORE_DEAD_PLAYERS);
+        (List<CCSPlayerController> players, string targetname) = FindTarget(player, command, 2, false, true, MultipleFlags.IGNORE_DEAD_PLAYERS);
 
         if (players.Count == 0)
         {
@@ -612,7 +612,7 @@ public partial class Admin : BasePlugin
     [CommandHelper(minArgs: 1, "<#userid|name|all @ commands>", whoCanExecute: CommandUsage.CLIENT_AND_SERVER)]
     public void Command_Bury(CCSPlayerController? player, CommandInfo command)
     {
-        (List<CCSPlayerController> players, string targetname) = FindTarget(player, command, 1, true, true, MultipleFlags.IGNORE_DEAD_PLAYERS);
+        (List<CCSPlayerController> players, string targetname) = FindTarget(player, command, 1, false, true, MultipleFlags.IGNORE_DEAD_PLAYERS);
 
         if (players.Count == 0)
         {
@@ -646,7 +646,7 @@ public partial class Admin : BasePlugin
     [CommandHelper(minArgs: 1, "<#userid|name|all @ commands>", whoCanExecute: CommandUsage.CLIENT_AND_SERVER)]
     public void Command_UnBury(CCSPlayerController? player, CommandInfo command)
     {
-        (List<CCSPlayerController> players, string targetname) = FindTarget(player, command, 1, true, true, MultipleFlags.IGNORE_DEAD_PLAYERS);
+        (List<CCSPlayerController> players, string targetname) = FindTarget(player, command, 1, false, true, MultipleFlags.IGNORE_DEAD_PLAYERS);
 
         if (players.Count == 0)
         {
@@ -731,7 +731,7 @@ public partial class Admin : BasePlugin
             return;
         }
 
-        (List<CCSPlayerController> players, string targetname) = FindTarget(player, command, 1, true, true, MultipleFlags.IGNORE_DEAD_PLAYERS);
+        (List<CCSPlayerController> players, string targetname) = FindTarget(player, command, 1, false, true, MultipleFlags.IGNORE_DEAD_PLAYERS);
 
         if (players.Count == 0)
         {
@@ -805,7 +805,7 @@ public partial class Admin : BasePlugin
     [CommandHelper(minArgs: 1, "<#userid|name|all @ commands> <color>", whoCanExecute: CommandUsage.CLIENT_ONLY)]
     public void Command_Glow(CCSPlayerController? player, CommandInfo command)
     {
-        (List<CCSPlayerController> players, string targetname) = FindTarget(player, command, 1, true, false, MultipleFlags.IGNORE_DEAD_PLAYERS);
+        (List<CCSPlayerController> players, string targetname) = FindTarget(player, command, 1, false, false, MultipleFlags.IGNORE_DEAD_PLAYERS);
 
         if (players.Count == 0)
         {
@@ -854,7 +854,7 @@ public partial class Admin : BasePlugin
     [CommandHelper(minArgs: 1, "<#userid|name|all @ commands> <value>", whoCanExecute: CommandUsage.CLIENT_AND_SERVER)]
     public void Command_Beacon(CCSPlayerController? player, CommandInfo command)
     {
-        (List<CCSPlayerController> players, string targetname) = FindTarget(player, command, 1, true, true, MultipleFlags.IGNORE_DEAD_PLAYERS);
+        (List<CCSPlayerController> players, string targetname) = FindTarget(player, command, 1, false, true, MultipleFlags.IGNORE_DEAD_PLAYERS);
 
         if (players.Count == 0)
         {
