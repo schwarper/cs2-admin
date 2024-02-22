@@ -197,35 +197,58 @@ public partial class Admin : BasePlugin
 
     [ConsoleCommand("css_who")]
     [RequiresPermissions("@css/generic")]
-    [CommandHelper(minArgs: 1, "<#userid|name>", whoCanExecute: CommandUsage.CLIENT_AND_SERVER)]
+    [CommandHelper(minArgs: 0, "<#userid|name or empty for all>", whoCanExecute: CommandUsage.CLIENT_AND_SERVER)]
     public void Command_Who(CCSPlayerController? player, CommandInfo command)
     {
-        (List<CCSPlayerController> players, string targetname) = FindTarget(player, command, 1, true, true, MultipleFlags.NORMAL);
+        Action<string> targetConsolePrint = (player != null) ? player.PrintToConsole : Server.PrintToConsole;
 
-        if (players.Count == 0)
+        if (command.ArgCount > 1)
         {
-            return;
+            (List<CCSPlayerController> players, string targetname) = FindTarget(player, command, 1, true, true, MultipleFlags.NORMAL);
+
+            if (players.Count == 0)
+            {
+                return;
+            }
+
+            CCSPlayerController target = players.Single();
+
+            PrintPlayerInfo(targetConsolePrint, target, targetname, true);
+
+            _ = SendDiscordMessage($"[{GetPlayerSteamIdOrConsole(player)}] {GetPlayerNameOrConsole(player)} -> css_who <{targetname}>");
         }
+        else
+        {
+            foreach (CCSPlayerController target in Utilities.GetPlayers().Where(target => AdminManager.CanPlayerTarget(player, target)))
+            {
+                PrintPlayerInfo(targetConsolePrint, target, string.Empty, false);
+            }
 
-        CCSPlayerController target = players.Single();
+            _ = SendDiscordMessage($"[{GetPlayerSteamIdOrConsole(player)}] {GetPlayerNameOrConsole(player)} -> css_who");
+        }
+    }
 
-        AdminData? data = AdminManager.GetPlayerAdminData(target);
+    private void PrintPlayerInfo(Action<string> printer, CCSPlayerController player, string targetname, bool singletarget)
+    {
+        AdminData? data = AdminManager.GetPlayerAdminData(player);
 
         string permissionflags = (data == null) ? "none" :
-                          data.GetAllFlags().Contains("@css/root") ? "root" :
-                          string.Join(",", data.GetAllFlags()).Replace("@css/", "");
+            data.GetAllFlags().Contains("@css/root") ? "root" :
+            string.Join(",", data.GetAllFlags()).Replace("@css/", "");
 
-        Server.NextFrame(() =>
+        uint immunitylevel = AdminManager.GetPlayerImmunity(player);
+
+        if (singletarget)
         {
-            Action<string> targetConsolePrint = (player != null) ? player.PrintToConsole : Server.PrintToConsole;
-
-            targetConsolePrint(Localizer["css_who<title>", targetname]);
-            targetConsolePrint(Localizer["css_who<steamid>", target.SteamID]);
-            targetConsolePrint(Localizer["css_who<ip>", target.IpAddress ?? Localizer["Unknown"]]);
-            targetConsolePrint(Localizer["css_who<permission>", permissionflags]);
-            targetConsolePrint(Localizer["css_who<immunitylevel>", AdminManager.GetPlayerImmunity(target)]);
-        });
-
-        _ = SendDiscordMessage($"[{GetPlayerSteamIdOrConsole(player)}] {GetPlayerNameOrConsole(player)} -> css_who <{targetname}>");
+            printer(Localizer["css_who<title>", targetname]);
+            printer(Localizer["css_who<steamid>", player.SteamID]);
+            printer(Localizer["css_who<ip>", player.IpAddress ?? Localizer["Unknown"]]);
+            printer(Localizer["css_who<permission>", permissionflags]);
+            printer(Localizer["css_who<immunitylevel>", immunitylevel]);
+        }
+        else
+        {
+            printer(Localizer["css_who<all>", player.PlayerName, player.SteamID, player.IpAddress ?? Localizer["Unknown"], permissionflags, immunitylevel]);
+        }
     }
 }

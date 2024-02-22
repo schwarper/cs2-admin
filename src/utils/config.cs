@@ -14,6 +14,8 @@ public class AdminConfig : BasePluginConfig
     [JsonPropertyName("changemap_delay")] public float ChangeMapDelay { get; set; } = 2.0f;
     [JsonPropertyName("give_knife_after_strip")] public bool GiveKnifeAfterStrip { get; set; } = true;
     [JsonPropertyName("sethp_max_100")] public bool SetHpMax100 { get; set; } = false;
+    [JsonPropertyName("ct_default_health")] public int CTDefaultHealth { get; set; } = 100;
+    [JsonPropertyName("t_default_health")] public int TDefaultHealth { get; set; } = 100;
     [JsonPropertyName("hide_console_msg")] public bool HideConsoleMsg { get; set; } = true;
     [JsonPropertyName("show_name_commands")] public string[] ShowNameCommands { get; set; } = { "css_slap", "css_slay" };
     [JsonPropertyName("show_name_flag")] public string ShowNameFlag { get; set; } = "@css/generic";
@@ -35,6 +37,16 @@ public partial class Admin : BasePlugin, IPluginConfig<AdminConfig>
         if (config.ChangeMapDelay <= 0.0)
         {
             config.ChangeMapDelay = 0.0f;
+        }
+
+        if (config.CTDefaultHealth <= 0)
+        {
+            config.CTDefaultHealth = 100;
+        }
+
+        if (config.TDefaultHealth <= 0)
+        {
+            config.TDefaultHealth = 100;
         }
 
         Config = config;

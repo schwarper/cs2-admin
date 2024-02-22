@@ -15,7 +15,8 @@
 	"Must be higher than zero": "{white}The entered value must be greater than zero.",
 	"Must be a steamid": "{white}The entered value must be a steamID.",
 	"Must be a string": "{white}The entered value must be a string.",
-	"No color exists": "{white}No such colour was found.",
+	"No color exists": "{white}No such color was found.",
+	"No team exists": "{white}No such team was found.",
 
 	"all": "all players",
 	"bots": "bots",
@@ -72,6 +73,7 @@
 	"css_who<ip>": "[------] IP Address: {0}",
 	"css_who<permission>": "[------] Permissions: {0}",
 	"css_who<immunitylevel>": "[------] Immunity Level: {0}",
+	"css_who<all>": "[------] [{0}] [{1}] [{2}] [{3}] [{4}]",
 
 	"css_vote": "{blue}{0} {white}started a vote for {green}{1}{white}.",
 	"css_vote<title>": "Vote for {0}",
@@ -92,8 +94,9 @@
 	"css_weapon<multiple>": "{blue}{0} {white}gave {1} {white}{green}{2}{white}.",
 	"css_strip<player>": "{blue}{0} {white}removed weapons from {green}{1}{white}.",
 	"css_strip<multiple>": "{blue}{0} {white}removed weapons from {1}{white}.",
-	"css_sethp<player>": "{blue}{0} {white}set {green}{1}{white}'s health to {green}{2}{white}.",
-	"css_sethp<multiple>": "{blue}{0} {white}set {1}{white}'s health to {green}{2}{white}.",
+	"css_hp<player>": "{blue}{0} {white}set {green}{1}{white}'s health to {green}{2}{white}.",
+	"css_hp<multiple>": "{blue}{0} {white}set {green}{1}{white}'s health to {green}{2}{white}.",
+	"css_sethp": "{blue}{0} {white}set {green}{1}{white}'s spawn health to {green}{2}{white}.'",
 	"css_speed<player>": "{blue}{0} {white}set the speed of {green}{1} {white}to {green}{2}{white}.",
 	"css_speed<multiple>": "{blue}{0} {white}set the speed of {1} {white}to {green}{2}{white}.",
 	"css_god<player>": "{blue}{0} {white}set god mode for {green}{1} {white}to {green}{2}{white}.",
@@ -111,6 +114,8 @@
 	"css_hrespawn": "{blue}{0}{white} respawned {green}{1}{white} where died.",
 	"css_glow<player>": "{blue}{0}{white} changes the colour of {green}{1} {white}to {blue}{2}{white}.",
 	"css_glow<multiple>": "{blue}{0}{white} changes the colour of {green}{1} {white}to {blue}{2}{white}.",
+	"css_beacon<player>": "{blue}{0} {white}set beacon for {green}{1} {white}to {green}{2}{white}.",
+	"css_beacon<multiple>": "{blue}{0} {white}set beacon for {1} {white}to {green}{2}{white}.",
 
 	"css_slap<player>": "{blue}{0} {white}slapped {green}{1} {white}and damaged {green}{2}{white}.",
 	"css_slap<multiple>": "{blue}{0} {white}slapped {green}{1} {white}and damaged {green}{2}{white}.",

@@ -156,4 +156,96 @@ public static class PlayerUtils
 
         Utilities.SetStateChanged(playerPawn, "CBaseModelEntity", "m_clrRender");
     }
+    static public void Circle(
+        this CCSPlayerController player,
+        float minRadius = 30f,
+        int radiusIncrement = 6,
+        float numberOfCircles = 15
+    )
+    {
+        const int numPoints = (int)Math.PI * 15;
+
+        float radius = minRadius;
+
+        Vector[] GenerateOffsets(float currentRadius)
+        {
+            Vector[] offsets = new Vector[numPoints];
+            float angle = 360f / numPoints;
+
+            for (int i = 0; i < numPoints; i++)
+            {
+                float x = currentRadius * MathF.Cos(DegToRadian(angle * i));
+                float y = currentRadius * MathF.Sin(DegToRadian(angle * i));
+
+                offsets[i] = new Vector(x, y, 0);
+            }
+
+            return offsets;
+        }
+
+        float DegToRadian(float d)
+        {
+            return (float)(d * (Math.PI / 180));
+        }
+
+        void DrawLine(Vector start, Vector end, int i)
+        {
+            CBeam? line = Utilities.CreateEntityByName<CBeam>("beam");
+
+            if (line == null)
+            {
+                return;
+            }
+
+            line.Render = System.Drawing.Color.Green;
+            line.Width = 2.0f;
+
+            line.Teleport(start, new QAngle(), new Vector());
+
+            line.EndPos.X = end.X;
+            line.EndPos.Y = end.Y;
+            line.EndPos.Z = end.Z;
+
+            Utilities.SetStateChanged(line, "CBeam", "m_vecEndPos");
+
+            Plugin.AddTimer(0.1f, line.Remove);
+        }
+
+        void DrawCircle(CCSPlayerController player, Vector[] offsets)
+        {
+            CCSPlayerPawn? playerPawn = player.PlayerPawn.Value;
+
+            if (playerPawn == null)
+            {
+                return;
+            }
+
+            Vector? position = playerPawn.AbsOrigin;
+
+            if (position == null)
+            {
+                return;
+            }
+
+            for (int i = 0; i < numPoints; i++)
+            {
+                Vector start = position + offsets[i];
+                Vector end = position + offsets[(i + 1) % offsets.Length];
+
+                DrawLine(start, end, i);
+            }
+        }
+
+        for (float i = 0; i < numberOfCircles; i++)
+        {
+            Plugin.AddTimer((float)(i * 0.11), () =>
+            {
+                Vector[] offsets = GenerateOffsets(radius);
+
+                DrawCircle(player, offsets);
+
+                radius += radiusIncrement;
+            });
+        }
+    }
 }

@@ -163,7 +163,7 @@ public partial class Admin : BasePlugin
         IEnumerable<CCSWeaponBaseGun> entities = Utilities.FindAllEntitiesByDesignerName<CCSWeaponBaseGun>("weapon_")
             .Where(entity => entity is { IsValid: true, State: CSWeaponState_t.WEAPON_NOT_CARRIED } && entity.DesignerName.StartsWith("weapon_"));
 
-        foreach(CCSWeaponBaseGun entity in entities)
+        foreach (CCSWeaponBaseGun entity in entities)
         {
             entity.Remove();
         }

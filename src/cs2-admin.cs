@@ -6,7 +6,7 @@ namespace Admin;
 public partial class Admin : BasePlugin
 {
     public override string ModuleName => "Admin";
-    public override string ModuleVersion => "0.0.5";
+    public override string ModuleVersion => "0.0.6";
     public override string ModuleAuthor => "schwarper";
 
     public override void Load(bool hotReload)

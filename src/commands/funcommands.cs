@@ -5,6 +5,7 @@ using CounterStrikeSharp.API.Modules.Admin;
 using CounterStrikeSharp.API.Modules.Commands;
 using CounterStrikeSharp.API.Modules.Cvars;
 using CounterStrikeSharp.API.Modules.Entities.Constants;
+using CounterStrikeSharp.API.Modules.Timers;
 using CounterStrikeSharp.API.Modules.Utils;
 using System.Drawing;
 
@@ -319,13 +320,12 @@ public partial class Admin : BasePlugin
         _ = SendDiscordMessage($"[{GetPlayerSteamIdOrConsole(player)}] {GetPlayerNameOrConsole(player)} -> css_strip <{command.GetArg(1)}>");
     }
 
-    [ConsoleCommand("css_sethp")]
     [ConsoleCommand("css_hp")]
     [RequiresPermissions("@css/cheats")]
     [CommandHelper(minArgs: 2, "<#userid|name|all @ commands> <health>", whoCanExecute: CommandUsage.CLIENT_AND_SERVER)]
     public void Command_Hp(CCSPlayerController? player, CommandInfo command)
     {
-        (List<CCSPlayerController> players, string targetname) = FindTarget(player, command, 2, true, true, MultipleFlags.IGNORE_DEAD_PLAYERS);
+        (List<CCSPlayerController> players, string targetname) = FindTarget(player, command, 2, false, true, MultipleFlags.IGNORE_DEAD_PLAYERS);
 
         if (players.Count == 0)
         {
@@ -356,14 +356,62 @@ public partial class Admin : BasePlugin
 
         if (players.Count == 1)
         {
-            PrintToChatAll("css_sethp<player>", GetPlayerNameOrConsole(player), targetname, value);
+            PrintToChatAll("css_hp<player>", GetPlayerNameOrConsole(player), targetname, value);
         }
         else
         {
-            PrintToChatAll("css_sethp<multiple>", GetPlayerNameOrConsole(player), targetname, value);
+            PrintToChatAll("css_hp<multiple>", GetPlayerNameOrConsole(player), targetname, value);
         }
 
-        _ = SendDiscordMessage($"[{GetPlayerSteamIdOrConsole(player)}] {GetPlayerNameOrConsole(player)} -> css_sethp <{command.GetArg(1)}> <{value}>");
+        _ = SendDiscordMessage($"[{GetPlayerSteamIdOrConsole(player)}] {GetPlayerNameOrConsole(player)} -> css_hp <{command.GetArg(1)}> <{value}>");
+    }
+
+    [ConsoleCommand("css_sethp")]
+    [RequiresPermissions("@css/cheats")]
+    [CommandHelper(minArgs: 2, "<team> <health> - Sets team players' spawn health", whoCanExecute: CommandUsage.CLIENT_AND_SERVER)]
+    public void Command_SetHp(CCSPlayerController? player, CommandInfo command)
+    {
+        string arg = command.GetArg(1);
+
+        CsTeam team = arg switch
+        {
+            string s when s.StartsWith("T") => CsTeam.Terrorist,
+            string s when s.StartsWith("C") => CsTeam.CounterTerrorist,
+            "2" => CsTeam.Terrorist,
+            "3" => CsTeam.CounterTerrorist,
+            _ => CsTeam.None
+        };
+
+        if (team == CsTeam.None)
+        {
+            command.ReplyToCommand(Localizer["Prefix"] + Localizer["No team exists"]);
+            return;
+        }
+
+        if (!int.TryParse(command.GetArg(2), out int value))
+        {
+            command.ReplyToCommand(Localizer["Prefix"] + Localizer["Must be an integer"]);
+            return;
+        }
+
+        if (value <= 0)
+        {
+            command.ReplyToCommand(Localizer["Must be higher than zero"]);
+            return;
+        }
+
+        if (team == CsTeam.CounterTerrorist)
+        {
+            Config.CTDefaultHealth = value;
+        }
+        else
+        {
+            Config.TDefaultHealth = value;
+        }
+
+        PrintToChatAll("css_sethp", GetPlayerNameOrConsole(player), team, value);
+
+        _ = SendDiscordMessage($"[{GetPlayerSteamIdOrConsole(player)}] {GetPlayerNameOrConsole(player)} -> css_sethp <{team}> <{value}>");
     }
 
     [ConsoleCommand("css_speed")]
@@ -799,5 +847,58 @@ public partial class Admin : BasePlugin
         }
 
         _ = SendDiscordMessage($"[{GetPlayerSteamIdOrConsole(player)}] {GetPlayerNameOrConsole(player)} -> css_glow <{command.GetArg(1)} <{color}>");
+    }
+
+    [ConsoleCommand("css_beacon")]
+    [RequiresPermissions("@css/slay")]
+    [CommandHelper(minArgs: 1, "<#userid|name|all @ commands> <value>", whoCanExecute: CommandUsage.CLIENT_AND_SERVER)]
+    public void Command_Beacon(CCSPlayerController? player, CommandInfo command)
+    {
+        (List<CCSPlayerController> players, string targetname) = FindTarget(player, command, 1, true, true, MultipleFlags.IGNORE_DEAD_PLAYERS);
+
+        if (players.Count == 0)
+        {
+            return;
+        }
+
+        if (!int.TryParse(command.GetArg(2), out int value))
+        {
+            command.ReplyToCommand(Localizer["Prefix"] + Localizer["Must be an integer"]);
+            return;
+        }
+
+        if (value > 0)
+        {
+            foreach (CCSPlayerController target in players)
+            {
+                if (!GlobalBeaconTimer.ContainsKey(target))
+                {
+                    CounterStrikeSharp.API.Modules.Timers.Timer timer = AddTimer(3.0f, () => target.Circle(), TimerFlags.REPEAT | TimerFlags.STOP_ON_MAPCHANGE);
+                    GlobalBeaconTimer[target] = timer;
+                }
+            }
+        }
+        else
+        {
+            foreach (CCSPlayerController target in players.ToList())
+            {
+                if (GlobalBeaconTimer.TryGetValue(target, out CounterStrikeSharp.API.Modules.Timers.Timer? timer))
+                {
+                    timer.Kill();
+                    GlobalBeaconTimer.Remove(target);
+                }
+            }
+        }
+
+        if (players.Count == 1)
+        {
+            PrintToChatAll("css_beacon<player>", GetPlayerNameOrConsole(player), targetname, value);
+        }
+        else
+        {
+            PrintToChatAll("css_beacon<multiple>", GetPlayerNameOrConsole(player), targetname, value);
+        }
+
+        _ = SendDiscordMessage($"[{GetPlayerSteamIdOrConsole(player)}] {GetPlayerNameOrConsole(player)} -> css_beacon <{command.GetArg(1)}> <{value}>");
     }
 }

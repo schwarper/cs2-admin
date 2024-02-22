@@ -4,6 +4,7 @@ using CounterStrikeSharp.API.Modules.Commands.Targeting;
 using CounterStrikeSharp.API.Modules.Entities.Constants;
 using CounterStrikeSharp.API.Modules.Utils;
 using MySqlConnector;
+using Timer = CounterStrikeSharp.API.Modules.Timers.Timer;
 
 namespace Admin;
 
@@ -15,6 +16,7 @@ public partial class Admin : BasePlugin
     private readonly List<Punishment> GlobalPunishList = new();
     private readonly Dictionary<string, int> GlobalVoteAnswers = new();
     private readonly List<CCSPlayerController> GlobalVotePlayers = new();
+    private readonly Dictionary<CCSPlayerController, Timer> GlobalBeaconTimer = new();
     private readonly Dictionary<CCSPlayerController, Vector> GlobalHRespawnPlayers = new();
 
     private bool GlobalVoteInProgress { get; set; } = false;

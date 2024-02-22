@@ -1,6 +1,8 @@
+using CounterStrikeSharp.API;
 using CounterStrikeSharp.API.Core;
 using CounterStrikeSharp.API.Modules.Commands;
 using CounterStrikeSharp.API.Modules.Utils;
+using static CounterStrikeSharp.API.Core.Listeners;
 
 namespace Admin;
 
@@ -54,6 +56,12 @@ public partial class Admin : BasePlugin
                 return HookResult.Continue;
             }
 
+            if (GlobalBeaconTimer.TryGetValue(player, out CounterStrikeSharp.API.Modules.Timers.Timer? timer))
+            {
+                timer.Kill();
+                GlobalBeaconTimer.Remove(player);
+            }
+
             CBasePlayerPawn? playerPawn = player.Pawn.Value;
 
             if (playerPawn == null || playerPawn.AbsOrigin == null)
@@ -77,9 +85,45 @@ public partial class Admin : BasePlugin
                 return HookResult.Continue;
             }
 
+            if (GlobalBeaconTimer.TryGetValue(player, out CounterStrikeSharp.API.Modules.Timers.Timer? timer))
+            {
+                timer.Kill();
+                GlobalBeaconTimer.Remove(player);
+            }
+
+            AddTimer(0.1f, () =>
+            {
+                CsTeam team = player.Team;
+
+                if (team == CsTeam.CounterTerrorist)
+                {
+                    player.Health(Config.CTDefaultHealth);
+                }
+                else
+                {
+                    player.Health(Config.TDefaultHealth);
+                }
+            });
+
             GlobalHRespawnPlayers.Remove(player);
 
             return HookResult.Continue;
+        });
+
+        RegisterListener<OnClientDisconnect>((playerslot) =>
+        {
+            CCSPlayerController player = Utilities.GetPlayerFromSlot(playerslot);
+
+            if (player == null)
+            {
+                return;
+            }
+
+            if (GlobalBeaconTimer.TryGetValue(player, out CounterStrikeSharp.API.Modules.Timers.Timer? timer))
+            {
+                timer.Kill();
+                GlobalBeaconTimer.Remove(player);
+            }
         });
     }
 
