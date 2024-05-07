@@ -5,10 +5,11 @@ using CounterStrikeSharp.API.Modules.Admin;
 using CounterStrikeSharp.API.Modules.Commands;
 using CounterStrikeSharp.API.Modules.Memory;
 using CounterStrikeSharp.API.Modules.Utils;
+using static Admin.FindTarget;
 
 namespace Admin;
 
-public partial class Admin : BasePlugin
+public partial class Admin
 {
     [ConsoleCommand("css_say")]
     [RequiresPermissions("@css/chat")]
@@ -23,8 +24,8 @@ public partial class Admin : BasePlugin
         string arg = command.GetCommandString;
         string message = arg[arg.IndexOf(' ')..];
 
-        Server.PrintToChatAll(Localizer["css_say", GetPlayerNameOrConsole(player), message]);
-        _ = SendDiscordMessage($"[{GetPlayerSteamIdOrConsole(player)}] [{GetPlayerSteamIdOrConsole(player)}] {GetPlayerNameOrConsole(player)} -> css_say <{message}>");
+        Server.PrintToChatAll(Localizer["css_say", player?.PlayerName ?? "Console", message]);
+        Discord.SendMessage($"[{player?.SteamID ?? 0}] {player?.PlayerName ?? "Console"} -> css_say <{message}>");
     }
 
     [ConsoleCommand("css_csay")]
@@ -42,15 +43,10 @@ public partial class Admin : BasePlugin
 
         Utilities.GetPlayers().ForEach(target =>
         {
-            if (!target.Valid())
-            {
-                return;
-            }
-
-            target.PrintToCenter(Localizer["css_csay", GetPlayerNameOrConsole(player), message]);
+            target.PrintToCenter(Localizer["css_csay", player?.PlayerName ?? "Console", message]);
         });
 
-        _ = SendDiscordMessage($"[{GetPlayerSteamIdOrConsole(player)}] {GetPlayerNameOrConsole(player)} -> css_csay <{message}>");
+        Discord.SendMessage($"[{player?.SteamID ?? 0}] {player?.PlayerName ?? "Console"} -> css_csay <{message}>");
     }
 
     [ConsoleCommand("css_dsay")]
@@ -68,10 +64,10 @@ public partial class Admin : BasePlugin
         string message = arg[arg.IndexOf(' ')..];
 
         VirtualFunctions.ClientPrintAll(HudDestination.Alert,
-            Localizer["css_csay", GetPlayerNameOrConsole(player), message],
+            Localizer["css_csay", player?.PlayerName ?? "Console", message],
             0, 0, 0, 0);
 
-        _ = SendDiscordMessage($"[{GetPlayerSteamIdOrConsole(player)}] {GetPlayerNameOrConsole(player)} -> css_csay <{message}>");
+        Discord.SendMessage($"[{player?.SteamID ?? 0}] {player?.PlayerName ?? "Console"} -> css_csay <{message}>");
     }
 
     [ConsoleCommand("css_asay")]
@@ -88,20 +84,20 @@ public partial class Admin : BasePlugin
         string arg = command.GetCommandString;
         string message = arg[arg.IndexOf(' ')..];
 
-        foreach (CCSPlayerController target in Utilities.GetPlayers().Where(p => p.Valid() && AdminManager.PlayerHasPermissions(p, "@css/chat")))
+        foreach (CCSPlayerController target in Utilities.GetPlayers().Where(p => AdminManager.PlayerHasPermissions(p, "@css/chat")))
         {
-            target.PrintToChat(Localizer["css_asay", GetPlayerNameOrConsole(player), message]);
+            target.PrintToChat(Localizer["css_asay", player?.PlayerName ?? "Console", message]);
         }
 
-        _ = SendDiscordMessage($"[{GetPlayerSteamIdOrConsole(player)}] {GetPlayerNameOrConsole(player)} -> css_asay <{message}>");
+        Discord.SendMessage($"[{player?.SteamID ?? 0}] {player?.PlayerName ?? "Console"} -> css_asay <{message}>");
     }
 
     [ConsoleCommand("css_psay")]
     [RequiresPermissions("@css/chat")]
-    [CommandHelper(minArgs: 2, "<#userid|name> <message> - sends private message", whoCanExecute: CommandUsage.CLIENT_AND_SERVER)]
+    [CommandHelper(minArgs: 2, "<#userid|name> <message> - sends public message", whoCanExecute: CommandUsage.CLIENT_AND_SERVER)]
     public void Command_PSay(CCSPlayerController? player, CommandInfo command)
     {
-        (List<CCSPlayerController> players, string targetname) = FindTarget(player, command, 2, true, false, MultipleFlags.NORMAL);
+        (List<CCSPlayerController> players, string targetname) = Find(player, command, 2, true, false, MultipleFlags.NORMAL);
 
         if (players.Count == 0)
         {
@@ -113,9 +109,9 @@ public partial class Admin : BasePlugin
         string arg = command.GetCommandString;
         string message = arg[arg.IndexOf(' ')..];
 
-        command.ReplyToCommand(Localizer["css_psay", GetPlayerNameOrConsole(player), targetname, message]);
-        target.PrintToChat(Localizer["css_psay", GetPlayerNameOrConsole(player), targetname, message]);
+        command.ReplyToCommand(Localizer["css_psay", player?.PlayerName ?? "Console", targetname, message]);
+        target.PrintToChat(Localizer["css_psay", player?.PlayerName ?? "Console", targetname, message]);
 
-        _ = SendDiscordMessage($"[{GetPlayerSteamIdOrConsole(player)}] {GetPlayerNameOrConsole(player)} -> css_psay <{targetname}> <{message}>");
+        Discord.SendMessage($"[{player?.SteamID ?? 0}] {player?.PlayerName ?? "Console"} -> css_psay <{targetname}> <{message}>");
     }
 }

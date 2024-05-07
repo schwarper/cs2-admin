@@ -1,6 +1,4 @@
 {
-	"Prefix": "{red}[CSS] ",
-
 	"No matching client": "{white}There is no matching client.",
 	"More than one client matched": "{white}There are multiple clients that match.",
 	"You cannot target": "{white}Since this person's immunity level is higher than yours, you cannot target this person.",

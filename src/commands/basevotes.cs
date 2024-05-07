@@ -5,94 +5,90 @@ using CounterStrikeSharp.API.Modules.Admin;
 using CounterStrikeSharp.API.Modules.Commands;
 using CounterStrikeSharp.API.Modules.Menu;
 using CounterStrikeSharp.API.Modules.Timers;
-using System.Text;
+using static Admin.Library;
 
 namespace Admin;
 
-public partial class Admin : BasePlugin
+public partial class Admin
 {
+    private bool GlobalVoteInProgress = false;
+    private readonly Dictionary<string, int> GlobalVoteAnswers = [];
+    private readonly HashSet<CCSPlayerController> GlobalVotePlayers = [];
+
     [ConsoleCommand("css_vote")]
     [RequiresPermissions("@css/generic")]
     [CommandHelper(minArgs: 2, "<question> [... Options ...]", whoCanExecute: CommandUsage.CLIENT_AND_SERVER)]
     public void Command_Vote(CCSPlayerController? player, CommandInfo command)
     {
-        if (command.ArgCount < 2)
-        {
-            return;
-        }
-
         if (GlobalVoteInProgress)
         {
             command.ReplyToCommand(Localizer["Prefix"] + Localizer["css_vote<inprogress>"]);
             return;
         }
 
-        GlobalVoteAnswers.Clear();
-
         string question = command.GetArg(1);
-        int answersCount = command.ArgCount;
 
-        CenterHtmlMenu menu = new(Localizer["css_vote<title>", question])
+        List<string> options = [];
+
+        for (int i = 2; i < command.ArgCount; i++)
+        {
+            options.Add(command.GetArg(i));
+        }
+
+        GlobalVoteInProgress = true;
+        GlobalVoteAnswers.Clear();
+        GlobalVotePlayers.Clear();
+
+        PrintToChatAll("css_vote", player?.PlayerName ?? "Console", question);
+        Discord.SendMessage($"[{player?.SteamID ?? 0}] {player?.PlayerName ?? "Console"} -> css_vote {options[0]}");
+
+        CenterHtmlMenu menu = VoteMenu(question, options);
+        menu.OpenToAll();
+
+        AddTimer(15.0f, () => EndVote(question), TimerFlags.STOP_ON_MAPCHANGE);
+    }
+
+    private CenterHtmlMenu VoteMenu(string question, List<string> options)
+    {
+        CenterHtmlMenu menu = new(Localizer["css_vote<title>", question], this)
         {
             PostSelectAction = PostSelectAction.Nothing
         };
 
-        string answer;
-        StringBuilder arg = new();
-
-        for (int i = 2; i < answersCount; i++)
+        foreach (string option in options)
         {
-            answer = command.GetArg(i);
+            GlobalVoteAnswers.Add(option, 0);
 
-            arg.Append($" <{command.GetArg(i)}>");
-
-            GlobalVoteAnswers.Add(answer, 0);
-
-            menu.AddMenuOption(Localizer["css_vote<optiontext>", answer, 0], HandleVote);
+            menu.AddMenuOption(Localizer["css_vote<optiontext>", option, 0], (p, o) =>
+            {
+                if (GlobalVoteInProgress && GlobalVotePlayers.Add(p))
+                {
+                    GlobalVoteAnswers[option]++;
+                    o.Text = Localizer["css_vote<optiontext>", option, GlobalVoteAnswers[option]];
+                }
+            });
         }
 
-        foreach (CCSPlayerController target in Utilities.GetPlayers().Where(p => p.Valid()))
-        {
-            MenuManager.OpenCenterHtmlMenu(Plugin, target, menu);
-        }
-
-        PrintToChatAll("css_vote", GetPlayerNameOrConsole(player), question);
-
-        _ = SendDiscordMessage($"[{GetPlayerSteamIdOrConsole(player)}] {GetPlayerNameOrConsole(player)} -> css_vote {arg}");
-
-        GlobalVoteInProgress = true;
-
-        AddTimer(30.0f, () =>
-        {
-            PrintToChatAll("css_vote<results>", question);
-
-            foreach (KeyValuePair<string, int> kvp in GlobalVoteAnswers)
-            {
-                PrintToChatAll("css_vote<resultsanswer>", kvp.Key, kvp.Value);
-            }
-
-            GlobalVoteAnswers.Clear();
-            GlobalVotePlayers.Clear();
-            GlobalVoteInProgress = false;
-
-            foreach (CCSPlayerController target in Utilities.GetPlayers().Where(p => p is { IsValid: true, IsBot: false }))
-            {
-                MenuManager.CloseActiveMenu(target);
-            }
-
-        }, TimerFlags.STOP_ON_MAPCHANGE);
+        return menu;
     }
 
-    public void HandleVote(CCSPlayerController player, ChatMenuOption option)
+    private void EndVote(string question)
     {
-        if (GlobalVoteInProgress && !GlobalVotePlayers.Contains(player))
+        GlobalVoteInProgress = false;
+
+        PrintToChatAll("css_vote<results>", question);
+
+        foreach (KeyValuePair<string, int> kvp in GlobalVoteAnswers)
         {
-            string[] optiontexts = option.Text.Split(" ");
+            PrintToChatAll("css_vote<resultsanswer>", kvp.Key, kvp.Value);
+        }
 
-            GlobalVotePlayers.Add(player);
-            GlobalVoteAnswers[optiontexts[0]]++;
+        GlobalVoteAnswers.Clear();
+        GlobalVotePlayers.Clear();
 
-            option.Text = Localizer["css_vote<optiontext>", optiontexts[0], GlobalVoteAnswers[optiontexts[0]]];
+        foreach (CCSPlayerController target in Utilities.GetPlayers())
+        {
+            MenuManager.CloseActiveMenu(target);
         }
     }
 }

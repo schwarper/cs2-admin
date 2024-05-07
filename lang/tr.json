@@ -1,6 +1,4 @@
 {
-	"Prefix": "{red}[CSS] ",
-
 	"No matching client": "{white}Eşleşen alıcı bulunamadı.",
 	"More than one client matched": "Verilen biçim düzeniyle birden fazla alıcı eşleşti.",
 	"You cannot target": "{white}Bu kişinin dokunulmazlığı sizinkinden yüksek olduğu için bu kişiye dokunamazsınız.",

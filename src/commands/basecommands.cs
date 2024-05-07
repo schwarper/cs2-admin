@@ -4,17 +4,19 @@ using CounterStrikeSharp.API.Core.Attributes.Registration;
 using CounterStrikeSharp.API.Modules.Admin;
 using CounterStrikeSharp.API.Modules.Commands;
 using CounterStrikeSharp.API.Modules.Cvars;
+using static Admin.FindTarget;
+using static Admin.Library;
 
 namespace Admin;
 
-public partial class Admin : BasePlugin
+public partial class Admin
 {
     [ConsoleCommand("css_kick")]
     [RequiresPermissions("@css/kick")]
     [CommandHelper(minArgs: 1, "<#userid|name> <reason>", whoCanExecute: CommandUsage.CLIENT_AND_SERVER)]
     public void Command_Kick(CCSPlayerController? player, CommandInfo command)
     {
-        (List<CCSPlayerController> players, string targetname) = FindTarget(player, command, 1, true, true, MultipleFlags.NORMAL);
+        (List<CCSPlayerController> players, string targetname) = Find(player, command, 1, true, true, MultipleFlags.NORMAL);
 
         if (players.Count == 0)
         {
@@ -31,11 +33,11 @@ public partial class Admin : BasePlugin
 
         string reason = command.GetArg(2) ?? Localizer["Unknown"];
 
-        KickPlayer(target, reason);
+        target.Kick();
 
-        PrintToChatAll("css_kick", GetPlayerNameOrConsole(player), targetname, reason);
+        PrintToChatAll("css_kick", player?.PlayerName ?? "Console", targetname, reason);
 
-        _ = SendDiscordMessage($"[{GetPlayerSteamIdOrConsole(player)}] {GetPlayerNameOrConsole(player)} -> css_kick <{targetname}> <{reason}>");
+        Discord.SendMessage($"[{player?.SteamID ?? 0}] {player?.PlayerName ?? "Console"} -> css_kick <{targetname}> <{reason}>");
     }
 
     [ConsoleCommand("css_changemap")]
@@ -102,9 +104,9 @@ public partial class Admin : BasePlugin
 
     private void ExecuteMapCommand(string mapCommand, CCSPlayerController? player, string map)
     {
-        PrintToChatAll(mapCommand.Contains("workshop") ? "css_wsmap" : "css_map", GetPlayerNameOrConsole(player), map);
+        PrintToChatAll(mapCommand.Contains("workshop") ? "css_wsmap" : "css_map", player?.PlayerName ?? "Console", map);
 
-        _ = SendDiscordMessage($"[{GetPlayerSteamIdOrConsole(player)}] {GetPlayerNameOrConsole(player)} -> {mapCommand}");
+        Discord.SendMessage($"[{player?.SteamID ?? 0}] {player?.PlayerName ?? "Console"} -> {mapCommand}");
 
         AddTimer(Config.ChangeMapDelay, () =>
         {
@@ -126,9 +128,9 @@ public partial class Admin : BasePlugin
 
         Server.ExecuteCommand(arg);
 
-        PrintToChatAll("css_rcon", GetPlayerNameOrConsole(player), arg);
+        PrintToChatAll("css_rcon", player?.PlayerName ?? "Console", arg);
 
-        _ = SendDiscordMessage($"[{GetPlayerSteamIdOrConsole(player)}] {GetPlayerNameOrConsole(player)} -> css_rcon <{arg}>");
+        Discord.SendMessage($"[{player?.SteamID ?? 0}] {player?.PlayerName ?? "Console"} -> css_rcon <{arg}>");
     }
 
     [ConsoleCommand("css_cvar")]
@@ -171,9 +173,9 @@ public partial class Admin : BasePlugin
 
         Server.ExecuteCommand($"{cvarname} {value}");
 
-        PrintToChatAll("css_cvar", GetPlayerNameOrConsole(player), cvar.Name, value);
+        PrintToChatAll("css_cvar", player?.PlayerName ?? "Console", cvar.Name, value);
 
-        _ = SendDiscordMessage($"[{GetPlayerSteamIdOrConsole(player)}] {GetPlayerNameOrConsole(player)} -> css_cvar <{cvar.Name}> <{value}");
+        Discord.SendMessage($"[{player?.SteamID ?? 0}] {player?.PlayerName ?? "Console"} -> css_cvar <{cvar.Name}> <{value}");
     }
 
     [ConsoleCommand("css_exec")]
@@ -190,9 +192,9 @@ public partial class Admin : BasePlugin
 
         Server.ExecuteCommand($"exec {cfg}");
 
-        PrintToChatAll("css_exec", GetPlayerNameOrConsole(player), cfg);
+        PrintToChatAll("css_exec", player?.PlayerName ?? "Console", cfg);
 
-        _ = SendDiscordMessage($"[{GetPlayerSteamIdOrConsole(player)}] {GetPlayerNameOrConsole(player)} -> css_exec <{cfg}>");
+        Discord.SendMessage($"[{player?.SteamID ?? 0}] {player?.PlayerName ?? "Console"} -> css_exec <{cfg}>");
     }
 
     [ConsoleCommand("css_who")]
@@ -204,7 +206,7 @@ public partial class Admin : BasePlugin
 
         if (command.ArgCount > 1)
         {
-            (List<CCSPlayerController> players, string targetname) = FindTarget(player, command, 1, true, true, MultipleFlags.NORMAL);
+            (List<CCSPlayerController> players, string targetname) = Find(player, command, 1, true, true, MultipleFlags.NORMAL);
 
             if (players.Count == 0)
             {
@@ -215,7 +217,7 @@ public partial class Admin : BasePlugin
 
             PrintPlayerInfo(targetConsolePrint, target, targetname, true);
 
-            _ = SendDiscordMessage($"[{GetPlayerSteamIdOrConsole(player)}] {GetPlayerNameOrConsole(player)} -> css_who <{targetname}>");
+            Discord.SendMessage($"[{player?.SteamID ?? 0}] {player?.PlayerName ?? "Console"} -> css_who <{targetname}>");
         }
         else
         {
@@ -224,11 +226,11 @@ public partial class Admin : BasePlugin
                 PrintPlayerInfo(targetConsolePrint, target, string.Empty, false);
             }
 
-            _ = SendDiscordMessage($"[{GetPlayerSteamIdOrConsole(player)}] {GetPlayerNameOrConsole(player)} -> css_who");
+            Discord.SendMessage($"[{player?.SteamID ?? 0}] {player?.PlayerName ?? "Console"} -> css_who");
         }
     }
 
-    private void PrintPlayerInfo(Action<string> printer, CCSPlayerController player, string targetname, bool singletarget)
+    public void PrintPlayerInfo(Action<string> printer, CCSPlayerController player, string targetname, bool singletarget)
     {
         AdminData? data = AdminManager.GetPlayerAdminData(player);
 

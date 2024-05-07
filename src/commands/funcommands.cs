@@ -8,6 +8,9 @@ using CounterStrikeSharp.API.Modules.Entities.Constants;
 using CounterStrikeSharp.API.Modules.Timers;
 using CounterStrikeSharp.API.Modules.Utils;
 using System.Drawing;
+using static Admin.FindTarget;
+using static Admin.Library;
+using Timer = CounterStrikeSharp.API.Modules.Timers.Timer;
 
 namespace Admin;
 public partial class Admin : BasePlugin
@@ -17,7 +20,7 @@ public partial class Admin : BasePlugin
     [CommandHelper(minArgs: 1, "<#userid|name|all @ commands> <time>", whoCanExecute: CommandUsage.CLIENT_AND_SERVER)]
     public void Command_Freeze(CCSPlayerController? player, CommandInfo command)
     {
-        (List<CCSPlayerController> players, string targetname) = FindTarget(player, command, 1, false, true, MultipleFlags.IGNORE_DEAD_PLAYERS);
+        (List<CCSPlayerController> players, string targetname) = Find(player, command, 1, false, true, MultipleFlags.IGNORE_DEAD_PLAYERS);
 
         if (players.Count == 0)
         {
@@ -49,14 +52,14 @@ public partial class Admin : BasePlugin
 
         if (players.Count == 1)
         {
-            PrintToChatAll("css_freeze<player>", GetPlayerNameOrConsole(player), targetname, value);
+            PrintToChatAll("css_freeze<player>", player?.PlayerName ?? "Console", targetname, value);
         }
         else
         {
-            PrintToChatAll("css_freeze<multiple>", GetPlayerNameOrConsole(player), targetname, value);
+            PrintToChatAll("css_freeze<multiple>", player?.PlayerName ?? "Console", targetname, value);
         }
 
-        _ = SendDiscordMessage($"[{GetPlayerSteamIdOrConsole(player)}] {GetPlayerNameOrConsole(player)} -> css_freeze <{command.GetArg(1)}> <{value}>");
+        Discord.SendMessage($"[{player?.SteamID ?? 0}] {player?.PlayerName ?? "Console"} -> css_freeze <{command.GetArg(1)}> <{value}>");
     }
 
     [ConsoleCommand("css_unfreeze")]
@@ -64,7 +67,7 @@ public partial class Admin : BasePlugin
     [CommandHelper(minArgs: 1, "<#userid|name|all @ commands>", whoCanExecute: CommandUsage.CLIENT_AND_SERVER)]
     public void Command_UnFreeze(CCSPlayerController? player, CommandInfo command)
     {
-        (List<CCSPlayerController> players, string targetname) = FindTarget(player, command, 1, false, true, MultipleFlags.IGNORE_DEAD_PLAYERS);
+        (List<CCSPlayerController> players, string targetname) = Find(player, command, 1, false, true, MultipleFlags.IGNORE_DEAD_PLAYERS);
 
         if (players.Count == 0)
         {
@@ -83,14 +86,14 @@ public partial class Admin : BasePlugin
 
         if (players.Count == 1)
         {
-            PrintToChatAll("css_unfreeze<player>", GetPlayerNameOrConsole(player), targetname);
+            PrintToChatAll("css_unfreeze<player>", player?.PlayerName ?? "Console", targetname);
         }
         else
         {
-            PrintToChatAll("css_unfreeze<multiple>", GetPlayerNameOrConsole(player), targetname);
+            PrintToChatAll("css_unfreeze<multiple>", player?.PlayerName ?? "Console", targetname);
         }
 
-        _ = SendDiscordMessage($"[{GetPlayerSteamIdOrConsole(player)}] {GetPlayerNameOrConsole(player)} -> css_unfreeze {command.GetArg(1)}");
+        Discord.SendMessage($"[{player?.SteamID ?? 0}] {player?.PlayerName ?? "Console"} -> css_unfreeze {command.GetArg(1)}");
     }
 
     [ConsoleCommand("css_gravity")]
@@ -119,9 +122,9 @@ public partial class Admin : BasePlugin
 
         Server.ExecuteCommand($"sv_gravity {value}");
 
-        PrintToChatAll("css_cvar", GetPlayerNameOrConsole(player), "sv_gravity", value);
+        PrintToChatAll("css_cvar", player?.PlayerName ?? "Console", "sv_gravity", value);
 
-        _ = SendDiscordMessage($"[{GetPlayerSteamIdOrConsole(player)}] {GetPlayerNameOrConsole(player)} -> css_gravity <{value}>");
+        Discord.SendMessage($"[{player?.SteamID ?? 0}] {player?.PlayerName ?? "Console"} -> css_gravity <{value}>");
     }
 
     [ConsoleCommand("css_revive")]
@@ -129,7 +132,7 @@ public partial class Admin : BasePlugin
     [CommandHelper(minArgs: 1, "<#userid|name|all @ commands>", whoCanExecute: CommandUsage.CLIENT_AND_SERVER)]
     public void Command_Revive(CCSPlayerController? player, CommandInfo command)
     {
-        (List<CCSPlayerController> players, string targetname) = FindTarget(player, command, 1, false, false, MultipleFlags.NORMAL);
+        (List<CCSPlayerController> players, string targetname) = Find(player, command, 1, false, false, MultipleFlags.NORMAL);
 
         if (players.Count == 0)
         {
@@ -143,14 +146,14 @@ public partial class Admin : BasePlugin
 
         if (players.Count == 1)
         {
-            PrintToChatAll("css_respawn<player>", GetPlayerNameOrConsole(player), targetname);
+            PrintToChatAll("css_respawn<player>", player?.PlayerName ?? "Console", targetname);
         }
         else
         {
-            PrintToChatAll("css_respawn<multiple>", GetPlayerNameOrConsole(player), targetname);
+            PrintToChatAll("css_respawn<multiple>", player?.PlayerName ?? "Console", targetname);
         }
 
-        _ = SendDiscordMessage($"[{GetPlayerSteamIdOrConsole(player)}] {GetPlayerNameOrConsole(player)} -> css_respawn <{command.GetArg(1)}>");
+        Discord.SendMessage($"[{player?.SteamID ?? 0}] {player?.PlayerName ?? "Console"} -> css_respawn <{command.GetArg(1)}>");
     }
 
     [ConsoleCommand("css_respawn")]
@@ -158,7 +161,7 @@ public partial class Admin : BasePlugin
     [CommandHelper(minArgs: 1, "<#userid|name|all @ commands>", whoCanExecute: CommandUsage.CLIENT_AND_SERVER)]
     public void Command_Respawn(CCSPlayerController? player, CommandInfo command)
     {
-        (List<CCSPlayerController> players, string targetname) = FindTarget(player, command, 1, false, false, MultipleFlags.IGNORE_ALIVE_PLAYERS);
+        (List<CCSPlayerController> players, string targetname) = Find(player, command, 1, false, false, MultipleFlags.IGNORE_ALIVE_PLAYERS);
 
         if (players.Count == 0)
         {
@@ -172,14 +175,14 @@ public partial class Admin : BasePlugin
 
         if (players.Count == 1)
         {
-            PrintToChatAll("css_respawn<player>", GetPlayerNameOrConsole(player), targetname);
+            PrintToChatAll("css_respawn<player>", player?.PlayerName ?? "Console", targetname);
         }
         else
         {
-            PrintToChatAll("css_respawn<multiple>", GetPlayerNameOrConsole(player), targetname);
+            PrintToChatAll("css_respawn<multiple>", player?.PlayerName ?? "Console", targetname);
         }
 
-        _ = SendDiscordMessage($"[{GetPlayerSteamIdOrConsole(player)}] {GetPlayerNameOrConsole(player)} -> css_respawn <{command.GetArg(1)}>");
+        Discord.SendMessage($"[{player?.SteamID ?? 0}] {player?.PlayerName ?? "Console"} -> css_respawn <{command.GetArg(1)}>");
     }
 
     [ConsoleCommand("css_noclip")]
@@ -187,7 +190,7 @@ public partial class Admin : BasePlugin
     [CommandHelper(minArgs: 1, "<#userid|name|all @ commands> <value>", whoCanExecute: CommandUsage.CLIENT_AND_SERVER)]
     public void Command_Noclip(CCSPlayerController? player, CommandInfo command)
     {
-        (List<CCSPlayerController> players, string targetname) = FindTarget(player, command, 1, false, false, MultipleFlags.IGNORE_DEAD_PLAYERS);
+        (List<CCSPlayerController> players, string targetname) = Find(player, command, 1, false, false, MultipleFlags.IGNORE_DEAD_PLAYERS);
 
         if (players.Count == 0)
         {
@@ -214,14 +217,14 @@ public partial class Admin : BasePlugin
 
             if (players.Count == 1)
             {
-                PrintToChatAll("css_noclip<player>", GetPlayerNameOrConsole(player), targetname, value);
+                PrintToChatAll("css_noclip<player>", player?.PlayerName ?? "Console", targetname, value);
             }
             else
             {
-                PrintToChatAll("css_noclip<multiple>", GetPlayerNameOrConsole(player), targetname, value);
+                PrintToChatAll("css_noclip<multiple>", player?.PlayerName ?? "Console", targetname, value);
             }
 
-            _ = SendDiscordMessage($"[{GetPlayerSteamIdOrConsole(player)}] {GetPlayerNameOrConsole(player)} -> css_noclip <{command.GetArg(1)}> <{value}>");
+            Discord.SendMessage($"[{player?.SteamID ?? 0}] {player?.PlayerName ?? "Console"} -> css_noclip <{command.GetArg(1)}> <{value}>");
         }
         else
         {
@@ -242,9 +245,9 @@ public partial class Admin : BasePlugin
 
             targetPawn.Noclip(Convert.ToBoolean(value));
 
-            PrintToChatAll("css_noclip<player>", GetPlayerNameOrConsole(player), targetname, value);
+            PrintToChatAll("css_noclip<player>", player?.PlayerName ?? "Console", targetname, value);
 
-            _ = SendDiscordMessage($"[{GetPlayerSteamIdOrConsole(player)}] {GetPlayerNameOrConsole(player)} -> css_noclip <{command.GetArg(1)}>");
+            Discord.SendMessage($"[{player?.SteamID ?? 0}] {player?.PlayerName ?? "Console"} -> css_noclip <{command.GetArg(1)}>");
         }
     }
 
@@ -254,7 +257,7 @@ public partial class Admin : BasePlugin
     [CommandHelper(minArgs: 2, "<#userid|name|all @ commands> <weapon>", whoCanExecute: CommandUsage.CLIENT_AND_SERVER)]
     public void Command_Weapon(CCSPlayerController? player, CommandInfo command)
     {
-        (List<CCSPlayerController> players, string targetname) = FindTarget(player, command, 2, false, false, MultipleFlags.IGNORE_DEAD_PLAYERS);
+        (List<CCSPlayerController> players, string targetname) = Find(player, command, 2, false, false, MultipleFlags.IGNORE_DEAD_PLAYERS);
 
         if (players.Count == 0)
         {
@@ -276,48 +279,62 @@ public partial class Admin : BasePlugin
 
         if (players.Count == 1)
         {
-            PrintToChatAll("css_weapon<player>", GetPlayerNameOrConsole(player), targetname, weaponname);
+            PrintToChatAll("css_weapon<player>", player?.PlayerName ?? "Console", targetname, weaponname);
         }
         else
         {
-            PrintToChatAll("css_weapon<multiple>", GetPlayerNameOrConsole(player), targetname, weaponname);
+            PrintToChatAll("css_weapon<multiple>", player?.PlayerName ?? "Console", targetname, weaponname);
         }
 
-        _ = SendDiscordMessage($"[{GetPlayerSteamIdOrConsole(player)}] {GetPlayerNameOrConsole(player)} -> css_weapon <{command.GetArg(1)}> <{weaponname}>");
+        Discord.SendMessage($"[{player?.SteamID ?? 0}] {player?.PlayerName ?? "Console"} -> css_weapon <{command.GetArg(1)}> <{weaponname}>");
     }
 
     [ConsoleCommand("css_strip")]
     [RequiresPermissions("@css/cheats")]
-    [CommandHelper(minArgs: 1, "<#userid|name|all @ commands>", whoCanExecute: CommandUsage.CLIENT_AND_SERVER)]
+    [CommandHelper(minArgs: 1, "<#userid|name|all @ commands> <slots>", CommandUsage.CLIENT_AND_SERVER)]
     public void Command_Strip(CCSPlayerController? player, CommandInfo command)
     {
-        (List<CCSPlayerController> players, string targetname) = FindTarget(player, command, 1, false, true, MultipleFlags.IGNORE_DEAD_PLAYERS);
+        (List<CCSPlayerController> players, string targetname) = Find(player, command, 2, false, false, MultipleFlags.IGNORE_DEAD_PLAYERS);
 
         if (players.Count == 0)
         {
             return;
         }
 
+        string slot = "";
+
+        List<gear_slot_t> slotList = [];
+
+        foreach (char c in command.GetArg(2))
+        {
+            if (GlobalSlotDictionary.TryGetValue(c, out gear_slot_t value))
+            {
+                slotList.Add(value);
+                slot += c;
+            }
+        }
+
+        if (slotList.Count == 0)
+        {
+            slotList = [gear_slot_t.GEAR_SLOT_RIFLE, gear_slot_t.GEAR_SLOT_PISTOL, gear_slot_t.GEAR_SLOT_GRENADES, gear_slot_t.GEAR_SLOT_C4];
+            slot = "1245";
+        }
+
         foreach (CCSPlayerController target in players)
         {
-            target.RemoveWeapons();
-
-            if (Config.GiveKnifeAfterStrip)
-            {
-                target.GiveNamedItem(CsItem.Knife);
-            }
+            target.Strip(slotList);
         }
 
         if (players.Count == 1)
         {
-            PrintToChatAll("css_strip<player>", GetPlayerNameOrConsole(player), targetname);
+            PrintToChatAll("css_strip<player>", player?.PlayerName ?? "Console", targetname, slot);
         }
         else
         {
-            PrintToChatAll("css_strip<multiple>", GetPlayerNameOrConsole(player), targetname);
+            PrintToChatAll("css_strip<multiple>", player?.PlayerName ?? "Console", targetname, slot);
         }
 
-        _ = SendDiscordMessage($"[{GetPlayerSteamIdOrConsole(player)}] {GetPlayerNameOrConsole(player)} -> css_strip <{command.GetArg(1)}>");
+        Discord.SendMessage($"[{player?.SteamID ?? 0}] {player?.PlayerName ?? "Console"} -> css_strip <{command.GetArg(1)}>");
     }
 
     [ConsoleCommand("css_hp")]
@@ -325,7 +342,7 @@ public partial class Admin : BasePlugin
     [CommandHelper(minArgs: 2, "<#userid|name|all @ commands> <health>", whoCanExecute: CommandUsage.CLIENT_AND_SERVER)]
     public void Command_Hp(CCSPlayerController? player, CommandInfo command)
     {
-        (List<CCSPlayerController> players, string targetname) = FindTarget(player, command, 2, false, true, MultipleFlags.IGNORE_DEAD_PLAYERS);
+        (List<CCSPlayerController> players, string targetname) = Find(player, command, 2, false, true, MultipleFlags.IGNORE_DEAD_PLAYERS);
 
         if (players.Count == 0)
         {
@@ -356,14 +373,14 @@ public partial class Admin : BasePlugin
 
         if (players.Count == 1)
         {
-            PrintToChatAll("css_hp<player>", GetPlayerNameOrConsole(player), targetname, value);
+            PrintToChatAll("css_hp<player>", player?.PlayerName ?? "Console", targetname, value);
         }
         else
         {
-            PrintToChatAll("css_hp<multiple>", GetPlayerNameOrConsole(player), targetname, value);
+            PrintToChatAll("css_hp<multiple>", player?.PlayerName ?? "Console", targetname, value);
         }
 
-        _ = SendDiscordMessage($"[{GetPlayerSteamIdOrConsole(player)}] {GetPlayerNameOrConsole(player)} -> css_hp <{command.GetArg(1)}> <{value}>");
+        Discord.SendMessage($"[{player?.SteamID ?? 0}] {player?.PlayerName ?? "Console"} -> css_hp <{command.GetArg(1)}> <{value}>");
     }
 
     [ConsoleCommand("css_sethp")]
@@ -375,8 +392,8 @@ public partial class Admin : BasePlugin
 
         CsTeam team = arg switch
         {
-            string s when s.StartsWith("T") => CsTeam.Terrorist,
-            string s when s.StartsWith("C") => CsTeam.CounterTerrorist,
+            string s when s.ToUpper().StartsWith('T') => CsTeam.Terrorist,
+            string s when s.ToUpper().StartsWith('C') => CsTeam.CounterTerrorist,
             "2" => CsTeam.Terrorist,
             "3" => CsTeam.CounterTerrorist,
             _ => CsTeam.None
@@ -409,9 +426,9 @@ public partial class Admin : BasePlugin
             Config.TDefaultHealth = value;
         }
 
-        PrintToChatAll("css_sethp", GetPlayerNameOrConsole(player), team, value);
+        PrintToChatAll("css_sethp", player?.PlayerName ?? "Console", team, value);
 
-        _ = SendDiscordMessage($"[{GetPlayerSteamIdOrConsole(player)}] {GetPlayerNameOrConsole(player)} -> css_sethp <{team}> <{value}>");
+        Discord.SendMessage($"[{player?.SteamID ?? 0}] {player?.PlayerName ?? "Console"} -> css_sethp <{team}> <{value}>");
     }
 
     [ConsoleCommand("css_speed")]
@@ -419,7 +436,7 @@ public partial class Admin : BasePlugin
     [CommandHelper(minArgs: 2, "<#userid|name|all @ commands> <value>", whoCanExecute: CommandUsage.CLIENT_AND_SERVER)]
     public void Command_Speed(CCSPlayerController? player, CommandInfo command)
     {
-        (List<CCSPlayerController> players, string targetname) = FindTarget(player, command, 2, false, true, MultipleFlags.IGNORE_DEAD_PLAYERS);
+        (List<CCSPlayerController> players, string targetname) = Find(player, command, 2, false, true, MultipleFlags.IGNORE_DEAD_PLAYERS);
 
         if (players.Count == 0)
         {
@@ -444,14 +461,14 @@ public partial class Admin : BasePlugin
 
         if (players.Count == 1)
         {
-            PrintToChatAll("css_speed<player>", GetPlayerNameOrConsole(player), targetname, value);
+            PrintToChatAll("css_speed<player>", player?.PlayerName ?? "Console", targetname, value);
         }
         else
         {
-            PrintToChatAll("css_speed<multiple>", GetPlayerNameOrConsole(player), targetname, value);
+            PrintToChatAll("css_speed<multiple>", player?.PlayerName ?? "Console", targetname, value);
         }
 
-        _ = SendDiscordMessage($"[{GetPlayerSteamIdOrConsole(player)}] {GetPlayerNameOrConsole(player)} -> css_speed <{command.GetArg(1)}> <{value}>");
+        Discord.SendMessage($"[{player?.SteamID ?? 0}] {player?.PlayerName ?? "Console"} -> css_speed <{command.GetArg(1)}> <{value}>");
     }
 
     [ConsoleCommand("css_god")]
@@ -459,7 +476,7 @@ public partial class Admin : BasePlugin
     [CommandHelper(minArgs: 2, "<#userid|name|all @ commands> <value>", whoCanExecute: CommandUsage.CLIENT_AND_SERVER)]
     public void Command_God(CCSPlayerController? player, CommandInfo command)
     {
-        (List<CCSPlayerController> players, string targetname) = FindTarget(player, command, 2, false, true, MultipleFlags.IGNORE_DEAD_PLAYERS);
+        (List<CCSPlayerController> players, string targetname) = Find(player, command, 2, false, true, MultipleFlags.IGNORE_DEAD_PLAYERS);
 
         if (players.Count == 0)
         {
@@ -488,14 +505,14 @@ public partial class Admin : BasePlugin
 
         if (players.Count == 1)
         {
-            PrintToChatAll("css_god<player>", GetPlayerNameOrConsole(player), targetname, value);
+            PrintToChatAll("css_god<player>", player?.PlayerName ?? "Console", targetname, value);
         }
         else
         {
-            PrintToChatAll("css_god<multiple>", GetPlayerNameOrConsole(player), targetname, value);
+            PrintToChatAll("css_god<multiple>", player?.PlayerName ?? "Console", targetname, value);
         }
 
-        _ = SendDiscordMessage($"[{GetPlayerSteamIdOrConsole(player)}] {GetPlayerNameOrConsole(player)} -> css_god <{command.GetArg(1)}> <{value}>");
+        Discord.SendMessage($"[{player?.SteamID ?? 0}] {player?.PlayerName ?? "Console"} -> css_god <{command.GetArg(1)}> <{value}>");
     }
 
     [ConsoleCommand("css_team")]
@@ -503,7 +520,7 @@ public partial class Admin : BasePlugin
     [CommandHelper(minArgs: 2, "<#userid|name|all @ commands> <value>", whoCanExecute: CommandUsage.CLIENT_AND_SERVER)]
     public void Command_Team(CCSPlayerController? player, CommandInfo command)
     {
-        (List<CCSPlayerController> players, string targetname) = FindTarget(player, command, 2, false, false, MultipleFlags.NORMAL);
+        (List<CCSPlayerController> players, string targetname) = Find(player, command, 2, false, false, MultipleFlags.NORMAL);
 
         if (players.Count == 0)
         {
@@ -555,14 +572,14 @@ public partial class Admin : BasePlugin
 
         if (players.Count == 1)
         {
-            PrintToChatAll("css_team<player>", GetPlayerNameOrConsole(player), targetname, teamname);
+            PrintToChatAll("css_team<player>", player?.PlayerName ?? "Console", targetname, teamname);
         }
         else
         {
-            PrintToChatAll("css_team<multiple>", GetPlayerNameOrConsole(player), targetname, teamname);
+            PrintToChatAll("css_team<multiple>", player?.PlayerName ?? "Console", targetname, teamname);
         }
 
-        _ = SendDiscordMessage($"[{GetPlayerSteamIdOrConsole(player)}] {GetPlayerNameOrConsole(player)} -> css_team <{command.GetArg(1)}> <{teamname}>");
+        Discord.SendMessage($"[{player?.SteamID ?? 0}] {player?.PlayerName ?? "Console"} -> css_team <{command.GetArg(1)}> <{teamname}>");
     }
 
     [ConsoleCommand("css_swap")]
@@ -570,7 +587,7 @@ public partial class Admin : BasePlugin
     [CommandHelper(minArgs: 1, "<#userid|name>", whoCanExecute: CommandUsage.CLIENT_AND_SERVER)]
     public void Command_Swap(CCSPlayerController? player, CommandInfo command)
     {
-        (List<CCSPlayerController> players, string targetname) = FindTarget(player, command, 2, true, false, MultipleFlags.NORMAL);
+        (List<CCSPlayerController> players, string targetname) = Find(player, command, 2, true, false, MultipleFlags.NORMAL);
 
         if (players.Count == 0)
         {
@@ -597,14 +614,14 @@ public partial class Admin : BasePlugin
 
         if (players.Count == 1)
         {
-            PrintToChatAll("css_team<player>", GetPlayerNameOrConsole(player), targetname, teamname);
+            PrintToChatAll("css_team<player>", player?.PlayerName ?? "Console", targetname, teamname);
         }
         else
         {
-            PrintToChatAll("css_team<multiple>", GetPlayerNameOrConsole(player), targetname, teamname);
+            PrintToChatAll("css_team<multiple>", player?.PlayerName ?? "Console", targetname, teamname);
         }
 
-        _ = SendDiscordMessage($"[{GetPlayerSteamIdOrConsole(player)}] {GetPlayerNameOrConsole(player)} -> css_swap <{command.GetArg(1)}>");
+        Discord.SendMessage($"[{player?.SteamID ?? 0}] {player?.PlayerName ?? "Console"} -> css_swap <{command.GetArg(1)}>");
     }
 
     [ConsoleCommand("css_bury")]
@@ -612,7 +629,7 @@ public partial class Admin : BasePlugin
     [CommandHelper(minArgs: 1, "<#userid|name|all @ commands>", whoCanExecute: CommandUsage.CLIENT_AND_SERVER)]
     public void Command_Bury(CCSPlayerController? player, CommandInfo command)
     {
-        (List<CCSPlayerController> players, string targetname) = FindTarget(player, command, 1, false, true, MultipleFlags.IGNORE_DEAD_PLAYERS);
+        (List<CCSPlayerController> players, string targetname) = Find(player, command, 1, false, true, MultipleFlags.IGNORE_DEAD_PLAYERS);
 
         if (players.Count == 0)
         {
@@ -631,14 +648,14 @@ public partial class Admin : BasePlugin
 
         if (players.Count == 1)
         {
-            PrintToChatAll("css_bury<player>", GetPlayerNameOrConsole(player), targetname);
+            PrintToChatAll("css_bury<player>", player?.PlayerName ?? "Console", targetname);
         }
         else
         {
-            PrintToChatAll("css_bury<multiple>", GetPlayerNameOrConsole(player), targetname);
+            PrintToChatAll("css_bury<multiple>", player?.PlayerName ?? "Console", targetname);
         }
 
-        _ = SendDiscordMessage($"[{GetPlayerSteamIdOrConsole(player)}] {GetPlayerNameOrConsole(player)} -> css_bury <{command.GetArg(1)}>");
+        Discord.SendMessage($"[{player?.SteamID ?? 0}] {player?.PlayerName ?? "Console"} -> css_bury <{command.GetArg(1)}>");
     }
 
     [ConsoleCommand("css_unbury")]
@@ -646,7 +663,7 @@ public partial class Admin : BasePlugin
     [CommandHelper(minArgs: 1, "<#userid|name|all @ commands>", whoCanExecute: CommandUsage.CLIENT_AND_SERVER)]
     public void Command_UnBury(CCSPlayerController? player, CommandInfo command)
     {
-        (List<CCSPlayerController> players, string targetname) = FindTarget(player, command, 1, false, true, MultipleFlags.IGNORE_DEAD_PLAYERS);
+        (List<CCSPlayerController> players, string targetname) = Find(player, command, 1, false, true, MultipleFlags.IGNORE_DEAD_PLAYERS);
 
         if (players.Count == 0)
         {
@@ -665,14 +682,14 @@ public partial class Admin : BasePlugin
 
         if (players.Count == 1)
         {
-            PrintToChatAll("css_unbury<player>", GetPlayerNameOrConsole(player), targetname);
+            PrintToChatAll("css_unbury<player>", player?.PlayerName ?? "Console", targetname);
         }
         else
         {
-            PrintToChatAll("css_unbury<multiple>", GetPlayerNameOrConsole(player), targetname);
+            PrintToChatAll("css_unbury<multiple>", player?.PlayerName ?? "Console", targetname);
         }
 
-        _ = SendDiscordMessage($"[{GetPlayerSteamIdOrConsole(player)}] {GetPlayerNameOrConsole(player)} -> css_unbury <{command.GetArg(1)}>");
+        Discord.SendMessage($"[{player?.SteamID ?? 0}] {player?.PlayerName ?? "Console"} -> css_unbury <{command.GetArg(1)}>");
     }
 
     [ConsoleCommand("css_clean")]
@@ -682,9 +699,9 @@ public partial class Admin : BasePlugin
     {
         RemoveWeaponsOnTheGround();
 
-        PrintToChatAll("css_clean", GetPlayerNameOrConsole(player));
+        PrintToChatAll("css_clean", player?.PlayerName ?? "Console");
 
-        _ = SendDiscordMessage($"[{GetPlayerSteamIdOrConsole(player)}] {GetPlayerNameOrConsole(player)} -> css_clean");
+        Discord.SendMessage($"[{player?.SteamID ?? 0}] {player?.PlayerName ?? "Console"} -> css_clean");
     }
 
     [ConsoleCommand("css_goto")]
@@ -697,7 +714,7 @@ public partial class Admin : BasePlugin
             return;
         }
 
-        (List<CCSPlayerController> players, string targetname) = FindTarget(player, command, 1, true, false, MultipleFlags.IGNORE_DEAD_PLAYERS);
+        (List<CCSPlayerController> players, string targetname) = Find(player, command, 1, true, false, MultipleFlags.IGNORE_DEAD_PLAYERS);
 
         if (players.Count == 0)
         {
@@ -718,7 +735,7 @@ public partial class Admin : BasePlugin
 
         PrintToChatAll("css_goto", player.PlayerName, targetname);
 
-        _ = SendDiscordMessage($"[{GetPlayerSteamIdOrConsole(player)}] {GetPlayerNameOrConsole(player)} -> css_goto <{command.GetArg(1)}>");
+        Discord.SendMessage($"[{player?.SteamID ?? 0}] {player?.PlayerName ?? "Console"} -> css_goto <{command.GetArg(1)}>");
     }
 
     [ConsoleCommand("css_bring")]
@@ -731,7 +748,7 @@ public partial class Admin : BasePlugin
             return;
         }
 
-        (List<CCSPlayerController> players, string targetname) = FindTarget(player, command, 1, false, true, MultipleFlags.IGNORE_DEAD_PLAYERS);
+        (List<CCSPlayerController> players, string targetname) = Find(player, command, 1, false, true, MultipleFlags.IGNORE_DEAD_PLAYERS);
 
         if (players.Count == 0)
         {
@@ -757,14 +774,14 @@ public partial class Admin : BasePlugin
 
         if (players.Count == 1)
         {
-            PrintToChatAll("css_bring<player>", GetPlayerNameOrConsole(player), targetname);
+            PrintToChatAll("css_bring<player>", player?.PlayerName ?? "Console", targetname);
         }
         else
         {
-            PrintToChatAll("css_bring<multiple>", GetPlayerNameOrConsole(player), targetname);
+            PrintToChatAll("css_bring<multiple>", player?.PlayerName ?? "Console", targetname);
         }
 
-        _ = SendDiscordMessage($"[{GetPlayerSteamIdOrConsole(player)}] {GetPlayerNameOrConsole(player)} -> css_bring <{command.GetArg(1)}>");
+        Discord.SendMessage($"[{player?.SteamID ?? 0}] {player?.PlayerName ?? "Console"} -> css_bring <{command.GetArg(1)}>");
     }
 
     [ConsoleCommand("css_hrespawn")]
@@ -773,7 +790,7 @@ public partial class Admin : BasePlugin
     [CommandHelper(minArgs: 1, "<#userid|name> - Respawns a player in his last known death position.", whoCanExecute: CommandUsage.CLIENT_AND_SERVER)]
     public void Command_HRespawn(CCSPlayerController? player, CommandInfo command)
     {
-        (List<CCSPlayerController> players, string targetname) = FindTarget(player, command, 1, true, false, MultipleFlags.IGNORE_ALIVE_PLAYERS);
+        (List<CCSPlayerController> players, string targetname) = Find(player, command, 1, true, false, MultipleFlags.IGNORE_ALIVE_PLAYERS);
 
         if (players.Count == 0)
         {
@@ -794,9 +811,9 @@ public partial class Admin : BasePlugin
         target.Respawn();
         targetPawn.Teleport(position, targetPawn.AbsRotation, targetPawn.AbsVelocity);
 
-        PrintToChatAll("css_hrespawn", GetPlayerNameOrConsole(player), targetname);
+        PrintToChatAll("css_hrespawn", player?.PlayerName ?? "Console", targetname);
 
-        _ = SendDiscordMessage($"[{GetPlayerSteamIdOrConsole(player)}] {GetPlayerNameOrConsole(player)} -> css_hrespawn <{command.GetArg(1)}>");
+        Discord.SendMessage($"[{player?.SteamID ?? 0}] {player?.PlayerName ?? "Console"} -> css_hrespawn <{command.GetArg(1)}>");
     }
 
     [ConsoleCommand("css_glow")]
@@ -805,7 +822,7 @@ public partial class Admin : BasePlugin
     [CommandHelper(minArgs: 1, "<#userid|name|all @ commands> <color>", whoCanExecute: CommandUsage.CLIENT_ONLY)]
     public void Command_Glow(CCSPlayerController? player, CommandInfo command)
     {
-        (List<CCSPlayerController> players, string targetname) = FindTarget(player, command, 1, false, false, MultipleFlags.IGNORE_DEAD_PLAYERS);
+        (List<CCSPlayerController> players, string targetname) = Find(player, command, 1, false, false, MultipleFlags.IGNORE_DEAD_PLAYERS);
 
         if (players.Count == 0)
         {
@@ -834,19 +851,19 @@ public partial class Admin : BasePlugin
                 continue;
             }
 
-            targetPlayerPawn.Color(color);
+            targetPlayerPawn.Glow(color);
         }
 
         if (players.Count == 1)
         {
-            PrintToChatAll("css_glow<player>", GetPlayerNameOrConsole(player), targetname, Localizer[color.Name]);
+            PrintToChatAll("css_glow<player>", player?.PlayerName ?? "Console", targetname, Localizer[color.Name]);
         }
         else
         {
-            PrintToChatAll("css_glow<multiple>", GetPlayerNameOrConsole(player), targetname, Localizer[color.Name]);
+            PrintToChatAll("css_glow<multiple>", player?.PlayerName ?? "Console", targetname, Localizer[color.Name]);
         }
 
-        _ = SendDiscordMessage($"[{GetPlayerSteamIdOrConsole(player)}] {GetPlayerNameOrConsole(player)} -> css_glow <{command.GetArg(1)} <{color}>");
+        Discord.SendMessage($"[{player?.SteamID ?? 0}] {player?.PlayerName ?? "Console"} -> css_glow <{command.GetArg(1)} <{color}>");
     }
 
     [ConsoleCommand("css_beacon")]
@@ -854,7 +871,7 @@ public partial class Admin : BasePlugin
     [CommandHelper(minArgs: 1, "<#userid|name|all @ commands> <value>", whoCanExecute: CommandUsage.CLIENT_AND_SERVER)]
     public void Command_Beacon(CCSPlayerController? player, CommandInfo command)
     {
-        (List<CCSPlayerController> players, string targetname) = FindTarget(player, command, 1, false, true, MultipleFlags.IGNORE_DEAD_PLAYERS);
+        (List<CCSPlayerController> players, string targetname) = Find(player, command, 1, false, true, MultipleFlags.IGNORE_DEAD_PLAYERS);
 
         if (players.Count == 0)
         {
@@ -869,20 +886,22 @@ public partial class Admin : BasePlugin
 
         if (value > 0)
         {
-            foreach (CCSPlayerController target in players)
+            foreach (CCSPlayerController target in players.ToList())
             {
-                if (!GlobalBeaconTimer.ContainsKey(target))
+                if (!GlobalBeaconTimer.TryGetValue(target, out Timer? timer) || timer == null)
                 {
-                    CounterStrikeSharp.API.Modules.Timers.Timer timer = AddTimer(3.0f, () => target.Circle(), TimerFlags.REPEAT | TimerFlags.STOP_ON_MAPCHANGE);
-                    GlobalBeaconTimer[target] = timer;
+                    GlobalBeaconTimer.Add(target, Instance.AddTimer(3.0f, () =>
+                    {
+                        target.Beacon();
+                    }, TimerFlags.REPEAT | TimerFlags.STOP_ON_MAPCHANGE));
                 }
             }
         }
         else
         {
-            foreach (CCSPlayerController target in players.ToList())
+            foreach (CCSPlayerController target in players)
             {
-                if (GlobalBeaconTimer.TryGetValue(target, out CounterStrikeSharp.API.Modules.Timers.Timer? timer))
+                if (GlobalBeaconTimer.TryGetValue(target, out Timer? timer) && timer != null)
                 {
                     timer.Kill();
                     GlobalBeaconTimer.Remove(target);
@@ -892,13 +911,99 @@ public partial class Admin : BasePlugin
 
         if (players.Count == 1)
         {
-            PrintToChatAll("css_beacon<player>", GetPlayerNameOrConsole(player), targetname, value);
+            PrintToChatAll("css_beacon<player>", player?.PlayerName ?? "Console", targetname, value);
         }
         else
         {
-            PrintToChatAll("css_beacon<multiple>", GetPlayerNameOrConsole(player), targetname, value);
+            PrintToChatAll("css_beacon<multiple>", player?.PlayerName ?? "Console", targetname, value);
         }
 
-        _ = SendDiscordMessage($"[{GetPlayerSteamIdOrConsole(player)}] {GetPlayerNameOrConsole(player)} -> css_beacon <{command.GetArg(1)}> <{value}>");
+        Discord.SendMessage($"[{player?.SteamID ?? 0}] {player?.PlayerName ?? "Console"} -> css_beacon <{command.GetArg(1)}> <{value}>");
     }
+
+    public static Dictionary<CCSPlayerController, Timer> GlobalBeaconTimer { get; set; } = [];
+    public static Dictionary<CCSPlayerController, Vector> GlobalHRespawnPlayers { get; set; } = [];
+
+    private readonly Dictionary<string, CsItem> GlobalWeaponDictionary = new()
+    {
+        { "zeus", CsItem.Taser },
+        { "taser", CsItem.Taser },
+        { "snowball", CsItem.Snowball },
+        { "shield", CsItem.Shield },
+        { "c4", CsItem.C4 },
+        { "healthshot", CsItem.Healthshot },
+        { "breachcharge", CsItem.BreachCharge },
+        { "tablet", CsItem.Tablet },
+        { "bumpmine", CsItem.Bumpmine },
+        { "smoke", CsItem.SmokeGrenade },
+        { "smokegrenade", CsItem.SmokeGrenade },
+        { "flash", CsItem.Flashbang },
+        { "flashbang", CsItem.Flashbang },
+        { "hg", CsItem.HEGrenade },
+        { "he", CsItem.HEGrenade },
+        { "hegrenade", CsItem.HEGrenade },
+        { "molotov", CsItem.Molotov },
+        { "inc", CsItem.IncendiaryGrenade },
+        { "incgrenade", CsItem.IncendiaryGrenade },
+        { "decoy", CsItem.Decoy },
+        { "ta", CsItem.TAGrenade },
+        { "tagrenade", CsItem.TAGrenade },
+        { "frag", CsItem.Frag },
+        { "firebomb", CsItem.Firebomb },
+        { "diversion", CsItem.Diversion },
+        { "knife_t", CsItem.KnifeT },
+        { "knife", CsItem.Knife },
+        { "deagle", CsItem.Deagle },
+        { "glock", CsItem.Glock },
+        { "usp", CsItem.USPS },
+        { "usp_silencer", CsItem.USPS },
+        { "hkp2000", CsItem.HKP2000 },
+        { "elite", CsItem.Elite },
+        { "tec9", CsItem.Tec9 },
+        { "p250", CsItem.P250 },
+        { "cz75a", CsItem.CZ75 },
+        { "fiveseven", CsItem.FiveSeven },
+        { "revolver", CsItem.Revolver },
+        { "mac10", CsItem.Mac10 },
+        { "mp9", CsItem.MP9 },
+        { "mp7", CsItem.MP7 },
+        { "p90", CsItem.P90 },
+        { "mp5", CsItem.MP5SD },
+        { "mp5sd", CsItem.MP5SD },
+        { "bizon", CsItem.Bizon },
+        { "ump45", CsItem.UMP45 },
+        { "xm1014", CsItem.XM1014 },
+        { "nova", CsItem.Nova },
+        { "mag7", CsItem.MAG7 },
+        { "sawedoff", CsItem.SawedOff },
+        { "m249", CsItem.M249 },
+        { "negev", CsItem.Negev },
+        { "ak", CsItem.AK47 },
+        { "ak47", CsItem.AK47 },
+        { "m4s", CsItem.M4A1S },
+        { "m4a1s", CsItem.M4A1S },
+        { "m4a1_silencer", CsItem.M4A1S },
+        { "m4", CsItem.M4A1 },
+        { "m4a1", CsItem.M4A1 },
+        { "galil", CsItem.Galil },
+        { "galilar", CsItem.Galil },
+        { "famas", CsItem.Famas },
+        { "sg556", CsItem.SG556 },
+        { "awp", CsItem.AWP },
+        { "aug", CsItem.AUG },
+        { "ssg08", CsItem.SSG08 },
+        { "scar20", CsItem.SCAR20 },
+        { "g3sg1", CsItem.G3SG1 },
+        { "kevlar", CsItem.Kevlar },
+        { "assaultsuit", CsItem.AssaultSuit }
+    };
+
+    private readonly Dictionary<char, gear_slot_t> GlobalSlotDictionary = new()
+    {
+        {'1', gear_slot_t.GEAR_SLOT_RIFLE},
+        {'2', gear_slot_t.GEAR_SLOT_PISTOL},
+        {'3', gear_slot_t.GEAR_SLOT_KNIFE},
+        {'4', gear_slot_t.GEAR_SLOT_GRENADES},
+        {'5', gear_slot_t.GEAR_SLOT_C4}
+    };
 }

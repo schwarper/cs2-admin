@@ -3,18 +3,20 @@ using CounterStrikeSharp.API.Core;
 using CounterStrikeSharp.API.Core.Attributes.Registration;
 using CounterStrikeSharp.API.Modules.Admin;
 using CounterStrikeSharp.API.Modules.Commands;
+using CounterStrikeSharp.API.Modules.Commands.Targeting;
 using CounterStrikeSharp.API.Modules.Entities;
+using static Admin.FindTarget;
 
 namespace Admin;
 
-public partial class Admin : BasePlugin
+public partial class Admin
 {
     [ConsoleCommand("css_ban")]
     [RequiresPermissions("@css/ban")]
     [CommandHelper(minArgs: 2, "<#userid|name> <time> <reason>", whoCanExecute: CommandUsage.CLIENT_AND_SERVER)]
     public void Command_Ban(CCSPlayerController? player, CommandInfo command)
     {
-        (List<CCSPlayerController> players, string targetname) = FindTarget(player, command, 2, true, true, MultipleFlags.NORMAL);
+        (List<CCSPlayerController> players, string targetname) = Find(player, command, 2, true, true, MultipleFlags.NORMAL);
 
         if (players.Count == 0)
         {
@@ -37,12 +39,12 @@ public partial class Admin : BasePlugin
 
         string reason = command.GetArg(3) ?? Localizer["Unknown"];
 
-        SetPunishmentForPlayer(player, target, "ban", reason, time, true);
+        Task.Run(() => Database.Ban(target, player, reason, time));
 
-        KickPlayer(target, reason);
+        target.Kick();
 
-        PrintToChatAll("css_ban", GetPlayerNameOrConsole(player), targetname, time, reason);
-        _ = SendDiscordMessage($"[{GetPlayerSteamIdOrConsole(player)}] {GetPlayerNameOrConsole(player)} -> css_ban <{targetname}> <{time}> <{reason}>");
+        Library.PrintToChatAll("css_ban", player?.PlayerName ?? "Console", targetname, time, reason);
+        Discord.SendMessage($"[{player?.SteamID ?? 0}] {player?.PlayerName ?? "Console"} -> css_ban <{targetname}> <{time}> <{reason}>");
     }
 
     [ConsoleCommand("css_unban")]
@@ -63,10 +65,10 @@ public partial class Admin : BasePlugin
             return;
         }
 
-        RemovePunishment(steamId.SteamId64, "ban", true);
+        Task.Run(() => Database.Unban(steamId.SteamId64, player));
 
-        PrintToChatAll("css_unban", GetPlayerNameOrConsole(player), steamid);
-        _ = SendDiscordMessage($"[{GetPlayerSteamIdOrConsole(player)}] {GetPlayerNameOrConsole(player)} -> css_unban <{steamid}>");
+        Library.PrintToChatAll("css_unban", player?.PlayerName ?? "Console", steamid);
+        Discord.SendMessage($"[{player?.SteamID ?? 0}] {player?.PlayerName ?? "Console"} -> css_unban <{steamid}>");
     }
 
     [ConsoleCommand("css_addban")]
@@ -103,21 +105,20 @@ public partial class Admin : BasePlugin
 
         CCSPlayerController? target = Utilities.GetPlayerFromSteamId(steamId.SteamId64);
 
-        if (target != null && target.Valid())
+        if (target != null)
         {
-            SetPunishmentForPlayer(player, target, "ban", reason, time, true);
+            Task.Run(() => Database.Ban(target, player, reason, time));
+            target.Kick();
 
-            KickPlayer(target, reason);
-
-            PrintToChatAll("css_ban", GetPlayerNameOrConsole(player), target.PlayerName, time, reason);
-            _ = SendDiscordMessage($"[{GetPlayerSteamIdOrConsole(player)}] {GetPlayerNameOrConsole(player)} -> css_addban <{target.PlayerName}> <{time}> <{reason}>");
+            Library.PrintToChatAll("css_ban", player?.PlayerName ?? "Console", target.PlayerName, time, reason);
+            Discord.SendMessage($"[{player?.SteamID ?? 0}] {player?.PlayerName ?? "Console"} -> css_addban <{target.PlayerName}> <{time}> <{reason}>");
         }
         else
         {
-            AddPunishmentForPlayer(player, steamId.SteamId64, reason, time, true);
+            Task.Run(() => Database.Ban(steamId.SteamId64, player, reason, time));
 
-            PrintToChatAll("css_addban", GetPlayerNameOrConsole(player), steamId.SteamId64, time, reason);
-            _ = SendDiscordMessage($"[{GetPlayerSteamIdOrConsole(player)}] {GetPlayerNameOrConsole(player)} -> css_addban <{steamId.SteamId64}> <{time}> <{reason}>");
+            Library.PrintToChatAll("css_addban", player?.PlayerName ?? "Console", steamId.SteamId64, time, reason);
+            Discord.SendMessage($"[{player?.SteamID ?? 0}] {player?.PlayerName ?? "Console"} -> css_addban <{steamId.SteamId64}> <{time}> <{reason}>");
         }
     }
 }
