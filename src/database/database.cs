@@ -1,9 +1,6 @@
-using CounterStrikeSharp.API;
 using CounterStrikeSharp.API.Core;
-using CounterStrikeSharp.API.Modules.Entities;
 using Dapper;
 using MySqlConnector;
-using static Admin.Admin;
 
 namespace Admin;
 
@@ -17,8 +14,6 @@ public static class Database
         await connection.OpenAsync();
         return connection;
     }
-
-
     public static void ExecuteAsync(string query, object? parameters)
     {
         Task.Run(async () =>
@@ -52,16 +47,16 @@ public static class Database
         {
             await connection.ExecuteAsync(@"
                 CREATE TABLE IF NOT EXISTS baseban (
-                        id INT NOT NULL AUTO_INCREMENT,
-                        steamid BIGINT UNSIGNED NOT NULL,
-                        duration INT NOT NULL,
-                        end TIMESTAMP NOT NULL,
-                        created TIMESTAMP NOT NULL,
-                        PRIMARY KEY (id),
-                        UNIQUE KEY id (id),
-                        UNIQUE KEY stSteamIDstSteamID
-                );
-            ");
+                    id INT NOT NULL AUTO_INCREMENT,
+                    steamid BIGINT UNSIGNED NOT NULL,
+                    duration INT NOT NULL,
+                    end TIMESTAMP NOT NULL,
+                    created TIMESTAMP NOT NULL,
+                    PRIMARY KEY (id),
+                    UNIQUE KEY id (id),
+                    UNIQUE KEY steamid (steamid)
+            );
+            ", transaction: transaction);
 
             await connection.ExecuteAsync(@"
                 CREATE TABLE IF NOT EXISTS baseban_log (
@@ -74,7 +69,7 @@ public static class Database
                         duration INT,
                         date TIMESTAMP NOT NULL
                 );
-            ");
+            ", transaction: transaction);
 
             await transaction.CommitAsync();
         }
@@ -89,7 +84,7 @@ public static class Database
     {
         using MySqlConnection connection = await ConnectAsync();
 
-        var results = await connection.QueryAsync("SELECT * FROM baseban WHERE steamid = @steamid;", new { steamid });
+        IEnumerable<dynamic> results = await connection.QueryAsync("SELECT * FROM baseban WHERE steamid = @steamid;", new { steamid });
 
         return results.Any();
     }

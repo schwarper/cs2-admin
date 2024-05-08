@@ -4,9 +4,9 @@ using CounterStrikeSharp.API.Modules.Entities;
 using CounterStrikeSharp.API.Modules.Utils;
 using System.Drawing;
 using static Admin.Admin;
+using static CounterStrikeSharp.API.Core.Listeners;
 using Timer = CounterStrikeSharp.API.Modules.Timers.Timer;
 using Vector = CounterStrikeSharp.API.Modules.Utils.Vector;
-using static CounterStrikeSharp.API.Core.Listeners;
 
 namespace Admin;
 

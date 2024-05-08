@@ -3,7 +3,6 @@ using CounterStrikeSharp.API.Core;
 using CounterStrikeSharp.API.Core.Attributes.Registration;
 using CounterStrikeSharp.API.Modules.Admin;
 using CounterStrikeSharp.API.Modules.Commands;
-using CounterStrikeSharp.API.Modules.Entities.Constants;
 using CounterStrikeSharp.API.Modules.Menu;
 using CounterStrikeSharp.API.Modules.Timers;
 using static Admin.Library;
@@ -90,7 +89,7 @@ public partial class Admin
 
         ResetVote();
 
-        foreach (var target in Utilities.GetPlayers())
+        foreach (CCSPlayerController target in Utilities.GetPlayers())
         {
             MenuManager.CloseActiveMenu(target);
         }

@@ -26,4 +26,4 @@ public static class Discord
 
         _client.SendMessageAsync(message);
     }
-}   
+}

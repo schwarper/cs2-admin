@@ -150,6 +150,10 @@ public static class PlayerUtils
                 continue;
             }
 
+            /*
+             * TO DO
+             * NEED T0 TEST
+             * NEED TO FIND ANOTHER WAY
             if (slotList.Any(slot => slot == _weapon.GearSlot))
             {
                 player.PlayerPawn.Value.WeaponServices.ActiveWeapon.Raw = myweapon.Raw;
@@ -158,7 +162,7 @@ public static class PlayerUtils
                 weapon.Remove();
             }
 
-            /*
+            
             if (slotList.Any(slot => slot == _weapon.GearSlot))
             {
                 weapon.Remove();
