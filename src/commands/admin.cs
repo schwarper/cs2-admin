@@ -8,8 +8,10 @@ using Newtonsoft.Json.Linq;
 
 namespace Admin;
 
-public partial class Admin : BasePlugin
+public partial class Admin
 {
+    public readonly string GlobalAdminsFilename = $"{Server.GameDirectory}/csgo/addons/counterstrikesharp/configs/admins.json";
+
     [ConsoleCommand("css_addadmin")]
     [RequiresPermissions("@css/ban")]
     [CommandHelper(minArgs: 2, "<steamid> <group> <immunity>", whoCanExecute: CommandUsage.CLIENT_AND_SERVER)]
