@@ -150,6 +150,14 @@ public static class PlayerUtils
                 continue;
             }
 
+            if (slotList.Any(slot => slot == _weapon.GearSlot))
+            {
+                player.PlayerPawn.Value.WeaponServices.ActiveWeapon.Raw = myweapon.Raw;
+
+                player.DropActiveWeapon();
+                weapon.Remove();
+            }
+
             /*
             if (slotList.Any(slot => slot == _weapon.GearSlot))
             {

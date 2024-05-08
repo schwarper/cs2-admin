@@ -3,6 +3,7 @@ using CounterStrikeSharp.API.Core;
 using CounterStrikeSharp.API.Core.Attributes.Registration;
 using CounterStrikeSharp.API.Modules.Admin;
 using CounterStrikeSharp.API.Modules.Commands;
+using CounterStrikeSharp.API.Modules.Entities.Constants;
 using CounterStrikeSharp.API.Modules.Menu;
 using CounterStrikeSharp.API.Modules.Timers;
 using static Admin.Library;
@@ -13,7 +14,7 @@ public partial class Admin
 {
     private bool GlobalVoteInProgress = false;
     private readonly Dictionary<string, int> GlobalVoteAnswers = [];
-    private readonly HashSet<CCSPlayerController> GlobalVotePlayers = [];
+    private readonly Dictionary<CCSPlayerController, string> GlobalVotePlayers = [];
 
     [ConsoleCommand("css_vote")]
     [RequiresPermissions("@css/generic")]
@@ -35,9 +36,7 @@ public partial class Admin
             options.Add(command.GetArg(i));
         }
 
-        GlobalVoteInProgress = true;
-        GlobalVoteAnswers.Clear();
-        GlobalVotePlayers.Clear();
+        ResetVote();
 
         PrintToChatAll("css_vote", player?.PlayerName ?? "Console", question);
         Discord.SendMessage($"[{player?.SteamID ?? 0}] {player?.PlayerName ?? "Console"} -> css_vote {options[0]}");
@@ -46,6 +45,57 @@ public partial class Admin
         menu.OpenToAll();
 
         AddTimer(15.0f, () => EndVote(question), TimerFlags.STOP_ON_MAPCHANGE);
+    }
+
+    [ConsoleCommand("css_revote")]
+    public void Command_Revote(CCSPlayerController? player, CommandInfo command)
+    {
+        if (player == null)
+        {
+            return;
+        }
+
+        if (!GlobalVoteInProgress)
+        {
+            command.ReplyToCommand(Config.Tag + Localizer["Vote is not in progress"]);
+            return;
+        }
+
+        if (!GlobalVotePlayers.TryGetValue(player, out string? value) || string.IsNullOrEmpty(value))
+        {
+            command.ReplyToCommand(Config.Tag + Localizer["You haven't voted yet"]);
+            return;
+        }
+
+        GlobalVoteAnswers[value]--;
+        GlobalVotePlayers.Remove(player);
+
+        command.ReplyToCommand(Config.Tag + Localizer["css_revote"]);
+    }
+
+    [ConsoleCommand("css_cancelvote")]
+    [RequiresPermissions("@css/generic")]
+    public void Command_Cancelvote(CCSPlayerController? player, CommandInfo command)
+    {
+        if (player == null)
+        {
+            return;
+        }
+
+        if (!GlobalVoteInProgress)
+        {
+            command.ReplyToCommand(Config.Tag + Localizer["Vote is not in progress"]);
+            return;
+        }
+
+        ResetVote();
+
+        foreach (var target in Utilities.GetPlayers())
+        {
+            MenuManager.CloseActiveMenu(target);
+        }
+
+        PrintToChatAll("css_cancelvote", player.PlayerName);
     }
 
     private CenterHtmlMenu VoteMenu(string question, List<string> options)
@@ -61,8 +111,9 @@ public partial class Admin
 
             menu.AddMenuOption(Localizer["css_vote<optiontext>", option, 0], (p, o) =>
             {
-                if (GlobalVoteInProgress && GlobalVotePlayers.Add(p))
+                if (GlobalVoteInProgress && !GlobalVotePlayers.ContainsKey(p))
                 {
+                    GlobalVotePlayers.Add(p, option);
                     GlobalVoteAnswers[option]++;
                     o.Text = Localizer["css_vote<optiontext>", option, GlobalVoteAnswers[option]];
                 }
@@ -90,5 +141,12 @@ public partial class Admin
         {
             MenuManager.CloseActiveMenu(target);
         }
+    }
+
+    private void ResetVote()
+    {
+        GlobalVoteInProgress = false;
+        GlobalVoteAnswers.Clear();
+        GlobalVotePlayers.Clear();
     }
 }

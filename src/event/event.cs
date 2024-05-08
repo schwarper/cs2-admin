@@ -6,6 +6,7 @@ using System.Drawing;
 using static Admin.Admin;
 using Timer = CounterStrikeSharp.API.Modules.Timers.Timer;
 using Vector = CounterStrikeSharp.API.Modules.Utils.Vector;
+using static CounterStrikeSharp.API.Core.Listeners;
 
 namespace Admin;
 
@@ -17,7 +18,7 @@ public static class Event
         Instance.RegisterEventHandler<EventPlayerDeath>(OnPlayerDeath);
         Instance.RegisterEventHandler<EventPlayerDisconnect>(OnPlayerDisconnect);
 
-        Instance.RegisterListener<Listeners.OnClientAuthorized>(OnClientAuthorized);
+        Instance.RegisterListener<OnClientAuthorized>(OnClientAuthorized);
     }
 
     public static void Unload()
