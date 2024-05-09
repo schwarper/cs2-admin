@@ -27,7 +27,7 @@ public partial class Admin
 
         if (!AdminManager.CanPlayerTarget(player, target))
         {
-            command.ReplyToCommand(Localizer["Prefix"] + Localizer["You cannot target"]);
+            command.ReplyToCommand(Config.Tag + Localizer["You cannot target"]);
             return;
         }
 
@@ -59,7 +59,7 @@ public partial class Admin
                 return;
             }
 
-            command.ReplyToCommand(Localizer["Prefix"] + Localizer["Map is not exist"]);
+            command.ReplyToCommand(Config.Tag + Localizer["Map is not exist"]);
             return;
         }
 
@@ -149,13 +149,13 @@ public partial class Admin
 
         if (cvar == null)
         {
-            command.ReplyToCommand(Localizer["Prefix"] + Localizer["Cvar is not found", cvarname]);
+            command.ReplyToCommand(Config.Tag + Localizer["Cvar is not found", cvarname]);
             return;
         }
 
         if (cvar.Name.Equals("sv_cheats") && !AdminManager.PlayerHasPermissions(player, "@css/cheats"))
         {
-            command.ReplyToCommand(Localizer["Prefix"] + Localizer["You don't have permissions to change sv_cheats"]);
+            command.ReplyToCommand(Config.Tag + Localizer["You don't have permissions to change sv_cheats"]);
             return;
         }
 
@@ -165,7 +165,7 @@ public partial class Admin
         {
             value = GetCvarStringValue(cvar);
 
-            command.ReplyToCommand(Localizer["Prefix"] + Localizer["Cvar value", cvar.Name, value]);
+            command.ReplyToCommand(Config.Tag + Localizer["Cvar value", cvar.Name, value]);
             return;
         }
 

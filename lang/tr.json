@@ -48,6 +48,14 @@
 	"css_asay": "{red}[ADMINLER] {blue}{0}{white}: {green}{1}",
 	"css_psay": "{white}[{blue}{0} {white}-> {blue}{1}{white}]: {green}{2}",
 
+	"Already temp muted": "{white}Bu kişinin mikrofonu zaten susturulmuş.",
+	"Already not temp muted": "{white}Bu kişinin mikrofonu zaten susturulmamış.",
+	"Already temp gagged": "{white}Bu kişinin yazısı zaten susturulmuş.",
+	"Already not temp gagged": "{white}Bu kişinin yazısı zaten susturulmamış.",
+
+	"You are gagged": "{white}Geçici olarak yazı yazamazsınız.",
+	"You are gagged temp": "{white}Geçici olarak yazı yazamazsınız. \u2029 {white}Yasaklanma süresi: {blue}{0} {white}dakika \u2029 {white}Yasaklanma atıldığı gün: {blue}{1} \u2029 {white}Yasaklanmanın kalkacağı gün: {blue}{2}",
+
 	"css_mute<player>": "{blue}{0}{white}, {green}{1} {white}adlı oyuncunun mikrofonunu susturdu.",
 	"css_mute<multiple>": "{blue}{0}{white}, {green}{1}ın {white}mikrofonunu susturdu.",
 	"css_unmute<player>": "{blue}{0}{white}, {green}{1} {white}adlı oyuncunun mikrofon susturmasını kaldırdı.",
@@ -60,10 +68,12 @@
 	"css_silence<multiple>": "{blue}{0}{white}, {green}{1}ın {white}mikrofon ve yazısını susturdu.",
 	"css_unsilence<player>": "{blue}{0}{white}, {green}{1} {white}adlı oyuncunun mikrofon ve yazı yazma yasağını kaldırdı.",
 	"css_unsilence<multiple>": "{blue}{0}{white}, {green}{1}ın {white}mikrofon ve yazı yazma yasağını kaldırdı.",
-	"css_smute": "{blue}{0}{white}, {green}{1} {white}adlı oyuncunun mikrofonunu {green}{2} dakika {white}susturdu.",
-	"css_sunmute": "{blue}{0}{white}, {green}{1} {white}adlı oyuncunun süreli mikrofon susturmasını kaldırdı.",
-	"css_sgag": "{blue}{0}{white}, {green}{1} {white}adlı oyuncunun yazı yazmasını {green}{2} dakika {white}susturdu.",
-	"css_sungag": "{blue}{0}{white}, {green}{1} {white}adlı oyuncunun süreli yazı yazma yasağını kaldırdı.",
+	"css_tmute": "{blue}{0}{white}, {green}{1} {white}adlı oyuncunun mikrofonunu {green}{2} dakika {white}susturdu.",
+	"css_tunmute": "{blue}{0}{white}, {green}{1} {white}adlı oyuncunun süreli mikrofon susturmasını kaldırdı.",
+	"css_tgag": "{blue}{0}{white}, {green}{1} {white}adlı oyuncunun yazı yazmasını {green}{2} dakika {white}susturdu.",
+	"css_tungag": "{blue}{0}{white}, {green}{1} {white}adlı oyuncunun süreli yazı yazma yasağını kaldırdı.",
+	"css_tsilence": "{blue}{0}{white}, {green}{1} {white}adlı oyuncunun yazı yazmasını ve mikrofonunu {green}{2} dakika {white}susturdu.",
+	"css_tunsilence": "{blue}{0}{white}, {green}{1} {white}adlı oyuncunun süreli yazı yazma ve mikrofon susturmasını kaldırdı.",
 
 	"css_kick": "{blue}{0}{white}, {green}{1} {white}adlı oyuncuyu {green}{2}{white}nedeniyle sunucudan attı.",
 	"css_map": "{blue}{0}{white}, haritayı değiştirdi. {green}{1} {white}açılıyor.",

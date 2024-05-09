@@ -26,13 +26,13 @@ public partial class Admin
 
         if (!AdminManager.CanPlayerTarget(player, target))
         {
-            command.ReplyToCommand(Localizer["Prefix"] + Localizer["You cannot target"]);
+            command.ReplyToCommand(Config.Tag + Localizer["You cannot target"]);
             return;
         }
 
         if (!int.TryParse(command.GetArg(2), out int time))
         {
-            command.ReplyToCommand(Localizer["Prefix"] + Localizer["Must be an integer"]);
+            command.ReplyToCommand(Config.Tag + Localizer["Must be an integer"]);
             return;
         }
 
@@ -60,7 +60,7 @@ public partial class Admin
 
         if (!SteamID.TryParse(steamid, out SteamID? steamId) || steamId == null)
         {
-            command.ReplyToCommand(Localizer["Prefix"] + Localizer["Must be a steamid"]);
+            command.ReplyToCommand(Config.Tag + Localizer["Must be a steamid"]);
             return;
         }
 
@@ -84,19 +84,19 @@ public partial class Admin
 
         if (!SteamID.TryParse(steamid, out SteamID? steamId) || steamId == null)
         {
-            command.ReplyToCommand(Localizer["Prefix"] + Localizer["Must be a steamid"]);
+            command.ReplyToCommand(Config.Tag + Localizer["Must be a steamid"]);
             return;
         }
 
         if (AdminManager.GetPlayerImmunity(player) < AdminManager.GetPlayerImmunity(steamId))
         {
-            command.ReplyToCommand(Localizer["Prefix"] + Localizer["You cannot target"]);
+            command.ReplyToCommand(Config.Tag + Localizer["You cannot target"]);
             return;
         }
 
         if (!int.TryParse(command.GetArg(2), out int time))
         {
-            command.ReplyToCommand(Localizer["Prefix"] + Localizer["Must be an integer"]);
+            command.ReplyToCommand(Config.Tag + Localizer["Must be an integer"]);
             return;
         }
 

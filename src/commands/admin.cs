@@ -21,7 +21,7 @@ public partial class Admin
 
         if (!SteamID.TryParse(steamid, out SteamID? steamId) || steamId == null)
         {
-            command.ReplyToCommand(Localizer["Prefix"] + Localizer["Must be a steamid"]);
+            command.ReplyToCommand(Config.Tag + Localizer["Must be a steamid"]);
             return;
         }
 
@@ -51,7 +51,7 @@ public partial class Admin
 
                 if (jsonObject[steamid] != null)
                 {
-                    command.ReplyToCommand(Localizer["Prefix"] + Localizer["css_adminisexist"]);
+                    command.ReplyToCommand(Config.Tag + Localizer["css_adminisexist"]);
                     return;
                 }
 
@@ -73,7 +73,7 @@ public partial class Admin
 
             Server.ExecuteCommand("css_admins_reload");
 
-            command.ReplyToCommand(Localizer["Prefix"] + Localizer["css_addadmin"]);
+            command.ReplyToCommand(Config.Tag + Localizer["css_addadmin"]);
         }
         catch (Exception ex)
         {
@@ -90,7 +90,7 @@ public partial class Admin
 
         if (!SteamID.TryParse(steamid, out SteamID? steamId) || steamId == null)
         {
-            command.ReplyToCommand(Localizer["Prefix"] + Localizer["Must be a steamid"]);
+            command.ReplyToCommand(Config.Tag + Localizer["Must be a steamid"]);
             return;
         }
 
@@ -112,11 +112,11 @@ public partial class Admin
 
                     Server.ExecuteCommand("css_admins_reload");
 
-                    command.ReplyToCommand(Localizer["Prefix"] + Localizer["css_removeadmin"]);
+                    command.ReplyToCommand(Config.Tag + Localizer["css_removeadmin"]);
                 }
                 else
                 {
-                    command.ReplyToCommand(Localizer["Prefix"] + Localizer["css_adminnotfound"]);
+                    command.ReplyToCommand(Config.Tag + Localizer["css_adminnotfound"]);
                 }
             }
             catch (Exception ex)
