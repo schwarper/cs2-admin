@@ -13,6 +13,7 @@ using static Admin.Library;
 using Timer = CounterStrikeSharp.API.Modules.Timers.Timer;
 
 namespace Admin;
+
 public partial class Admin : BasePlugin
 {
     [ConsoleCommand("css_freeze")]
@@ -108,7 +109,7 @@ public partial class Admin : BasePlugin
 
         if (!int.TryParse(command.GetArg(1), out int value))
         {
-            command.ReplyToCommand(Localizer["Prefix"] + Localizer["Must be an integer"]);
+            command.ReplyToCommand(Config.Tag + Localizer["Must be an integer"]);
             return;
         }
 
@@ -230,7 +231,7 @@ public partial class Admin : BasePlugin
         {
             if (players.Count != 1)
             {
-                command.ReplyToCommand(Localizer["Prefix"] + Localizer["Must be an integer"]);
+                command.ReplyToCommand(Config.Tag + Localizer["Must be an integer"]);
                 return;
             }
 
@@ -268,7 +269,7 @@ public partial class Admin : BasePlugin
 
         if (!GlobalWeaponDictionary.TryGetValue(weapon, out CsItem weaponname))
         {
-            command.ReplyToCommand(Localizer["Prefix"] + Localizer["Weapon is not exist"]);
+            command.ReplyToCommand(Config.Tag + Localizer["Weapon is not exist"]);
             return;
         }
 
@@ -351,13 +352,13 @@ public partial class Admin : BasePlugin
 
         if (!int.TryParse(command.GetArg(2), out int value))
         {
-            command.ReplyToCommand(Localizer["Prefix"] + Localizer["Must be an integer"]);
+            command.ReplyToCommand(Config.Tag + Localizer["Must be an integer"]);
             return;
         }
 
         if (value <= 0)
         {
-            command.ReplyToCommand(Localizer["Must be higher than zero"]);
+            command.ReplyToCommand(Config.Tag + Localizer["Must be higher than zero"]);
             return;
         }
 
@@ -401,13 +402,13 @@ public partial class Admin : BasePlugin
 
         if (team == CsTeam.None)
         {
-            command.ReplyToCommand(Localizer["Prefix"] + Localizer["No team exists"]);
+            command.ReplyToCommand(Config.Tag + Localizer["No team exists"]);
             return;
         }
 
         if (!int.TryParse(command.GetArg(2), out int value))
         {
-            command.ReplyToCommand(Localizer["Prefix"] + Localizer["Must be an integer"]);
+            command.ReplyToCommand(Config.Tag + Localizer["Must be an integer"]);
             return;
         }
 
@@ -445,7 +446,7 @@ public partial class Admin : BasePlugin
 
         if (!float.TryParse(command.GetArg(2), out float value))
         {
-            command.ReplyToCommand(Localizer["Prefix"] + Localizer["Must be an integer"]);
+            command.ReplyToCommand(Config.Tag + Localizer["Must be an integer"]);
             return;
         }
 
@@ -485,7 +486,7 @@ public partial class Admin : BasePlugin
 
         if (!int.TryParse(command.GetArg(2), out int value))
         {
-            command.ReplyToCommand(Localizer["Prefix"] + Localizer["Must be an integer"]);
+            command.ReplyToCommand(Config.Tag + Localizer["Must be an integer"]);
             return;
         }
 
@@ -806,10 +807,10 @@ public partial class Admin : BasePlugin
             return;
         }
 
-        Vector position = GlobalHRespawnPlayers.First(p => p.Key == target).Value;
+        var position = GlobalHRespawnPlayers.First(p => p.Key == target).Value;
 
         target.Respawn();
-        targetPawn.Teleport(position, targetPawn.AbsRotation, targetPawn.AbsVelocity);
+        targetPawn.Teleport(new Vector(position.X, position.Y, position.Z), targetPawn.AbsRotation, targetPawn.AbsVelocity);
 
         PrintToChatAll("css_hrespawn", player?.PlayerName ?? "Console", targetname);
 
@@ -837,7 +838,7 @@ public partial class Admin : BasePlugin
         {
             if (!Enum.TryParse(colorstring, true, out KnownColor knownColor))
             {
-                command.ReplyToCommand(Localizer["Prefix"] + Localizer["No color exists"]);
+                command.ReplyToCommand(Config.Tag + Localizer["No color exists"]);
                 return;
             }
 
@@ -880,7 +881,7 @@ public partial class Admin : BasePlugin
 
         if (!int.TryParse(command.GetArg(2), out int value))
         {
-            command.ReplyToCommand(Localizer["Prefix"] + Localizer["Must be an integer"]);
+            command.ReplyToCommand(Config.Tag + Localizer["Must be an integer"]);
             return;
         }
 
@@ -890,6 +891,8 @@ public partial class Admin : BasePlugin
             {
                 if (!GlobalBeaconTimer.TryGetValue(target, out Timer? timer) || timer == null)
                 {
+                    target.Beacon();
+
                     GlobalBeaconTimer.Add(target, Instance.AddTimer(3.0f, () =>
                     {
                         target.Beacon();
@@ -922,7 +925,7 @@ public partial class Admin : BasePlugin
     }
 
     public static Dictionary<CCSPlayerController, Timer> GlobalBeaconTimer { get; set; } = [];
-    public static Dictionary<CCSPlayerController, Vector> GlobalHRespawnPlayers { get; set; } = [];
+    public static Dictionary<CCSPlayerController, (float X, float Y, float Z)> GlobalHRespawnPlayers { get; set; } = [];
 
     private readonly Dictionary<string, CsItem> GlobalWeaponDictionary = new()
     {

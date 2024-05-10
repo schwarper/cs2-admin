@@ -1,5 +1,6 @@
 using CounterStrikeSharp.API;
 using CounterStrikeSharp.API.Core;
+using CounterStrikeSharp.API.Modules.Commands;
 using CounterStrikeSharp.API.Modules.Entities;
 using CounterStrikeSharp.API.Modules.Utils;
 using System.Drawing;
@@ -14,16 +15,47 @@ public static class Event
 {
     public static void Load()
     {
+        Instance.AddCommandListener("say", OnSay, HookMode.Pre);
+        Instance.AddCommandListener("say_team", OnSay, HookMode.Pre);
+
         Instance.RegisterEventHandler<EventPlayerSpawn>(OnPlayerSpawn);
         Instance.RegisterEventHandler<EventPlayerDeath>(OnPlayerDeath);
         Instance.RegisterEventHandler<EventPlayerDisconnect>(OnPlayerDisconnect);
+        Instance.RegisterEventHandler<EventRoundStart>(OnRoundStart);
 
         Instance.RegisterListener<OnClientAuthorized>(OnClientAuthorized);
+        
     }
 
     public static void Unload()
     {
-        Instance.RemoveListener<Listeners.OnClientAuthorized>(OnClientAuthorized);
+        Instance.RemoveCommandListener("say", OnSay, HookMode.Pre);
+        Instance.RemoveCommandListener("say_team", OnSay, HookMode.Pre);
+        Instance.RemoveListener<OnClientAuthorized>(OnClientAuthorized);
+    }
+
+    public static HookResult OnSay(CCSPlayerController? player, CommandInfo command)
+    {
+        if (player == null)
+        {
+            return HookResult.Continue;
+        }
+
+        if (PlayerGagList.Contains(player.SteamID))
+        {
+            player.PrintToChat(Instance.Config.Tag + Instance.Localizer["You are gagged"]);
+            return HookResult.Handled;
+        }
+
+        var punish = PlayerTemporaryPunishList.FirstOrDefault(p => p.SteamID == player.SteamID && p.PunishName == "GAG");
+
+        if (punish != null)
+        {
+            player.PrintToChat(Instance.Config.Tag + Instance.Localizer["You are gagged temp", punish.Duration, punish.Created, punish.End]);
+            return HookResult.Handled;
+        }
+
+        return HookResult.Continue;
     }
 
     public static HookResult OnPlayerSpawn(EventPlayerSpawn @event, GameEventInfo info)
@@ -51,9 +83,10 @@ public static class Event
             }
 
             player.PlayerPawn.Value?.Glow(Color.White);
-        });
 
-        GlobalHRespawnPlayers.Remove(player);
+            GlobalHRespawnPlayers.Remove(player);
+            Server.PrintToChatAll($"SPAWN REMOVEDD");
+        });
 
         return HookResult.Continue;
     }
@@ -75,21 +108,25 @@ public static class Event
             return HookResult.Continue;
         }
 
-        GlobalHRespawnPlayers.Add(player, absOrigin);
+        GlobalHRespawnPlayers.Add(player, (absOrigin.X, absOrigin.Y, absOrigin.Z));
+
+        Server.PrintToChatAll($"DEATH {absOrigin}");
 
         return HookResult.Continue;
     }
 
     public static async void OnClientAuthorized(int slot, SteamID steamId)
     {
-        if (await Database.IsBanned(steamId.SteamId64))
+        var player = Utilities.GetPlayerFromSlot(slot);
+
+        if (player == null || player.IsBot)
         {
             return;
         }
 
-        int? userid = Utilities.GetPlayerFromSlot(slot)?.UserId;
+        var userid = player.UserId;
 
-        if (userid == null)
+        if (!await Database.IsBanned(steamId.SteamId64))
         {
             return;
         }
@@ -109,7 +146,15 @@ public static class Event
         DeleteBeaconTimer(player);
 
         GlobalHRespawnPlayers.Remove(player);
+        PlayerGagList.Remove(player.SteamID);
+        PlayerTemporaryPunishList.RemoveAll(p => p.SteamID == player.SteamID);
 
+        return HookResult.Continue;
+    }
+    
+    public static HookResult OnRoundStart(EventRoundStart @event, GameEventInfo info)
+    {
+        PlayerGagList.Clear();
         return HookResult.Continue;
     }
 

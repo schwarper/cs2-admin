@@ -22,7 +22,7 @@ public partial class Admin
     {
         if (GlobalVoteInProgress)
         {
-            command.ReplyToCommand(Localizer["Prefix"] + Localizer["css_vote<inprogress>"]);
+            command.ReplyToCommand(Config.Tag + Localizer["css_vote<inprogress>"]);
             return;
         }
 
@@ -42,6 +42,8 @@ public partial class Admin
 
         CenterHtmlMenu menu = VoteMenu(question, options);
         menu.OpenToAll();
+
+        GlobalVoteInProgress = true;
 
         AddTimer(15.0f, () => EndVote(question), TimerFlags.STOP_ON_MAPCHANGE);
     }
@@ -104,17 +106,21 @@ public partial class Admin
             PostSelectAction = PostSelectAction.Nothing
         };
 
+        int i = 0;
         foreach (string option in options)
         {
-            GlobalVoteAnswers.Add(option, 0);
+            var newoption = option + i++;
+
+            GlobalVoteAnswers.Add(newoption, 0);
 
             menu.AddMenuOption(Localizer["css_vote<optiontext>", option, 0], (p, o) =>
             {
                 if (GlobalVoteInProgress && !GlobalVotePlayers.ContainsKey(p))
                 {
-                    GlobalVotePlayers.Add(p, option);
-                    GlobalVoteAnswers[option]++;
-                    o.Text = Localizer["css_vote<optiontext>", option, GlobalVoteAnswers[option]];
+                    GlobalVotePlayers.Add(p, newoption);
+                    GlobalVoteAnswers[newoption]++;
+
+                    o.Text = Localizer["css_vote<optiontext>", option, GlobalVoteAnswers[newoption]];
                 }
             });
         }

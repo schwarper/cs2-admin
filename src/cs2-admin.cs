@@ -1,5 +1,6 @@
 using CounterStrikeSharp.API.Core;
 using CounterStrikeSharp.API.Core.Translations;
+using CounterStrikeSharp.API.Modules.Timers;
 
 namespace Admin;
 
@@ -14,6 +15,9 @@ public partial class Admin : BasePlugin, IPluginConfig<AdminConfig>
         Instance = this;
 
         Event.Load();
+
+        AddTimer(10.0f, OnBaseCommTimer, TimerFlags.REPEAT);
+        AddTimer(60.0f, async () => { await Database.RemoveExpiredBans(); }, TimerFlags.REPEAT);
     }
 
     public override void Unload(bool hotReload)
@@ -40,3 +44,9 @@ public partial class Admin : BasePlugin, IPluginConfig<AdminConfig>
     public static Admin Instance { get; set; } = new();
     public AdminConfig Config { get; set; } = new AdminConfig();
 }
+
+/*
+ * FUNCOMMANDS (HRESPAWN, STRIP?!, 
+ * BASEVOTE (TÜRKÇE KARAKTER YOK?, TABLO GÜNCELLENMÝYOR, TIMER DURMUYOR)
+ * 
+*/
