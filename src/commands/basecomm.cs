@@ -26,13 +26,13 @@ public partial class Admin
     {
         DateTime now = DateTime.Now;
 
-        var punishlist = PlayerTemporaryPunishList.FindAll(p => p.End < now);
+        List<PunishInfo> punishlist = PlayerTemporaryPunishList.FindAll(p => p.End < now);
 
-        foreach (var punish in punishlist)
+        foreach (PunishInfo punish in punishlist)
         {
             if (punish.PunishName == "MUTE")
             {
-                var player = Utilities.GetPlayerFromSteamId(punish.SteamID);
+                CCSPlayerController? player = Utilities.GetPlayerFromSteamId(punish.SteamID);
 
                 if (player != null)
                 {
@@ -45,6 +45,7 @@ public partial class Admin
         {
             Task.Run(() => Database.RemoveExpiredPunishs());
         }
+
         PlayerTemporaryPunishList.RemoveAll(p => p.End < now);
     }
 
@@ -60,21 +61,21 @@ public partial class Admin
             return;
         }
 
-        foreach(var target in players)
+        foreach (CCSPlayerController target in players)
         {
             target.VoiceFlags = VoiceFlags.Muted;
         }
 
         if (players.Count == 1)
         {
-            PrintToChatAll("css_mute<player>", player?.PlayerName?? "Console", targetname);
+            PrintToChatAll("css_mute<player>", player?.PlayerName ?? "Console", targetname);
         }
         else
         {
             PrintToChatAll("css_mute<multiple>", player?.PlayerName ?? "Console", targetname);
         }
 
-         Discord.SendMessage($"[{player?.SteamID ?? 0}] {player?.PlayerName ?? "Console"} -> css_mute <{command.GetArg(1)}>");
+        Discord.SendMessage($"[{player?.SteamID ?? 0}] {player?.PlayerName ?? "Console"} -> css_mute <{command.GetArg(1)}>");
     }
 
     [ConsoleCommand("css_unmute")]
@@ -89,7 +90,7 @@ public partial class Admin
             return;
         }
 
-        foreach (var target in players)
+        foreach (CCSPlayerController target in players)
         {
             target.VoiceFlags = VoiceFlags.Normal;
         }
@@ -118,7 +119,7 @@ public partial class Admin
             return;
         }
 
-        foreach (var target in players)
+        foreach (CCSPlayerController target in players)
         {
             PlayerGagList.Add(target.SteamID);
         }
@@ -147,7 +148,7 @@ public partial class Admin
             return;
         }
 
-        foreach (var target in players)
+        foreach (CCSPlayerController target in players)
         {
             PlayerGagList.Remove(target.SteamID);
         }
@@ -176,7 +177,7 @@ public partial class Admin
             return;
         }
 
-        foreach (var target in players)
+        foreach (CCSPlayerController target in players)
         {
             target.VoiceFlags = VoiceFlags.Muted;
             PlayerGagList.Add(target.SteamID);
@@ -206,7 +207,7 @@ public partial class Admin
             return;
         }
 
-        foreach (var target in players)
+        foreach (CCSPlayerController target in players)
         {
             target.VoiceFlags = VoiceFlags.Normal;
             PlayerGagList.Remove(target.SteamID);
@@ -237,7 +238,7 @@ public partial class Admin
             return;
         }
 
-        var target = players.Single();
+        CCSPlayerController target = players.Single();
 
         if (PlayerTemporaryPunishList.Any(p => p.SteamID == target.SteamID && p.PunishName == "MUTE"))
         {
@@ -283,7 +284,7 @@ public partial class Admin
             return;
         }
 
-        var target = players.Single();
+        CCSPlayerController target = players.Single();
 
         if (!PlayerTemporaryPunishList.Any(p => p.SteamID == target.SteamID && p.PunishName == "MUTE"))
         {
@@ -313,7 +314,7 @@ public partial class Admin
             return;
         }
 
-        var target = players.Single();
+        CCSPlayerController target = players.Single();
 
         if (PlayerTemporaryPunishList.Any(p => p.SteamID == target.SteamID && p.PunishName == "GAG"))
         {
@@ -357,7 +358,7 @@ public partial class Admin
             return;
         }
 
-        var target = players.Single();
+        CCSPlayerController target = players.Single();
 
         if (!PlayerTemporaryPunishList.Any(p => p.SteamID == target.SteamID && p.PunishName == "GAG"))
         {
@@ -386,7 +387,7 @@ public partial class Admin
             return;
         }
 
-        var target = players.Single();
+        CCSPlayerController target = players.Single();
 
         if (!int.TryParse(command.GetArg(2), out int time))
         {
@@ -443,7 +444,7 @@ public partial class Admin
             return;
         }
 
-        var target = players.Single();
+        CCSPlayerController target = players.Single();
 
         PlayerTemporaryPunishList.RemoveAll(p => p.SteamID == target.SteamID && p.PunishName == "GAG");
         Task.Run(() => Database.UnPunishPlayer(target.SteamID, player, "GAG"));

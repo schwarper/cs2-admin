@@ -11,9 +11,12 @@ namespace Admin;
 
 public partial class Admin
 {
+    private readonly Dictionary<CCSPlayerController, (string, ChatMenuOption)> GlobalVotePlayers = [];
+    private CenterHtmlMenu GlobalMenu = null!;
     private bool GlobalVoteInProgress = false;
     private readonly Dictionary<string, int> GlobalVoteAnswers = [];
-    private readonly Dictionary<CCSPlayerController, string> GlobalVotePlayers = [];
+
+    //private readonly Dictionary<CCSPlayerController, string> GlobalVotePlayers = [];
 
     [ConsoleCommand("css_vote")]
     [RequiresPermissions("@css/generic")]
@@ -40,7 +43,7 @@ public partial class Admin
         PrintToChatAll("css_vote", player?.PlayerName ?? "Console", question);
         Discord.SendMessage($"[{player?.SteamID ?? 0}] {player?.PlayerName ?? "Console"} -> css_vote {options[0]}");
 
-        CenterHtmlMenu menu = VoteMenu(question, options);
+        CenterHtmlMenu menu = GlobalMenu = VoteMenu(question, options);
         menu.OpenToAll();
 
         GlobalVoteInProgress = true;
@@ -62,13 +65,23 @@ public partial class Admin
             return;
         }
 
-        if (!GlobalVotePlayers.TryGetValue(player, out string? value) || string.IsNullOrEmpty(value))
+        if (!GlobalVotePlayers.TryGetValue(player, out (string, ChatMenuOption) value))
         {
             command.ReplyToCommand(Config.Tag + Localizer["You haven't voted yet"]);
             return;
         }
 
-        GlobalVoteAnswers[value]--;
+        GlobalVoteAnswers[value.Item1]--;
+
+        ChatMenuOption? o = GlobalMenu.MenuOptions.Find(o => o.Equals(GlobalVotePlayers[player].Item2));
+
+        if (o != null)
+        {
+            string option = GlobalVotePlayers[player].Item1;
+
+            o.Text = Localizer["css_vote<optiontext>", option, GlobalVoteAnswers[option]];
+        }
+
         GlobalVotePlayers.Remove(player);
 
         command.ReplyToCommand(Config.Tag + Localizer["css_revote"]);
@@ -106,23 +119,25 @@ public partial class Admin
             PostSelectAction = PostSelectAction.Nothing
         };
 
-        int i = 0;
         foreach (string option in options)
         {
-            var newoption = option + i++;
-
-            GlobalVoteAnswers.Add(newoption, 0);
-
-            menu.AddMenuOption(Localizer["css_vote<optiontext>", option, 0], (p, o) =>
+            try
             {
-                if (GlobalVoteInProgress && !GlobalVotePlayers.ContainsKey(p))
-                {
-                    GlobalVotePlayers.Add(p, newoption);
-                    GlobalVoteAnswers[newoption]++;
+                GlobalVoteAnswers.Add(option, 0);
 
-                    o.Text = Localizer["css_vote<optiontext>", option, GlobalVoteAnswers[newoption]];
-                }
-            });
+                menu.AddMenuOption(Localizer["css_vote<optiontext>", option, 0], (p, o) =>
+                {
+                    if (GlobalVoteInProgress && !GlobalVotePlayers.ContainsKey(p))
+                    {
+                        GlobalVotePlayers.Add(p, (option, o));
+                        GlobalVoteAnswers[option]++;
+
+                        o.Text = Localizer["css_vote<optiontext>", option, GlobalVoteAnswers[option]];
+                    }
+                });
+            }
+            catch (Exception) { };
+
         }
 
         return menu;

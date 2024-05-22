@@ -807,7 +807,7 @@ public partial class Admin : BasePlugin
             return;
         }
 
-        var position = GlobalHRespawnPlayers.First(p => p.Key == target).Value;
+        (float X, float Y, float Z) position = GlobalHRespawnPlayers.First(p => p.Key == target).Value;
 
         target.Respawn();
         targetPawn.Teleport(new Vector(position.X, position.Y, position.Z), targetPawn.AbsRotation, targetPawn.AbsVelocity);

@@ -24,7 +24,7 @@ public static class Event
         Instance.RegisterEventHandler<EventRoundStart>(OnRoundStart);
 
         Instance.RegisterListener<OnClientAuthorized>(OnClientAuthorized);
-        
+
     }
 
     public static void Unload()
@@ -47,7 +47,7 @@ public static class Event
             return HookResult.Handled;
         }
 
-        var punish = PlayerTemporaryPunishList.FirstOrDefault(p => p.SteamID == player.SteamID && p.PunishName == "GAG");
+        PunishInfo? punish = PlayerTemporaryPunishList.FirstOrDefault(p => p.SteamID == player.SteamID && p.PunishName == "GAG");
 
         if (punish != null)
         {
@@ -110,28 +110,27 @@ public static class Event
 
         GlobalHRespawnPlayers.Add(player, (absOrigin.X, absOrigin.Y, absOrigin.Z));
 
-        Server.PrintToChatAll($"DEATH {absOrigin}");
-
         return HookResult.Continue;
     }
 
     public static async void OnClientAuthorized(int slot, SteamID steamId)
     {
-        var player = Utilities.GetPlayerFromSlot(slot);
+        CCSPlayerController? player = Utilities.GetPlayerFromSlot(slot);
 
         if (player == null || player.IsBot)
         {
             return;
         }
 
-        var userid = player.UserId;
+        int? userid = player.UserId;
 
-        if (!await Database.IsBanned(steamId.SteamId64))
+        if (await Database.IsBanned(steamId.SteamId64))
         {
+            Server.NextFrame(() => Server.ExecuteCommand($"kickid {userid}"));
             return;
         }
 
-        Server.NextFrame(() => Server.ExecuteCommand($"kickid {userid}"));
+        await Database.LoadPlayer(player);
     }
 
     public static HookResult OnPlayerDisconnect(EventPlayerDisconnect @event, GameEventInfo info)
@@ -151,7 +150,7 @@ public static class Event
 
         return HookResult.Continue;
     }
-    
+
     public static HookResult OnRoundStart(EventRoundStart @event, GameEventInfo info)
     {
         PlayerGagList.Clear();

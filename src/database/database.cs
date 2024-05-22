@@ -1,8 +1,6 @@
 using CounterStrikeSharp.API.Core;
-using CounterStrikeSharp.API.Modules.Entities;
 using Dapper;
 using MySqlConnector;
-using System.Transactions;
 using static Admin.Admin;
 
 namespace Admin;
@@ -180,11 +178,13 @@ public static class Database
             VALUES (@player_steamid, @admin_steamid, @admin_name, 'unban', @date);
         ", new
         {
-            player_steamid = steamid,
+            @player_steamid = steamid,
             @admin_steamid = admin?.SteamID ?? 0,
             @admin_name = admin?.PlayerName ?? "Console",
             @date = created
         }, transaction: transaction);
+
+        await transaction.CommitAsync();
     }
 
     public static async Task LoadPlayer(CCSPlayerController player)
@@ -193,7 +193,7 @@ public static class Database
 
         dynamic results = connection.QueryAsync("SELECT * FROM basecomm WHERE steamid = @steamid", new { steamid = player.SteamID });
 
-        foreach(var result in results)
+        foreach (dynamic result in results)
         {
             PlayerTemporaryPunishList.Add(new PunishInfo
             {
@@ -220,7 +220,7 @@ public static class Database
             ON DUPLICATE KEY UPDATE 
             steamid = VALUES(steamid), 
             duration = VALUES(duration), 
-            end = VALUES(end), 
+            end = VALUES(end),
             created = VALUES(created);
         ", new
         {
@@ -236,7 +236,7 @@ public static class Database
             VALUES (@player_steamid, @player_name, @admin_steamid, @admin_name, @command, @duration, @date);
         ", new
         {
-            player_steamid = player.SteamID,
+            @player_steamid = player.SteamID,
             @player_name = player.PlayerName,
             @admin_steamid = admin?.SteamID,
             @admin_name = admin?.PlayerName ?? "Console",
@@ -244,6 +244,8 @@ public static class Database
             duration,
             @date = created
         }, transaction: transaction);
+
+        await transaction.CommitAsync();
     }
 
     public static async Task UnPunishPlayer(ulong steamid, CCSPlayerController? admin, string punishname)
@@ -253,19 +255,21 @@ public static class Database
         using MySqlConnection connection = await ConnectAsync();
         using MySqlTransaction transaction = await connection.BeginTransactionAsync();
 
-        await connection.ExecuteAsync("DELETE FROM basecomm WHERE steamid = @steamid AND @command = @command;", new { steamid, @command = punishname == "GAG" ? "GAG" : "MUTE" }, transaction: transaction);
+        await connection.ExecuteAsync("DELETE FROM basecomm WHERE steamid = @steamid AND command = @command;", new { steamid, @command = punishname }, transaction: transaction);
 
         await connection.ExecuteAsync(@"
             INSERT INTO baseban_log (player_steamid, admin_steamid, admin_name, command, date)
             VALUES (@player_steamid, @admin_steamid, @admin_name, @command, @date);
         ", new
         {
-            player_steamid = steamid,
+            @player_steamid = steamid,
             @admin_steamid = admin?.SteamID ?? 0,
             @admin_name = admin?.PlayerName ?? "Console",
             @command = punishname,
             @date = created
         }, transaction: transaction);
+
+        await transaction.CommitAsync();
     }
 
     public static async Task RemoveExpiredPunishs()
