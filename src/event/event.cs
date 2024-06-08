@@ -145,6 +145,7 @@ public static class Event
 
         GlobalHRespawnPlayers.Remove(player);
         PlayerGagList.Remove(player.SteamID);
+        TagsAPI?.UngagPlayer(player.SteamID);
         PlayerTemporaryPunishList.RemoveAll(p => p.SteamID == player.SteamID);
 
         return HookResult.Continue;
