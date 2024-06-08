@@ -131,7 +131,6 @@ public static class Database
         DateTime end = created.AddMinutes(duration);
 
         using MySqlConnection connection = await ConnectAsync();
-        using MySqlTransaction transaction = await connection.BeginTransactionAsync();
 
         await connection.ExecuteAsync(@"
             INSERT INTO baseban (steamid, duration, created, end) 
@@ -147,7 +146,7 @@ public static class Database
             duration,
             created,
             end
-        }, transaction: transaction);
+        });
 
         await connection.ExecuteAsync(@"
             INSERT INTO baseban_log (player_steamid, player_name, admin_steamid, admin_name, command, reason, duration, date)
@@ -161,7 +160,7 @@ public static class Database
             reason,
             duration,
             @date = created
-        }, transaction: transaction);
+        });
     }
 
     public static async Task Unban(ulong steamid, CCSPlayerController? admin)
@@ -169,9 +168,8 @@ public static class Database
         DateTime created = DateTime.Now;
 
         using MySqlConnection connection = await ConnectAsync();
-        using MySqlTransaction transaction = await connection.BeginTransactionAsync();
 
-        await connection.ExecuteAsync("DELETE FROM baseban WHERE steamid = @steamid;", new { steamid }, transaction: transaction);
+        await connection.ExecuteAsync("DELETE FROM baseban WHERE steamid = @steamid;", new { steamid });
 
         await connection.ExecuteAsync(@"
             INSERT INTO baseban_log (player_steamid, admin_steamid, admin_name, command, date)
@@ -182,27 +180,18 @@ public static class Database
             @admin_steamid = admin?.SteamID ?? 0,
             @admin_name = admin?.PlayerName ?? "Console",
             @date = created
-        }, transaction: transaction);
-
-        await transaction.CommitAsync();
+        });
     }
 
     public static async Task LoadPlayer(CCSPlayerController player)
     {
-        using MySqlConnection connection = await ConnectAsync();
+        await using MySqlConnection connection = await ConnectAsync();
 
-        dynamic results = connection.QueryAsync("SELECT * FROM basecomm WHERE steamid = @steamid", new { steamid = player.SteamID });
+        IEnumerable<PunishInfo> results = await connection.QueryAsync<PunishInfo>("SELECT * FROM basecomm WHERE steamid = @steamid", new { steamid = player.SteamID });
 
-        foreach (dynamic result in results)
+        foreach (PunishInfo result in results)
         {
-            PlayerTemporaryPunishList.Add(new PunishInfo
-            {
-                SteamID = result.steamid,
-                PunishName = result.command,
-                Duration = result.duration,
-                Created = result.created,
-                End = result.end
-            });
+            PlayerTemporaryPunishList.Add(result);
         }
     }
 
@@ -212,7 +201,6 @@ public static class Database
         DateTime end = created.AddMinutes(duration);
 
         using MySqlConnection connection = await ConnectAsync();
-        using MySqlTransaction transaction = await connection.BeginTransactionAsync();
 
         await connection.ExecuteAsync(@"
             INSERT INTO basecomm (steamid, command, duration, created, end) 
@@ -229,7 +217,7 @@ public static class Database
             duration,
             created,
             end
-        }, transaction: transaction);
+        });
 
         await connection.ExecuteAsync(@"
             INSERT INTO basecomm_log (player_steamid, player_name, admin_steamid, admin_name, command, duration, date)
@@ -243,9 +231,7 @@ public static class Database
             @command = punishname,
             duration,
             @date = created
-        }, transaction: transaction);
-
-        await transaction.CommitAsync();
+        });
     }
 
     public static async Task UnPunishPlayer(ulong steamid, CCSPlayerController? admin, string punishname)
@@ -253,9 +239,8 @@ public static class Database
         DateTime created = DateTime.Now;
 
         using MySqlConnection connection = await ConnectAsync();
-        using MySqlTransaction transaction = await connection.BeginTransactionAsync();
 
-        await connection.ExecuteAsync("DELETE FROM basecomm WHERE steamid = @steamid AND command = @command;", new { steamid, @command = punishname }, transaction: transaction);
+        await connection.ExecuteAsync("DELETE FROM basecomm WHERE steamid = @steamid AND command = @command;", new { steamid, @command = punishname });
 
         await connection.ExecuteAsync(@"
             INSERT INTO baseban_log (player_steamid, admin_steamid, admin_name, command, date)
@@ -267,9 +252,7 @@ public static class Database
             @admin_name = admin?.PlayerName ?? "Console",
             @command = punishname,
             @date = created
-        }, transaction: transaction);
-
-        await transaction.CommitAsync();
+        });
     }
 
     public static async Task RemoveExpiredPunishs()

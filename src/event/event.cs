@@ -85,7 +85,6 @@ public static class Event
             player.PlayerPawn.Value?.Glow(Color.White);
 
             GlobalHRespawnPlayers.Remove(player);
-            Server.PrintToChatAll($"SPAWN REMOVEDD");
         });
 
         return HookResult.Continue;

@@ -1,29 +1,28 @@
-using Discord.Webhook;
+using Newtonsoft.Json;
+using System.Text;
 using static Admin.Admin;
 
 namespace Admin;
 
 public static class Discord
 {
-    private static DiscordWebhookClient? _client;
-
-    public static void Create()
+    public static void SendMessage(string message)
     {
         if (string.IsNullOrEmpty(Instance.Config.DiscordWebhook))
         {
             return;
         }
 
-        _client = new(Instance.Config.DiscordWebhook);
-    }
+        using HttpClient client = new();
 
-    public static void SendMessage(string message)
-    {
-        if (_client == null)
+        var payload = new
         {
-            return;
-        }
+            content = $"`{message}`"
+        };
 
-        _client.SendMessageAsync(message);
+        string jsonPayload = JsonConvert.SerializeObject(payload);
+        StringContent stringContent = new(jsonPayload, Encoding.UTF8, "application/json");
+
+        Task.Run(async () => await client.PostAsync(Instance.Config.DiscordWebhook, stringContent));
     }
 }

@@ -11,6 +11,11 @@ namespace Admin;
 
 public static class PlayerUtils
 {
+    private static readonly Random Random = new();
+    private const int lines = 20;
+    private const float radiusIncrement = 10.0f;
+    private const float initialRadius = 20.0f;
+
     private static void ChangeMovetype(this CBasePlayerPawn pawn, MoveType_t movetype)
     {
         pawn.MoveType = movetype;
@@ -287,9 +292,4 @@ public static class PlayerUtils
             Utilities.SetStateChanged(beam, "CBeam", "m_vecEndPos");
         }
     }
-
-    private static readonly Random Random = new();
-    private const int lines = 20;
-    private const float radiusIncrement = 10.0f;
-    private const float initialRadius = 20.0f;
 }

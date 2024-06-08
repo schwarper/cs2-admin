@@ -8,6 +8,7 @@ using CounterStrikeSharp.API.Modules.Entities.Constants;
 using CounterStrikeSharp.API.Modules.Timers;
 using CounterStrikeSharp.API.Modules.Utils;
 using System.Drawing;
+using System.Globalization;
 using static Admin.FindTarget;
 using static Admin.Library;
 using Timer = CounterStrikeSharp.API.Modules.Timers.Timer;
@@ -16,6 +17,92 @@ namespace Admin;
 
 public partial class Admin : BasePlugin
 {
+    public static Dictionary<CCSPlayerController, Timer> GlobalBeaconTimer { get; set; } = [];
+    public static Dictionary<CCSPlayerController, (float X, float Y, float Z)> GlobalHRespawnPlayers { get; set; } = [];
+
+    private readonly Dictionary<string, CsItem> GlobalWeaponDictionary = new()
+    {
+        { "zeus", CsItem.Taser },
+        { "taser", CsItem.Taser },
+        { "snowball", CsItem.Snowball },
+        { "shield", CsItem.Shield },
+        { "c4", CsItem.C4 },
+        { "healthshot", CsItem.Healthshot },
+        { "breachcharge", CsItem.BreachCharge },
+        { "tablet", CsItem.Tablet },
+        { "bumpmine", CsItem.Bumpmine },
+        { "smoke", CsItem.SmokeGrenade },
+        { "smokegrenade", CsItem.SmokeGrenade },
+        { "flash", CsItem.Flashbang },
+        { "flashbang", CsItem.Flashbang },
+        { "hg", CsItem.HEGrenade },
+        { "he", CsItem.HEGrenade },
+        { "hegrenade", CsItem.HEGrenade },
+        { "molotov", CsItem.Molotov },
+        { "inc", CsItem.IncendiaryGrenade },
+        { "incgrenade", CsItem.IncendiaryGrenade },
+        { "decoy", CsItem.Decoy },
+        { "ta", CsItem.TAGrenade },
+        { "tagrenade", CsItem.TAGrenade },
+        { "frag", CsItem.Frag },
+        { "firebomb", CsItem.Firebomb },
+        { "diversion", CsItem.Diversion },
+        { "knife_t", CsItem.KnifeT },
+        { "knife", CsItem.Knife },
+        { "deagle", CsItem.Deagle },
+        { "glock", CsItem.Glock },
+        { "usp", CsItem.USPS },
+        { "usp_silencer", CsItem.USPS },
+        { "hkp2000", CsItem.HKP2000 },
+        { "elite", CsItem.Elite },
+        { "tec9", CsItem.Tec9 },
+        { "p250", CsItem.P250 },
+        { "cz75a", CsItem.CZ75 },
+        { "fiveseven", CsItem.FiveSeven },
+        { "revolver", CsItem.Revolver },
+        { "mac10", CsItem.Mac10 },
+        { "mp9", CsItem.MP9 },
+        { "mp7", CsItem.MP7 },
+        { "p90", CsItem.P90 },
+        { "mp5", CsItem.MP5SD },
+        { "mp5sd", CsItem.MP5SD },
+        { "bizon", CsItem.Bizon },
+        { "ump45", CsItem.UMP45 },
+        { "xm1014", CsItem.XM1014 },
+        { "nova", CsItem.Nova },
+        { "mag7", CsItem.MAG7 },
+        { "sawedoff", CsItem.SawedOff },
+        { "m249", CsItem.M249 },
+        { "negev", CsItem.Negev },
+        { "ak", CsItem.AK47 },
+        { "ak47", CsItem.AK47 },
+        { "m4s", CsItem.M4A1S },
+        { "m4a1s", CsItem.M4A1S },
+        { "m4a1_silencer", CsItem.M4A1S },
+        { "m4", CsItem.M4A1 },
+        { "m4a1", CsItem.M4A1 },
+        { "galil", CsItem.Galil },
+        { "galilar", CsItem.Galil },
+        { "famas", CsItem.Famas },
+        { "sg556", CsItem.SG556 },
+        { "awp", CsItem.AWP },
+        { "aug", CsItem.AUG },
+        { "ssg08", CsItem.SSG08 },
+        { "scar20", CsItem.SCAR20 },
+        { "g3sg1", CsItem.G3SG1 },
+        { "kevlar", CsItem.Kevlar },
+        { "assaultsuit", CsItem.AssaultSuit }
+    };
+
+    private readonly Dictionary<char, gear_slot_t> GlobalSlotDictionary = new()
+    {
+        {'1', gear_slot_t.GEAR_SLOT_RIFLE},
+        {'2', gear_slot_t.GEAR_SLOT_PISTOL},
+        {'3', gear_slot_t.GEAR_SLOT_KNIFE},
+        {'4', gear_slot_t.GEAR_SLOT_GRENADES},
+        {'5', gear_slot_t.GEAR_SLOT_C4}
+    };
+
     [ConsoleCommand("css_freeze")]
     [RequiresPermissions("@css/slay")]
     [CommandHelper(minArgs: 1, "<#userid|name|all @ commands> <time>", whoCanExecute: CommandUsage.CLIENT_AND_SERVER)]
@@ -28,7 +115,7 @@ public partial class Admin : BasePlugin
             return;
         }
 
-        if (!float.TryParse(command.GetArg(2), out float value) || value <= 0.0)
+        if (!float.TryParse(command.GetArg(2), CultureInfo.InvariantCulture, out float value) || value <= 0.0)
         {
             value = -1.0f;
         }
@@ -444,7 +531,7 @@ public partial class Admin : BasePlugin
             return;
         }
 
-        if (!float.TryParse(command.GetArg(2), out float value))
+        if (!float.TryParse(command.GetArg(2), CultureInfo.InvariantCulture, out float value))
         {
             command.ReplyToCommand(Config.Tag + Localizer["Must be an integer"]);
             return;
@@ -807,10 +894,10 @@ public partial class Admin : BasePlugin
             return;
         }
 
-        (float X, float Y, float Z) position = GlobalHRespawnPlayers.First(p => p.Key == target).Value;
+        (float X, float Y, float Z) = GlobalHRespawnPlayers.First(p => p.Key == target).Value;
 
         target.Respawn();
-        targetPawn.Teleport(new Vector(position.X, position.Y, position.Z), targetPawn.AbsRotation, targetPawn.AbsVelocity);
+        targetPawn.Teleport(new Vector(X, Y, Z), targetPawn.AbsRotation, targetPawn.AbsVelocity);
 
         PrintToChatAll("css_hrespawn", player?.PlayerName ?? "Console", targetname);
 
@@ -923,90 +1010,4 @@ public partial class Admin : BasePlugin
 
         Discord.SendMessage($"[{player?.SteamID ?? 0}] {player?.PlayerName ?? "Console"} -> css_beacon <{command.GetArg(1)}> <{value}>");
     }
-
-    public static Dictionary<CCSPlayerController, Timer> GlobalBeaconTimer { get; set; } = [];
-    public static Dictionary<CCSPlayerController, (float X, float Y, float Z)> GlobalHRespawnPlayers { get; set; } = [];
-
-    private readonly Dictionary<string, CsItem> GlobalWeaponDictionary = new()
-    {
-        { "zeus", CsItem.Taser },
-        { "taser", CsItem.Taser },
-        { "snowball", CsItem.Snowball },
-        { "shield", CsItem.Shield },
-        { "c4", CsItem.C4 },
-        { "healthshot", CsItem.Healthshot },
-        { "breachcharge", CsItem.BreachCharge },
-        { "tablet", CsItem.Tablet },
-        { "bumpmine", CsItem.Bumpmine },
-        { "smoke", CsItem.SmokeGrenade },
-        { "smokegrenade", CsItem.SmokeGrenade },
-        { "flash", CsItem.Flashbang },
-        { "flashbang", CsItem.Flashbang },
-        { "hg", CsItem.HEGrenade },
-        { "he", CsItem.HEGrenade },
-        { "hegrenade", CsItem.HEGrenade },
-        { "molotov", CsItem.Molotov },
-        { "inc", CsItem.IncendiaryGrenade },
-        { "incgrenade", CsItem.IncendiaryGrenade },
-        { "decoy", CsItem.Decoy },
-        { "ta", CsItem.TAGrenade },
-        { "tagrenade", CsItem.TAGrenade },
-        { "frag", CsItem.Frag },
-        { "firebomb", CsItem.Firebomb },
-        { "diversion", CsItem.Diversion },
-        { "knife_t", CsItem.KnifeT },
-        { "knife", CsItem.Knife },
-        { "deagle", CsItem.Deagle },
-        { "glock", CsItem.Glock },
-        { "usp", CsItem.USPS },
-        { "usp_silencer", CsItem.USPS },
-        { "hkp2000", CsItem.HKP2000 },
-        { "elite", CsItem.Elite },
-        { "tec9", CsItem.Tec9 },
-        { "p250", CsItem.P250 },
-        { "cz75a", CsItem.CZ75 },
-        { "fiveseven", CsItem.FiveSeven },
-        { "revolver", CsItem.Revolver },
-        { "mac10", CsItem.Mac10 },
-        { "mp9", CsItem.MP9 },
-        { "mp7", CsItem.MP7 },
-        { "p90", CsItem.P90 },
-        { "mp5", CsItem.MP5SD },
-        { "mp5sd", CsItem.MP5SD },
-        { "bizon", CsItem.Bizon },
-        { "ump45", CsItem.UMP45 },
-        { "xm1014", CsItem.XM1014 },
-        { "nova", CsItem.Nova },
-        { "mag7", CsItem.MAG7 },
-        { "sawedoff", CsItem.SawedOff },
-        { "m249", CsItem.M249 },
-        { "negev", CsItem.Negev },
-        { "ak", CsItem.AK47 },
-        { "ak47", CsItem.AK47 },
-        { "m4s", CsItem.M4A1S },
-        { "m4a1s", CsItem.M4A1S },
-        { "m4a1_silencer", CsItem.M4A1S },
-        { "m4", CsItem.M4A1 },
-        { "m4a1", CsItem.M4A1 },
-        { "galil", CsItem.Galil },
-        { "galilar", CsItem.Galil },
-        { "famas", CsItem.Famas },
-        { "sg556", CsItem.SG556 },
-        { "awp", CsItem.AWP },
-        { "aug", CsItem.AUG },
-        { "ssg08", CsItem.SSG08 },
-        { "scar20", CsItem.SCAR20 },
-        { "g3sg1", CsItem.G3SG1 },
-        { "kevlar", CsItem.Kevlar },
-        { "assaultsuit", CsItem.AssaultSuit }
-    };
-
-    private readonly Dictionary<char, gear_slot_t> GlobalSlotDictionary = new()
-    {
-        {'1', gear_slot_t.GEAR_SLOT_RIFLE},
-        {'2', gear_slot_t.GEAR_SLOT_PISTOL},
-        {'3', gear_slot_t.GEAR_SLOT_KNIFE},
-        {'4', gear_slot_t.GEAR_SLOT_GRENADES},
-        {'5', gear_slot_t.GEAR_SLOT_C4}
-    };
 }
