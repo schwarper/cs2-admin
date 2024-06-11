@@ -18,6 +18,7 @@ An admin command plugin with mysql support
 //baseban
 ♦ css_ban <player> <time> <reason>
 ♦ css_unban <steamid>
+♦ css_addban <steamid> <time> <reason>
 
 //basechat
 ♦ css_say <message> - sends message to all players
@@ -43,6 +44,10 @@ An admin command plugin with mysql support
 ♦ css_sgag <#userid|name> <time> - Imposes a timed gag
 ♦ css_tungag <#userid|name> <time> - Ungag timed gag
 ♦ css_sungag <#userid|name> <time> - Ungag timed gag
+♦ css_tsilence <#userid|name> <time> - Imposes a timed gag & mute
+♦ css_ssilence <#userid|name> <time> - Imposes a timed gag & mute
+♦ css_tunsilence <#userid|name> <time> - Ungag & unmute timed gag & mute
+♦ css_sunsilence <#userid|name> <time> - Ungag & unmute timed gag & mute
 
 //basecommands
 ♦ css_kick <#userid|name> <reason>
@@ -57,6 +62,8 @@ An admin command plugin with mysql support
 
 //basevotes
 ♦ css_vote <question> [... Options ...]
+♦ css_revote
+♦ css_cancelvote
 
 //funcommands
 ♦ css_freeze <#userid|name|all @ commands> <time>
@@ -76,7 +83,12 @@ An admin command plugin with mysql support
 ♦ css_bury <#userid|name|all @ commands>
 ♦ css_unbury <#userid|name|all @ commands>
 ♦ css_clean - Clean weapons on the ground
+♦ css_goto - <#userid|name> - Teleport player to a player's position
+♦ css_bring - <#userid|name|all @ commands> - Teleport players to a player's position
+♦ css_hrespawn - <#userid|name> - Respawns a player in his last known death position.
+♦ css_1up - <#userid|name> - Respawns a player in his last known death position.
 ♦ css_glow <#userid|name|all @ commands> <color>
+♦ css_color <#userid|name|all @ commands> <color>
 ♦ css_beacon <#userid|name|all @ commands> <value>
 
 //playercommands
