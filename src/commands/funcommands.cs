@@ -807,10 +807,10 @@ public partial class Admin : BasePlugin
             return;
         }
 
-        (float X, float Y, float Z) position = GlobalHRespawnPlayers.First(p => p.Key == target).Value;
+        (float X, float Y, float Z) = GlobalHRespawnPlayers.First(p => p.Key == target).Value;
 
         target.Respawn();
-        targetPawn.Teleport(new Vector(position.X, position.Y, position.Z), targetPawn.AbsRotation, targetPawn.AbsVelocity);
+        targetPawn.Teleport(new Vector(X, Y, Z), targetPawn.AbsRotation, targetPawn.AbsVelocity);
 
         PrintToChatAll("css_hrespawn", player?.PlayerName ?? "Console", targetname);
 

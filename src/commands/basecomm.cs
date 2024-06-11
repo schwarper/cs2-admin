@@ -122,6 +122,7 @@ public partial class Admin
         foreach (CCSPlayerController target in players)
         {
             PlayerGagList.Add(target.SteamID);
+            TagApi?.GagPlayer(target.SteamID);
         }
 
         if (players.Count == 1)
@@ -151,6 +152,7 @@ public partial class Admin
         foreach (CCSPlayerController target in players)
         {
             PlayerGagList.Remove(target.SteamID);
+            TagApi?.UngagPlayer(target.SteamID);
         }
 
         if (players.Count == 1)
@@ -181,6 +183,7 @@ public partial class Admin
         {
             target.VoiceFlags = VoiceFlags.Muted;
             PlayerGagList.Add(target.SteamID);
+            TagApi?.GagPlayer(target.SteamID);
         }
 
         if (players.Count == 1)
@@ -211,6 +214,7 @@ public partial class Admin
         {
             target.VoiceFlags = VoiceFlags.Normal;
             PlayerGagList.Remove(target.SteamID);
+            TagApi?.UngagPlayer(target.SteamID);
         }
 
         if (players.Count == 1)
@@ -265,10 +269,12 @@ public partial class Admin
             End = now.AddMinutes(time)
         });
 
-        Task.Run(() => Database.PunishPlayer(target, player, "MUTE", time));
+        string playerName = player?.PlayerName ?? "Console";
 
-        PrintToChatAll("css_tmute", player?.PlayerName ?? "Console", targetname, time);
-        Discord.SendMessage($"[{player?.SteamID ?? 0}] {player?.PlayerName ?? "Console"} -> css_tmute <{command.GetArg(1)}> <{time}>");
+        Task.Run(async () => await Database.PunishPlayer(target, targetname, player, playerName, "MUTE", time));
+
+        PrintToChatAll("css_tmute", playerName, targetname, time);
+        Discord.SendMessage($"[{player?.SteamID ?? 0}] {playerName} -> css_tmute <{command.GetArg(1)}> <{time}>");
     }
 
     [ConsoleCommand("css_tunmute")]
@@ -295,10 +301,12 @@ public partial class Admin
         target.VoiceFlags = VoiceFlags.Normal;
         PlayerTemporaryPunishList.RemoveAll(p => p.SteamID == target.SteamID && p.PunishName == "MUTE");
 
-        Task.Run(() => Database.UnPunishPlayer(target.SteamID, player, "MUTE"));
+        string playerName = player?.PlayerName ?? "Console";
 
-        PrintToChatAll("css_tunmute", player?.PlayerName ?? "Console", targetname);
-        Discord.SendMessage($"[{player?.SteamID ?? 0}] {player?.PlayerName ?? "Console"} -> css_tunmute <{command.GetArg(1)}> <{command.GetArg(1)}>");
+        Task.Run(() => Database.UnPunishPlayer(target.SteamID, player, playerName, "MUTE"));
+
+        PrintToChatAll("css_tunmute", playerName, targetname);
+        Discord.SendMessage($"[{player?.SteamID ?? 0}] {playerName} -> css_tunmute <{command.GetArg(1)}> <{command.GetArg(1)}>");
     }
 
     [ConsoleCommand("css_tgag")]
@@ -339,10 +347,12 @@ public partial class Admin
             End = now.AddMinutes(time)
         });
 
-        Task.Run(() => Database.PunishPlayer(target, player, "GAG", time));
+        string playerName = player?.PlayerName ?? "Console";
 
-        PrintToChatAll("css_tgag", player?.PlayerName ?? "Console", targetname, time);
-        Discord.SendMessage($"[{player?.SteamID ?? 0}] {player?.PlayerName ?? "Console"} -> css_tgag <{command.GetArg(1)}> <{time}>");
+        Task.Run(() => Database.PunishPlayer(target, targetname, player, playerName, "GAG", time));
+
+        PrintToChatAll("css_tgag", playerName, targetname, time);
+        Discord.SendMessage($"[{player?.SteamID ?? 0}] {playerName} -> css_tgag <{command.GetArg(1)}> <{time}>");
     }
 
     [ConsoleCommand("css_tungag")]
@@ -368,10 +378,12 @@ public partial class Admin
 
         PlayerTemporaryPunishList.RemoveAll(p => p.SteamID == target.SteamID && p.PunishName == "GAG");
 
-        Task.Run(() => Database.UnPunishPlayer(target.SteamID, player, "GAG"));
+        string playerName = player?.PlayerName ?? "Console";
 
-        PrintToChatAll("css_tungag", player?.PlayerName ?? "Console", targetname);
-        Discord.SendMessage($"[{player?.SteamID ?? 0}] {player?.PlayerName ?? "Console"} -> css_tungag <{command.GetArg(1)}>");
+        Task.Run(() => Database.UnPunishPlayer(target.SteamID, player, playerName, "GAG"));
+
+        PrintToChatAll("css_tungag", playerName, targetname);
+        Discord.SendMessage($"[{player?.SteamID ?? 0}] {playerName} -> css_tungag <{command.GetArg(1)}>");
     }
 
     [ConsoleCommand("css_tsilence")]
@@ -399,6 +411,8 @@ public partial class Admin
 
         DateTime now = DateTime.Now;
 
+        string playerName = player?.PlayerName ?? "Console";
+
         if (!PlayerTemporaryPunishList.Any(p => p.SteamID == target.SteamID && p.PunishName == "MUTE"))
         {
             PlayerTemporaryPunishList.Add(new PunishInfo
@@ -410,7 +424,7 @@ public partial class Admin
                 End = now.AddMinutes(time)
             });
 
-            Task.Run(() => Database.PunishPlayer(target, player, "MUTE", time));
+            Task.Run(() => Database.PunishPlayer(target, targetname, player, playerName, "MUTE", time));
         }
 
         if (!PlayerTemporaryPunishList.Any(p => p.SteamID == target.SteamID && p.PunishName == "GAG"))
@@ -424,11 +438,11 @@ public partial class Admin
                 End = now.AddMinutes(time)
             });
 
-            Task.Run(() => Database.PunishPlayer(target, player, "GAG", time));
+            Task.Run(() => Database.PunishPlayer(target, targetname, player, playerName, "GAG", time));
         }
 
-        PrintToChatAll("css_tsilence", player?.PlayerName ?? "Console", targetname, time);
-        Discord.SendMessage($"[{player?.SteamID ?? 0}] {player?.PlayerName ?? "Console"} -> css_tsilence <{command.GetArg(1)}> <{time}>");
+        PrintToChatAll("css_tsilence", playerName, targetname, time);
+        Discord.SendMessage($"[{player?.SteamID ?? 0}] {playerName} -> css_tsilence <{command.GetArg(1)}> <{time}>");
     }
 
     [ConsoleCommand("css_tunsilence")]
@@ -446,13 +460,15 @@ public partial class Admin
 
         CCSPlayerController target = players.Single();
 
+        string playerName = player?.PlayerName ?? "Console";
+
         PlayerTemporaryPunishList.RemoveAll(p => p.SteamID == target.SteamID && p.PunishName == "GAG");
-        Task.Run(() => Database.UnPunishPlayer(target.SteamID, player, "GAG"));
+        Task.Run(() => Database.UnPunishPlayer(target.SteamID, player, playerName, "GAG"));
 
         PlayerTemporaryPunishList.RemoveAll(p => p.SteamID == target.SteamID && p.PunishName == "MUTE");
-        Task.Run(() => Database.UnPunishPlayer(target.SteamID, player, "MUTE"));
+        Task.Run(() => Database.UnPunishPlayer(target.SteamID, player, playerName, "MUTE"));
 
-        PrintToChatAll("css_tunsilence", player?.PlayerName ?? "Console", targetname);
-        Discord.SendMessage($"[{player?.SteamID ?? 0}] {player?.PlayerName ?? "Console"} -> css_tunsilence <{command.GetArg(1)}>");
+        PrintToChatAll("css_tunsilence", playerName, targetname);
+        Discord.SendMessage($"[{player?.SteamID ?? 0}] {playerName} -> css_tunsilence <{command.GetArg(1)}>");
     }
 }

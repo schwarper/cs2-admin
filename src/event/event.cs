@@ -1,6 +1,7 @@
 using CounterStrikeSharp.API;
 using CounterStrikeSharp.API.Core;
 using CounterStrikeSharp.API.Modules.Commands;
+using CounterStrikeSharp.API.Modules.Commands.Targeting;
 using CounterStrikeSharp.API.Modules.Entities;
 using CounterStrikeSharp.API.Modules.Utils;
 using System.Drawing;
@@ -18,13 +19,12 @@ public static class Event
         Instance.AddCommandListener("say", OnSay, HookMode.Pre);
         Instance.AddCommandListener("say_team", OnSay, HookMode.Pre);
 
+        Instance.RegisterListener<OnClientAuthorized>(OnClientAuthorized);
+
         Instance.RegisterEventHandler<EventPlayerSpawn>(OnPlayerSpawn);
         Instance.RegisterEventHandler<EventPlayerDeath>(OnPlayerDeath);
         Instance.RegisterEventHandler<EventPlayerDisconnect>(OnPlayerDisconnect);
         Instance.RegisterEventHandler<EventRoundStart>(OnRoundStart);
-
-        Instance.RegisterListener<OnClientAuthorized>(OnClientAuthorized);
-
     }
 
     public static void Unload()
@@ -69,6 +69,10 @@ public static class Event
 
         DeleteBeaconTimer(player);
 
+        GlobalHRespawnPlayers.Remove(player);
+
+        player.PlayerPawn.Value?.Glow(Color.White);
+
         Instance.AddTimer(0.1f, () =>
         {
             CsTeam team = player.Team;
@@ -77,15 +81,10 @@ public static class Event
             {
                 player.Health(Instance.Config.CTDefaultHealth);
             }
-            else
+            else if (team == CsTeam.Terrorist)
             {
                 player.Health(Instance.Config.TDefaultHealth);
             }
-
-            player.PlayerPawn.Value?.Glow(Color.White);
-
-            GlobalHRespawnPlayers.Remove(player);
-            Server.PrintToChatAll($"SPAWN REMOVEDD");
         });
 
         return HookResult.Continue;
@@ -108,7 +107,16 @@ public static class Event
             return HookResult.Continue;
         }
 
-        GlobalHRespawnPlayers.Add(player, (absOrigin.X, absOrigin.Y, absOrigin.Z));
+        if (GlobalHRespawnPlayers.TryGetValue(player, out (float X, float Y, float Z) value))
+        {
+            value.X = absOrigin.X;
+            value.Y = absOrigin.Y;
+            value.Z = absOrigin.Z;
+        }
+        else
+        {
+            GlobalHRespawnPlayers.Add(player, (absOrigin.X, absOrigin.Y, absOrigin.Z));
+        }
 
         return HookResult.Continue;
     }
@@ -146,6 +154,7 @@ public static class Event
 
         GlobalHRespawnPlayers.Remove(player);
         PlayerGagList.Remove(player.SteamID);
+        TagApi?.UngagPlayer(player.SteamID);
         PlayerTemporaryPunishList.RemoveAll(p => p.SteamID == player.SteamID);
 
         return HookResult.Continue;

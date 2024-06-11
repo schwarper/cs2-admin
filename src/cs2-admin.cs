@@ -1,6 +1,8 @@
 using CounterStrikeSharp.API.Core;
 using CounterStrikeSharp.API.Core.Translations;
 using CounterStrikeSharp.API.Modules.Timers;
+using System.Security.Cryptography.X509Certificates;
+using TagsApi;
 
 namespace Admin;
 
@@ -18,6 +20,11 @@ public partial class Admin : BasePlugin, IPluginConfig<AdminConfig>
 
         AddTimer(10.0f, OnBaseCommTimer, TimerFlags.REPEAT);
         AddTimer(60.0f, async () => { await Database.RemoveExpiredBans(); }, TimerFlags.REPEAT);
+    }
+
+    public override void OnAllPluginsLoaded(bool hotReload)
+    {
+        TagApi = ITagApi.Capability.Get();
     }
 
     public override void Unload(bool hotReload)
@@ -43,10 +50,5 @@ public partial class Admin : BasePlugin, IPluginConfig<AdminConfig>
 
     public static Admin Instance { get; set; } = new();
     public AdminConfig Config { get; set; } = new AdminConfig();
+    public static ITagApi? TagApi { get; set; }
 }
-
-/*
- * FUNCOMMANDS (HRESPAWN, STRIP?!, 
- * BASEVOTE (TÜRKÇE KARAKTER YOK?, TABLO GÜNCELLENMÝYOR, TIMER DURMUYOR)
- * 
-*/
