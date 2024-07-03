@@ -6,6 +6,7 @@ using CounterStrikeSharp.API.Modules.Commands;
 using CounterStrikeSharp.API.Modules.Menu;
 using CounterStrikeSharp.API.Modules.Timers;
 using static Admin.Library;
+using Timer = CounterStrikeSharp.API.Modules.Timers.Timer;
 
 namespace Admin;
 
@@ -15,8 +16,7 @@ public partial class Admin
     private CenterHtmlMenu GlobalMenu = null!;
     private bool GlobalVoteInProgress = false;
     private readonly Dictionary<string, int> GlobalVoteAnswers = [];
-
-    //private readonly Dictionary<CCSPlayerController, string> GlobalVotePlayers = [];
+    private Timer? GlobalTimer;
 
     [ConsoleCommand("css_vote")]
     [RequiresPermissions("@css/generic")]
@@ -48,7 +48,7 @@ public partial class Admin
 
         GlobalVoteInProgress = true;
 
-        AddTimer(15.0f, () => EndVote(question), TimerFlags.STOP_ON_MAPCHANGE);
+        GlobalTimer = AddTimer(15.0f, () => EndVote(question), TimerFlags.STOP_ON_MAPCHANGE);
     }
 
     [ConsoleCommand("css_revote")]
@@ -168,5 +168,6 @@ public partial class Admin
         GlobalVoteInProgress = false;
         GlobalVoteAnswers.Clear();
         GlobalVotePlayers.Clear();
+        GlobalTimer?.Kill();
     }
 }

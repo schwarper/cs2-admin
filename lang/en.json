@@ -16,6 +16,11 @@
 	"No color exists": "{white}No such color was found.",
 	"No team exists": "{white}No such team was found.",
 
+	"Vote is not in progress": "{white}There is no active vote.",
+	"You haven't voted yet": "{white}You haven't voted yet.",
+	"css_revote": "{white}You have deleted your vote. You can vote again.",
+	"css_cancelvote": "{blue}{0}{white} has cancelled the vote.",
+
 	"all": "all players",
 	"bots": "bots",
 	"humans": "humans",

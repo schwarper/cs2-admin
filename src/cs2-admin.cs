@@ -9,7 +9,7 @@ namespace Admin;
 public partial class Admin : BasePlugin, IPluginConfig<AdminConfig>
 {
     public override string ModuleName => "Admin";
-    public override string ModuleVersion => "0.0.8";
+    public override string ModuleVersion => "0.0.9";
     public override string ModuleAuthor => "schwarper";
 
     public override void Load(bool hotReload)

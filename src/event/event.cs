@@ -5,6 +5,7 @@ using CounterStrikeSharp.API.Modules.Commands.Targeting;
 using CounterStrikeSharp.API.Modules.Entities;
 using CounterStrikeSharp.API.Modules.Utils;
 using System.Drawing;
+using System.Numerics;
 using static Admin.Admin;
 using static CounterStrikeSharp.API.Core.Listeners;
 using Timer = CounterStrikeSharp.API.Modules.Timers.Timer;
@@ -25,6 +26,7 @@ public static class Event
         Instance.RegisterEventHandler<EventPlayerDeath>(OnPlayerDeath);
         Instance.RegisterEventHandler<EventPlayerDisconnect>(OnPlayerDisconnect);
         Instance.RegisterEventHandler<EventRoundStart>(OnRoundStart);
+        Instance.RegisterEventHandler<EventPlayerConnectFull>(OnPlayerConnect);
     }
 
     public static void Unload()
@@ -135,10 +137,7 @@ public static class Event
         if (await Database.IsBanned(steamId.SteamId64))
         {
             Server.NextFrame(() => Server.ExecuteCommand($"kickid {userid}"));
-            return;
         }
-
-        await Database.LoadPlayer(player);
     }
 
     public static HookResult OnPlayerDisconnect(EventPlayerDisconnect @event, GameEventInfo info)
@@ -163,6 +162,19 @@ public static class Event
     public static HookResult OnRoundStart(EventRoundStart @event, GameEventInfo info)
     {
         PlayerGagList.Clear();
+        return HookResult.Continue;
+    }
+
+    public static HookResult OnPlayerConnect(EventPlayerConnectFull @event, GameEventInfo info)
+    {
+        var player = @event.Userid;
+
+        if (player == null)
+        {
+            return HookResult.Continue;
+        }
+
+        Task.Run(() => Database.LoadPlayer(player));
         return HookResult.Continue;
     }
 
