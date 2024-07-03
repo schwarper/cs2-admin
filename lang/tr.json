@@ -16,10 +16,10 @@
 	"No color exists": "{white}Böyle bir renk bulunamadı.",
 	"No team exists": "{white}Böyle bir takım bulunamadı.",
 
-	"Vote is not in progress": "{white}There is no active vote",
-	"You haven't voted yet": "{white}You haven't voted yet",
-	"css_revote": "{white}You have deleted your vote. You can vote again.",
-	"css_cancelvote": "{blue}{0}{white} has cancelled the vote.",
+	"Vote is not in progress": "{white}Zaten aktif bir oylama yok.",
+	"You haven't voted yet": "{white}Henüz oy vermemişsiniz.",
+	"css_revote": "{white}Oyunuz silindi. Tekrardan oy verebilirsiniz.",
+	"css_cancelvote": "{blue}{0}{white} oylamayı durdurdu.",
 
 	"all": "bütün oyuncular",
 	"bots": "botlar",
@@ -114,7 +114,7 @@
 	"css_speed<multiple>": "{blue}{0}{white}, {1}ın {white}hız değerini {green}{2} {white}yaptı.",
 	"css_god<player>": "{blue}{0}{white}, {green}{1} {white}adlı oyuncunun dokunulmazlık değerini {green}{2} {white}yaptı.",
 	"css_god<multiple>": "{blue}{0}{white}, {1}ın {white}dokunulmazlık değerini {green}{2} {white}yaptı.",
-	"css_team<player>": "{blue}{0}{white}, {green}{1}adlı oyuncunun takımını {green}{2} {white}olarak değiştirdi.",
+	"css_team<player>": "{blue}{0}{white}, {green}{1} {white}adlı oyuncunun takımını {green}{2} {white}olarak değiştirdi.",
 	"css_team<multiple>": "{blue}{0}{white}, {1}ın {white}takımını {green}{2} {white}olarak değiştirdi.",
 	"css_bury<player>": "{blue}{0}{white}, {green}{1} {white}adlı oyuncuyu gömdü.",
 	"css_bury<multiple>": "{blue}{0}{white}, {1}ı {white}gömdü.",
