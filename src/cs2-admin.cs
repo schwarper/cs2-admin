@@ -34,16 +34,19 @@ public partial class Admin : BasePlugin, IPluginConfig<AdminConfig>
 
     public void OnConfigParsed(AdminConfig config)
     {
-        string[] databaseStrings = ["host", "name", "user"];
-
-        if (databaseStrings.Any(p => string.IsNullOrEmpty(config.Database[p])))
+        if (config.DatabaseEnabled)
         {
-            throw new Exception("You need to setup Database credentials in config.");
+            string[] databaseStrings = ["host", "name", "user"];
+            if (databaseStrings.Any(p => string.IsNullOrEmpty(config.Database[p])))
+            {
+                throw new Exception("You need to setup Database credentials in config.");
+            }
+
+            Task.Run(() => Database.CreateDatabaseAsync(config));
         }
 
         config.Tag = StringExtensions.ReplaceColorTags(config.Tag);
 
-        Task.Run(() => Database.CreateDatabaseAsync(config));
 
         Config = config;
     }

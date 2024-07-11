@@ -9,15 +9,21 @@ namespace Admin;
 public static class Database
 {
     private static string? GlobalDatabaseConnectionString;
+    private static bool IsDatabaseEnabled => GlobalDatabaseConnectionString is not null;
 
-    public static async Task<MySqlConnection> ConnectAsync()
+    private static async Task<MySqlConnection> ConnectAsync()
     {
         MySqlConnection connection = new(GlobalDatabaseConnectionString);
         await connection.OpenAsync();
         return connection;
     }
-    public static void ExecuteAsync(string query, object? parameters)
+
+    private static void ExecuteAsync(string query, object? parameters)
     {
+        if (!IsDatabaseEnabled)
+        {
+            return;
+        }
         Task.Run(async () =>
         {
             using MySqlConnection connection = await ConnectAsync();
@@ -26,6 +32,11 @@ public static class Database
     }
     public static async Task CreateDatabaseAsync(AdminConfig config)
     {
+        if (!config.DatabaseEnabled)
+        {
+            return;
+        }
+
         MySqlConnectionStringBuilder builder = new()
         {
             Server = config.Database["host"],
@@ -109,6 +120,11 @@ public static class Database
 
     public static async Task<bool> IsBanned(ulong steamid)
     {
+        if (!IsDatabaseEnabled)
+        {
+            return false;
+        }
+
         using MySqlConnection connection = await ConnectAsync();
 
         IEnumerable<dynamic> results = await connection.QueryAsync("SELECT * FROM baseban WHERE steamid = @steamid;", new { steamid });
@@ -208,6 +224,11 @@ public static class Database
 
     public static async Task LoadPlayer(CCSPlayerController player)
     {
+        if (!IsDatabaseEnabled)
+        {
+            return;
+        }
+
         using MySqlConnection connection = await ConnectAsync();
 
         IEnumerable<dynamic> results = await connection.QueryAsync("SELECT * FROM basecomm WHERE steamid = @steamid", new { steamid = player.SteamID });
@@ -314,6 +335,11 @@ public static class Database
 
     public static async Task RemoveExpiredPunishs()
     {
+        if (!IsDatabaseEnabled)
+        {
+            return;
+        }
+
         using MySqlConnection connection = await ConnectAsync();
 
         await connection.ExecuteAsync("DELETE FROM basecomm WHERE end < @end", new { @end = DateTime.Now });
@@ -321,6 +347,11 @@ public static class Database
 
     public static async Task RemoveExpiredBans()
     {
+        if (!IsDatabaseEnabled)
+        {
+            return;
+        }
+
         using MySqlConnection connection = await ConnectAsync();
 
         await connection.ExecuteAsync("DELETE FROM baseban WHERE end < @end", new { @end = DateTime.Now });
