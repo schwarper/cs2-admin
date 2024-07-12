@@ -5,6 +5,7 @@ namespace Admin;
 
 public class AdminConfig : BasePluginConfig
 {
+    [JsonPropertyName("database_enabled")] public bool DatabaseEnabled { get; set; } = true;
     [JsonPropertyName("database")]
     public Dictionary<string, string> Database { get; set; } = new Dictionary<string, string>()
     {
