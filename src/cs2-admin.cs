@@ -1,4 +1,5 @@
 using CounterStrikeSharp.API.Core;
+using CounterStrikeSharp.API.Core.Capabilities;
 using CounterStrikeSharp.API.Core.Translations;
 using CounterStrikeSharp.API.Modules.Timers;
 using TagsApi;
@@ -8,7 +9,7 @@ namespace Admin;
 public partial class Admin : BasePlugin, IPluginConfig<AdminConfig>
 {
     public override string ModuleName => "Admin";
-    public override string ModuleVersion => "0.0.9";
+    public override string ModuleVersion => "1.0.0";
     public override string ModuleAuthor => "schwarper";
 
     public override void Load(bool hotReload)
@@ -23,7 +24,9 @@ public partial class Admin : BasePlugin, IPluginConfig<AdminConfig>
 
     public override void OnAllPluginsLoaded(bool hotReload)
     {
-        TagApi = ITagApi.Capability.Get();
+        PluginCapability<ITagApi> Capability = new("tags:api");
+
+        TagApi = Capability.Get();
     }
 
     public override void Unload(bool hotReload)
