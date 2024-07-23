@@ -1,7 +1,6 @@
 using CounterStrikeSharp.API.Core;
 using CounterStrikeSharp.API.Core.Translations;
 using CounterStrikeSharp.API.Modules.Timers;
-using System.Security.Cryptography.X509Certificates;
 using TagsApi;
 
 namespace Admin;
@@ -34,19 +33,19 @@ public partial class Admin : BasePlugin, IPluginConfig<AdminConfig>
 
     public void OnConfigParsed(AdminConfig config)
     {
-        if (config.DatabaseEnabled)
+        bool usemysql = config.Database.UseMySql;
+
+        if (usemysql)
         {
-            string[] databaseStrings = ["host", "name", "user"];
-            if (databaseStrings.Any(p => string.IsNullOrEmpty(config.Database[p])))
+            if (string.IsNullOrEmpty(config.Database.Host) || string.IsNullOrEmpty(config.Database.Name) || string.IsNullOrEmpty(config.Database.User))
             {
                 throw new Exception("You need to setup Database credentials in config.");
             }
-
-            Task.Run(() => Database.CreateDatabaseAsync(config));
         }
 
-        config.Tag = StringExtensions.ReplaceColorTags(config.Tag);
+        Task.Run(() => Database.CreateDatabaseAsync(config, usemysql));
 
+        config.Tag = StringExtensions.ReplaceColorTags(config.Tag);
 
         Config = config;
     }
