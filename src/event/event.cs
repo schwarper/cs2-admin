@@ -1,11 +1,9 @@
 using CounterStrikeSharp.API;
 using CounterStrikeSharp.API.Core;
 using CounterStrikeSharp.API.Modules.Commands;
-using CounterStrikeSharp.API.Modules.Commands.Targeting;
 using CounterStrikeSharp.API.Modules.Entities;
 using CounterStrikeSharp.API.Modules.Utils;
 using System.Drawing;
-using System.Numerics;
 using static Admin.Admin;
 using static CounterStrikeSharp.API.Core.Listeners;
 using Timer = CounterStrikeSharp.API.Modules.Timers.Timer;
@@ -167,7 +165,7 @@ public static class Event
 
     public static HookResult OnPlayerConnect(EventPlayerConnectFull @event, GameEventInfo info)
     {
-        var player = @event.Userid;
+        CCSPlayerController? player = @event.Userid;
 
         if (player == null)
         {

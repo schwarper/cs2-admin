@@ -1,7 +1,7 @@
 using CounterStrikeSharp.API.Core;
+using CounterStrikeSharp.API.Core.Capabilities;
 using CounterStrikeSharp.API.Core.Translations;
 using CounterStrikeSharp.API.Modules.Timers;
-using System.Security.Cryptography.X509Certificates;
 using TagsApi;
 
 namespace Admin;
@@ -9,7 +9,7 @@ namespace Admin;
 public partial class Admin : BasePlugin, IPluginConfig<AdminConfig>
 {
     public override string ModuleName => "Admin";
-    public override string ModuleVersion => "0.0.9";
+    public override string ModuleVersion => "1.0.0";
     public override string ModuleAuthor => "schwarper";
 
     public override void Load(bool hotReload)
@@ -24,7 +24,9 @@ public partial class Admin : BasePlugin, IPluginConfig<AdminConfig>
 
     public override void OnAllPluginsLoaded(bool hotReload)
     {
-        TagApi = ITagApi.Capability.Get();
+        PluginCapability<ITagApi> Capability = new("tags:api");
+
+        TagApi = Capability.Get();
     }
 
     public override void Unload(bool hotReload)
@@ -34,19 +36,19 @@ public partial class Admin : BasePlugin, IPluginConfig<AdminConfig>
 
     public void OnConfigParsed(AdminConfig config)
     {
-        if (config.DatabaseEnabled)
+        bool usemysql = config.Database.UseMySql;
+
+        if (usemysql)
         {
-            string[] databaseStrings = ["host", "name", "user"];
-            if (databaseStrings.Any(p => string.IsNullOrEmpty(config.Database[p])))
+            if (string.IsNullOrEmpty(config.Database.Host) || string.IsNullOrEmpty(config.Database.Name) || string.IsNullOrEmpty(config.Database.User))
             {
                 throw new Exception("You need to setup Database credentials in config.");
             }
-
-            Task.Run(() => Database.CreateDatabaseAsync(config));
         }
 
-        config.Tag = StringExtensions.ReplaceColorTags(config.Tag);
+        Task.Run(() => Database.CreateDatabaseAsync(config, usemysql));
 
+        config.Tag = StringExtensions.ReplaceColorTags(config.Tag);
 
         Config = config;
     }

@@ -197,6 +197,17 @@ public partial class Admin
         Discord.SendMessage($"[{player?.SteamID ?? 0}] {player?.PlayerName ?? "Console"} -> css_exec <{cfg}>");
     }
 
+    [ConsoleCommand("css_rr")]
+    [RequiresPermissions("@css/root")]
+    public void Command_RestartRound(CCSPlayerController? player, CommandInfo command)
+    {
+        Server.ExecuteCommand("mp_restartgame 2");
+
+        PrintToChatAll("css_rr", player?.PlayerName ?? "Console");
+
+        Discord.SendMessage($"[{player?.SteamID ?? 0}] {player?.PlayerName ?? "Console"} -> css_rr");
+    }
+
     [ConsoleCommand("css_who")]
     [RequiresPermissions("@css/generic")]
     [CommandHelper(minArgs: 0, "<#userid|name or empty for all>", whoCanExecute: CommandUsage.CLIENT_AND_SERVER)]

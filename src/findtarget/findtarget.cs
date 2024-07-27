@@ -42,6 +42,11 @@ public static class FindTarget
             command.ReplyToCommand(Instance.Config.Tag + Instance.Localizer["More than one client matched"]);
             return ([], string.Empty);
         }
+        else if (!command.GetArg(1).StartsWith('@') && targetresult.Players.Count > 1)
+        {
+            command.ReplyToCommand(Instance.Config.Tag + Instance.Localizer["More than one client matched"]);
+            return ([], string.Empty);
+        }
 
         if (immunitycheck)
         {

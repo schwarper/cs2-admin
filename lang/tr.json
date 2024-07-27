@@ -1,6 +1,6 @@
 {
 	"No matching client": "{white}Eşleşen alıcı bulunamadı.",
-	"More than one client matched": "Verilen biçim düzeniyle birden fazla alıcı eşleşti.",
+	"More than one client matched": "{white}Verilen biçim düzeniyle birden fazla alıcı eşleşti.",
 	"You cannot target": "{white}Bu kişinin dokunulmazlığı sizinkinden yüksek olduğu için bu kişiye dokunamazsınız.",
 	"You can target only dead players": "{white}Sadece ölü kişilere bu komutu uygulayabilirsiniz.",
 	"You can target only alive players": "{white}Sadece yaşayan kişilere bu komutu uygulayabilirsiniz.",
@@ -81,6 +81,7 @@
 	"css_rcon": "{blue}{0}{white}, {green}{1} {white}komutunu rcon ile gönderdi.",
 	"css_cvar": "{blue}{0}{white}, {green}{1} {white}cvarını {green}{2} {white}olarak değiştirdi.",
 	"css_exec": "{blue}{0}{white}, {green}{1} {white}dosyasını açtı.",
+	"css_rr": "{blue}{0}{white}, turu yeniden başlattı.",
 	"css_who<title>": "[------] {0} hakkında bilgi [------]",
 	"css_who<steamid>": "[------] SteamID: {0}",
 	"css_who<ip>": "[------] IP Adresi: {0}",
