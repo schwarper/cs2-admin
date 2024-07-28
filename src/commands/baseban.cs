@@ -15,7 +15,7 @@ public partial class Admin
     [CommandHelper(minArgs: 2, "<#userid|name> <time> <reason>", whoCanExecute: CommandUsage.CLIENT_AND_SERVER)]
     public void Command_Ban(CCSPlayerController? player, CommandInfo command)
     {
-        (List<CCSPlayerController> players, string targetname) = Find(player, command, 2, true, true, MultipleFlags.NORMAL);
+        (List<CCSPlayerController> players, string adminname, string targetname) = Find(player, command, 2, true, true, MultipleFlags.NORMAL);
 
         if (players.Count == 0)
         {
@@ -38,14 +38,10 @@ public partial class Admin
 
         string reason = command.GetArg(3) ?? Localizer["Unknown"];
 
-        string playerName = player?.PlayerName ?? "Console";
+        target.Ban(targetname, player, adminname, reason, time);
 
-        Task.Run(() => Database.Ban(target, targetname, player, playerName, reason, time));
-
-        target.Kick();
-
-        Library.PrintToChatAll("css_ban", playerName, targetname, time, reason);
-        Discord.SendMessage($"[{player?.SteamID ?? 0}] {playerName} -> css_ban <{targetname}> <{time}> <{reason}>");
+        Library.PrintToChatAll("css_ban", adminname, targetname, time, reason);
+        Discord.SendMessage($"[{player?.SteamID ?? 0}] {adminname} -> css_ban <{targetname}> <{time}> <{reason}>");
     }
 
     [ConsoleCommand("css_unban")]
@@ -66,12 +62,12 @@ public partial class Admin
             return;
         }
 
-        string playerName = player?.PlayerName ?? "Console";
+        var adminname = player?.PlayerName ?? Instance.Localizer["Console"];
 
-        Task.Run(() => Database.Unban(steamId.SteamId64, player, playerName));
+        Task.Run(() => Database.Unban(steamId.SteamId64, player, adminname));
 
-        Library.PrintToChatAll("css_unban", playerName, steamid);
-        Discord.SendMessage($"[{player?.SteamID ?? 0}] {playerName} -> css_unban <{steamid}>");
+        Library.PrintToChatAll("css_unban", adminname, steamid);
+        Discord.SendMessage($"[{player?.SteamID ?? 0}] {adminname} -> css_unban <{steamid}>");
     }
 
     [ConsoleCommand("css_addban")]
@@ -108,24 +104,23 @@ public partial class Admin
 
         CCSPlayerController? target = Utilities.GetPlayerFromSteamId(steamId.SteamId64);
 
-        string playerName = player?.PlayerName ?? "Console";
+        var adminname = player?.PlayerName ?? Instance.Localizer["Console"];
 
         if (target != null)
         {
             string targetname = target.PlayerName;
 
-            Task.Run(() => Database.Ban(target, targetname, player, playerName, reason, time));
-            target.Kick();
+            target.Ban(targetname, player, adminname, reason, time);
 
-            Library.PrintToChatAll("css_ban", playerName, targetname, time, reason);
-            Discord.SendMessage($"[{player?.SteamID ?? 0}] {playerName} -> css_addban <{targetname}> <{time}> <{reason}>");
+            Library.PrintToChatAll("css_ban", adminname, targetname, time, reason);
+            Discord.SendMessage($"[{player?.SteamID ?? 0}] {adminname} -> css_addban <{targetname}> <{time}> <{reason}>");
         }
         else
         {
-            Task.Run(() => Database.Ban(steamId.SteamId64, player, playerName, reason, time));
+            Task.Run(() => Database.Ban(steamId.SteamId64, player, adminname, reason, time));
 
-            Library.PrintToChatAll("css_addban", playerName, steamId.SteamId64, time, reason);
-            Discord.SendMessage($"[{player?.SteamID ?? 0}] {playerName} -> css_addban <{steamId.SteamId64}> <{time}> <{reason}>");
+            Library.PrintToChatAll("css_addban", adminname, steamId.SteamId64, time, reason);
+            Discord.SendMessage($"[{player?.SteamID ?? 0}] {adminname} -> css_addban <{steamId.SteamId64}> <{time}> <{reason}>");
         }
     }
 }

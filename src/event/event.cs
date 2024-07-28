@@ -15,23 +15,23 @@ public static class Event
 {
     public static void Load()
     {
-        Instance.AddCommandListener("say", OnSay, HookMode.Pre);
-        Instance.AddCommandListener("say_team", OnSay, HookMode.Pre);
+        //Instance.AddCommandListener("say", OnSay, HookMode.Pre);
+        //Instance.AddCommandListener("say_team", OnSay, HookMode.Pre);
 
-        Instance.RegisterListener<OnClientAuthorized>(OnClientAuthorized);
+        //Instance.RegisterListener<OnClientAuthorized>(OnClientAuthorized);
 
-        Instance.RegisterEventHandler<EventPlayerSpawn>(OnPlayerSpawn);
-        Instance.RegisterEventHandler<EventPlayerDeath>(OnPlayerDeath);
-        Instance.RegisterEventHandler<EventPlayerDisconnect>(OnPlayerDisconnect);
-        Instance.RegisterEventHandler<EventRoundStart>(OnRoundStart);
-        Instance.RegisterEventHandler<EventPlayerConnectFull>(OnPlayerConnect);
+        //Instance.RegisterEventHandler<EventPlayerSpawn>(OnPlayerSpawn);
+        //Instance.RegisterEventHandler<EventPlayerDeath>(OnPlayerDeath);
+        //Instance.RegisterEventHandler<EventPlayerDisconnect>(OnPlayerDisconnect);
+        //Instance.RegisterEventHandler<EventRoundStart>(OnRoundStart);
+        //Instance.RegisterEventHandler<EventPlayerConnectFull>(OnPlayerConnect);
     }
 
     public static void Unload()
     {
-        Instance.RemoveCommandListener("say", OnSay, HookMode.Pre);
-        Instance.RemoveCommandListener("say_team", OnSay, HookMode.Pre);
-        Instance.RemoveListener<OnClientAuthorized>(OnClientAuthorized);
+        //Instance.RemoveCommandListener("say", OnSay, HookMode.Pre);
+        //Instance.RemoveCommandListener("say_team", OnSay, HookMode.Pre);
+        //Instance.RemoveListener<OnClientAuthorized>(OnClientAuthorized);
     }
 
     public static HookResult OnSay(CCSPlayerController? player, CommandInfo command)

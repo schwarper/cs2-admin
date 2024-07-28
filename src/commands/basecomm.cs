@@ -54,7 +54,7 @@ public partial class Admin
     [CommandHelper(1, "<#userid|name|all @ commands>", CommandUsage.CLIENT_AND_SERVER)]
     public void Command_Mute(CCSPlayerController? player, CommandInfo command)
     {
-        (List<CCSPlayerController> players, string targetname) = Find(player, command, 1, false, true, MultipleFlags.NORMAL);
+        (List<CCSPlayerController> players, string adminname, string targetname) = Find(player, command, 1, false, true, MultipleFlags.NORMAL);
 
         if (players.Count == 0)
         {
@@ -68,14 +68,14 @@ public partial class Admin
 
         if (players.Count == 1)
         {
-            PrintToChatAll("css_mute<player>", player?.PlayerName ?? "Console", targetname);
+            PrintToChatAll("css_mute<player>", adminname, targetname);
         }
         else
         {
-            PrintToChatAll("css_mute<multiple>", player?.PlayerName ?? "Console", targetname);
+            PrintToChatAll("css_mute<multiple>", adminname, targetname);
         }
 
-        Discord.SendMessage($"[{player?.SteamID ?? 0}] {player?.PlayerName ?? "Console"} -> css_mute <{command.GetArg(1)}>");
+        Discord.SendMessage($"[{player?.SteamID ?? 0}] {adminname} -> css_mute <{command.GetArg(1)}>");
     }
 
     [ConsoleCommand("css_unmute")]
@@ -83,7 +83,7 @@ public partial class Admin
     [CommandHelper(1, "<#userid|name|all @ commands>", CommandUsage.CLIENT_AND_SERVER)]
     public void Command_Unmute(CCSPlayerController? player, CommandInfo command)
     {
-        (List<CCSPlayerController> players, string targetname) = Find(player, command, 1, false, true, MultipleFlags.NORMAL);
+        (List<CCSPlayerController> players, string adminname, string targetname) = Find(player, command, 1, false, true, MultipleFlags.NORMAL);
 
         if (players.Count == 0)
         {
@@ -97,14 +97,14 @@ public partial class Admin
 
         if (players.Count == 1)
         {
-            PrintToChatAll("css_unmute<player>", player?.PlayerName ?? "Console", targetname);
+            PrintToChatAll("css_unmute<player>", adminname, targetname);
         }
         else
         {
-            PrintToChatAll("css_unmute<multiple>", player?.PlayerName ?? "Console", targetname);
+            PrintToChatAll("css_unmute<multiple>", adminname, targetname);
         }
 
-        Discord.SendMessage($"[{player?.SteamID ?? 0}] {player?.PlayerName ?? "Console"} -> css_unmute <{command.GetArg(1)}>");
+        Discord.SendMessage($"[{player?.SteamID ?? 0}] {adminname} -> css_unmute <{command.GetArg(1)}>");
     }
 
     [ConsoleCommand("css_gag")]
@@ -112,7 +112,7 @@ public partial class Admin
     [CommandHelper(1, "<#userid|name|all @ commands>", CommandUsage.CLIENT_AND_SERVER)]
     public void Command_Gag(CCSPlayerController? player, CommandInfo command)
     {
-        (List<CCSPlayerController> players, string targetname) = Find(player, command, 1, false, true, MultipleFlags.NORMAL);
+        (List<CCSPlayerController> players, string adminname, string targetname) = Find(player, command, 1, false, true, MultipleFlags.NORMAL);
 
         if (players.Count == 0)
         {
@@ -127,14 +127,14 @@ public partial class Admin
 
         if (players.Count == 1)
         {
-            PrintToChatAll("css_gag<player>", player?.PlayerName ?? "Console", targetname);
+            PrintToChatAll("css_gag<player>", adminname, targetname);
         }
         else
         {
-            PrintToChatAll("css_gag<multiple>", player?.PlayerName ?? "Console", targetname);
+            PrintToChatAll("css_gag<multiple>", adminname, targetname);
         }
 
-        Discord.SendMessage($"[{player?.SteamID ?? 0}] {player?.PlayerName ?? "Console"} -> css_gag <{command.GetArg(1)}>");
+        Discord.SendMessage($"[{player?.SteamID ?? 0}] {adminname} -> css_gag <{command.GetArg(1)}>");
     }
 
     [ConsoleCommand("css_ungag")]
@@ -142,7 +142,7 @@ public partial class Admin
     [CommandHelper(1, "<#userid|name|all @ commands>", CommandUsage.CLIENT_AND_SERVER)]
     public void Command_Ungag(CCSPlayerController? player, CommandInfo command)
     {
-        (List<CCSPlayerController> players, string targetname) = Find(player, command, 1, false, true, MultipleFlags.NORMAL);
+        (List<CCSPlayerController> players, string adminname, string targetname) = Find(player, command, 1, false, true, MultipleFlags.NORMAL);
 
         if (players.Count == 0)
         {
@@ -157,14 +157,14 @@ public partial class Admin
 
         if (players.Count == 1)
         {
-            PrintToChatAll("css_ungag<player>", player?.PlayerName ?? "Console", targetname);
+            PrintToChatAll("css_ungag<player>", adminname, targetname);
         }
         else
         {
-            PrintToChatAll("css_ungag<multiple>", player?.PlayerName ?? "Console", targetname);
+            PrintToChatAll("css_ungag<multiple>", adminname, targetname);
         }
 
-        Discord.SendMessage($"[{player?.SteamID ?? 0}] {player?.PlayerName ?? "Console"} -> css_ungag <{command.GetArg(1)}>");
+        Discord.SendMessage($"[{player?.SteamID ?? 0}] {adminname} -> css_ungag <{command.GetArg(1)}>");
     }
 
     [ConsoleCommand("css_silence")]
@@ -172,7 +172,7 @@ public partial class Admin
     [CommandHelper(1, "<#userid|name|all @ commands>", CommandUsage.CLIENT_AND_SERVER)]
     public void Command_Silence(CCSPlayerController? player, CommandInfo command)
     {
-        (List<CCSPlayerController> players, string targetname) = Find(player, command, 1, false, true, MultipleFlags.NORMAL);
+        (List<CCSPlayerController> players, string adminname, string targetname) = Find(player, command, 1, false, true, MultipleFlags.NORMAL);
 
         if (players.Count == 0)
         {
@@ -188,14 +188,14 @@ public partial class Admin
 
         if (players.Count == 1)
         {
-            PrintToChatAll("css_silence<player>", player?.PlayerName ?? "Console", targetname);
+            PrintToChatAll("css_silence<player>", adminname, targetname);
         }
         else
         {
-            PrintToChatAll("css_silence<multiple>", player?.PlayerName ?? "Console", targetname);
+            PrintToChatAll("css_silence<multiple>", adminname, targetname);
         }
 
-        Discord.SendMessage($"[{player?.SteamID ?? 0}] {player?.PlayerName ?? "Console"} -> css_silence <{command.GetArg(1)}>");
+        Discord.SendMessage($"[{player?.SteamID ?? 0}] {adminname} -> css_silence <{command.GetArg(1)}>");
     }
 
     [ConsoleCommand("css_unsilence")]
@@ -203,7 +203,7 @@ public partial class Admin
     [CommandHelper(1, "<#userid|name|all @ commands>", CommandUsage.CLIENT_AND_SERVER)]
     public void Command_Unsilence(CCSPlayerController? player, CommandInfo command)
     {
-        (List<CCSPlayerController> players, string targetname) = Find(player, command, 1, false, true, MultipleFlags.NORMAL);
+        (List<CCSPlayerController> players, string adminname, string targetname) = Find(player, command, 1, false, true, MultipleFlags.NORMAL);
 
         if (players.Count == 0)
         {
@@ -219,14 +219,14 @@ public partial class Admin
 
         if (players.Count == 1)
         {
-            PrintToChatAll("css_unsilence<player>", player?.PlayerName ?? "Console", targetname);
+            PrintToChatAll("css_unsilence<player>", adminname, targetname);
         }
         else
         {
-            PrintToChatAll("css_unsilence<multiple>", player?.PlayerName ?? "Console", targetname);
+            PrintToChatAll("css_unsilence<multiple>", adminname, targetname);
         }
 
-        Discord.SendMessage($"[{player?.SteamID ?? 0}] {player?.PlayerName ?? "Console"} -> css_unsilence <{command.GetArg(1)}>");
+        Discord.SendMessage($"[{player?.SteamID ?? 0}] {adminname} -> css_unsilence <{command.GetArg(1)}>");
     }
 
     [ConsoleCommand("css_tmute")]
@@ -235,7 +235,7 @@ public partial class Admin
     [CommandHelper(1, "<#userid|name> <time>", CommandUsage.CLIENT_AND_SERVER)]
     public void Command_TMute(CCSPlayerController? player, CommandInfo command)
     {
-        (List<CCSPlayerController> players, string targetname) = Find(player, command, 1, true, true, MultipleFlags.NORMAL);
+        (List<CCSPlayerController> players, string adminname, string targetname) = Find(player, command, 1, true, true, MultipleFlags.NORMAL);
 
         if (players.Count == 0)
         {
@@ -269,12 +269,10 @@ public partial class Admin
             End = now.AddMinutes(time)
         });
 
-        string playerName = player?.PlayerName ?? "Console";
+        Task.Run(async () => await Database.PunishPlayer(target, targetname, player, adminname, "MUTE", time));
 
-        Task.Run(async () => await Database.PunishPlayer(target, targetname, player, playerName, "MUTE", time));
-
-        PrintToChatAll("css_tmute", playerName, targetname, time);
-        Discord.SendMessage($"[{player?.SteamID ?? 0}] {playerName} -> css_tmute <{command.GetArg(1)}> <{time}>");
+        PrintToChatAll("css_tmute", adminname, targetname, time);
+        Discord.SendMessage($"[{player?.SteamID ?? 0}] {adminname} -> css_tmute <{command.GetArg(1)}> <{time}>");
     }
 
     [ConsoleCommand("css_tunmute")]
@@ -283,7 +281,7 @@ public partial class Admin
     [CommandHelper(1, "<#userid|name>", CommandUsage.CLIENT_AND_SERVER)]
     public void Command_TUnmute(CCSPlayerController? player, CommandInfo command)
     {
-        (List<CCSPlayerController> players, string targetname) = Find(player, command, 1, true, true, MultipleFlags.NORMAL);
+        (List<CCSPlayerController> players, string adminname, string targetname) = Find(player, command, 1, true, true, MultipleFlags.NORMAL);
 
         if (players.Count == 0)
         {
@@ -301,12 +299,10 @@ public partial class Admin
         target.VoiceFlags = VoiceFlags.Normal;
         PlayerTemporaryPunishList.RemoveAll(p => p.SteamID == target.SteamID && p.PunishName == "MUTE");
 
-        string playerName = player?.PlayerName ?? "Console";
+        Task.Run(() => Database.UnPunishPlayer(target.SteamID, player, adminname, "MUTE"));
 
-        Task.Run(() => Database.UnPunishPlayer(target.SteamID, player, playerName, "MUTE"));
-
-        PrintToChatAll("css_tunmute", playerName, targetname);
-        Discord.SendMessage($"[{player?.SteamID ?? 0}] {playerName} -> css_tunmute <{command.GetArg(1)}> <{command.GetArg(1)}>");
+        PrintToChatAll("css_tunmute", adminname, targetname);
+        Discord.SendMessage($"[{player?.SteamID ?? 0}] {adminname} -> css_tunmute <{command.GetArg(1)}> <{command.GetArg(1)}>");
     }
 
     [ConsoleCommand("css_tgag")]
@@ -315,7 +311,7 @@ public partial class Admin
     [CommandHelper(1, "<#userid|name> <time>", CommandUsage.CLIENT_AND_SERVER)]
     public void Command_TGag(CCSPlayerController? player, CommandInfo command)
     {
-        (List<CCSPlayerController> players, string targetname) = Find(player, command, 1, true, true, MultipleFlags.NORMAL);
+        (List<CCSPlayerController> players, string adminname, string targetname) = Find(player, command, 1, true, true, MultipleFlags.NORMAL);
 
         if (players.Count == 0)
         {
@@ -347,12 +343,10 @@ public partial class Admin
             End = now.AddMinutes(time)
         });
 
-        string playerName = player?.PlayerName ?? "Console";
+        Task.Run(() => Database.PunishPlayer(target, targetname, player, adminname, "GAG", time));
 
-        Task.Run(() => Database.PunishPlayer(target, targetname, player, playerName, "GAG", time));
-
-        PrintToChatAll("css_tgag", playerName, targetname, time);
-        Discord.SendMessage($"[{player?.SteamID ?? 0}] {playerName} -> css_tgag <{command.GetArg(1)}> <{time}>");
+        PrintToChatAll("css_tgag", adminname, targetname, time);
+        Discord.SendMessage($"[{player?.SteamID ?? 0}] {adminname} -> css_tgag <{command.GetArg(1)}> <{time}>");
     }
 
     [ConsoleCommand("css_tungag")]
@@ -361,7 +355,7 @@ public partial class Admin
     [CommandHelper(1, "<#userid|name>", CommandUsage.CLIENT_AND_SERVER)]
     public void Command_TUngag(CCSPlayerController? player, CommandInfo command)
     {
-        (List<CCSPlayerController> players, string targetname) = Find(player, command, 1, true, true, MultipleFlags.NORMAL);
+        (List<CCSPlayerController> players, string adminname, string targetname) = Find(player, command, 1, true, true, MultipleFlags.NORMAL);
 
         if (players.Count == 0)
         {
@@ -378,12 +372,10 @@ public partial class Admin
 
         PlayerTemporaryPunishList.RemoveAll(p => p.SteamID == target.SteamID && p.PunishName == "GAG");
 
-        string playerName = player?.PlayerName ?? "Console";
+        Task.Run(() => Database.UnPunishPlayer(target.SteamID, player, adminname, "GAG"));
 
-        Task.Run(() => Database.UnPunishPlayer(target.SteamID, player, playerName, "GAG"));
-
-        PrintToChatAll("css_tungag", playerName, targetname);
-        Discord.SendMessage($"[{player?.SteamID ?? 0}] {playerName} -> css_tungag <{command.GetArg(1)}>");
+        PrintToChatAll("css_tungag", adminname, targetname);
+        Discord.SendMessage($"[{player?.SteamID ?? 0}] {adminname} -> css_tungag <{command.GetArg(1)}>");
     }
 
     [ConsoleCommand("css_tsilence")]
@@ -392,7 +384,7 @@ public partial class Admin
     [CommandHelper(1, "<#userid|name> <time>", CommandUsage.CLIENT_AND_SERVER)]
     public void Command_TSilence(CCSPlayerController? player, CommandInfo command)
     {
-        (List<CCSPlayerController> players, string targetname) = Find(player, command, 1, true, true, MultipleFlags.NORMAL);
+        (List<CCSPlayerController> players, string adminname, string targetname) = Find(player, command, 1, true, true, MultipleFlags.NORMAL);
 
         if (players.Count == 0)
         {
@@ -411,8 +403,6 @@ public partial class Admin
 
         DateTime now = DateTime.Now;
 
-        string playerName = player?.PlayerName ?? "Console";
-
         if (!PlayerTemporaryPunishList.Any(p => p.SteamID == target.SteamID && p.PunishName == "MUTE"))
         {
             PlayerTemporaryPunishList.Add(new PunishInfo
@@ -424,7 +414,7 @@ public partial class Admin
                 End = now.AddMinutes(time)
             });
 
-            Task.Run(() => Database.PunishPlayer(target, targetname, player, playerName, "MUTE", time));
+            Task.Run(() => Database.PunishPlayer(target, targetname, player, adminname, "MUTE", time));
         }
 
         if (!PlayerTemporaryPunishList.Any(p => p.SteamID == target.SteamID && p.PunishName == "GAG"))
@@ -438,11 +428,11 @@ public partial class Admin
                 End = now.AddMinutes(time)
             });
 
-            Task.Run(() => Database.PunishPlayer(target, targetname, player, playerName, "GAG", time));
+            Task.Run(() => Database.PunishPlayer(target, targetname, player, adminname, "GAG", time));
         }
 
-        PrintToChatAll("css_tsilence", playerName, targetname, time);
-        Discord.SendMessage($"[{player?.SteamID ?? 0}] {playerName} -> css_tsilence <{command.GetArg(1)}> <{time}>");
+        PrintToChatAll("css_tsilence", adminname, targetname, time);
+        Discord.SendMessage($"[{player?.SteamID ?? 0}] {adminname} -> css_tsilence <{command.GetArg(1)}> <{time}>");
     }
 
     [ConsoleCommand("css_tunsilence")]
@@ -451,7 +441,7 @@ public partial class Admin
     [CommandHelper(1, "<#userid|name>", CommandUsage.CLIENT_AND_SERVER)]
     public void Command_TUnSilence(CCSPlayerController? player, CommandInfo command)
     {
-        (List<CCSPlayerController> players, string targetname) = Find(player, command, 1, true, true, MultipleFlags.NORMAL);
+        (List<CCSPlayerController> players, string adminname, string targetname) = Find(player, command, 1, true, true, MultipleFlags.NORMAL);
 
         if (players.Count == 0)
         {
@@ -460,15 +450,13 @@ public partial class Admin
 
         CCSPlayerController target = players.Single();
 
-        string playerName = player?.PlayerName ?? "Console";
-
         PlayerTemporaryPunishList.RemoveAll(p => p.SteamID == target.SteamID && p.PunishName == "GAG");
-        Task.Run(() => Database.UnPunishPlayer(target.SteamID, player, playerName, "GAG"));
+        Task.Run(() => Database.UnPunishPlayer(target.SteamID, player, adminname, "GAG"));
 
         PlayerTemporaryPunishList.RemoveAll(p => p.SteamID == target.SteamID && p.PunishName == "MUTE");
-        Task.Run(() => Database.UnPunishPlayer(target.SteamID, player, playerName, "MUTE"));
+        Task.Run(() => Database.UnPunishPlayer(target.SteamID, player, adminname, "MUTE"));
 
-        PrintToChatAll("css_tunsilence", playerName, targetname);
-        Discord.SendMessage($"[{player?.SteamID ?? 0}] {playerName} -> css_tunsilence <{command.GetArg(1)}>");
+        PrintToChatAll("css_tunsilence", adminname, targetname);
+        Discord.SendMessage($"[{player?.SteamID ?? 0}] {adminname} -> css_tunsilence <{command.GetArg(1)}>");
     }
 }

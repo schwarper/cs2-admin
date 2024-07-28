@@ -16,7 +16,7 @@ public partial class Admin
     [CommandHelper(minArgs: 1, "<#userid|name> <reason>", whoCanExecute: CommandUsage.CLIENT_AND_SERVER)]
     public void Command_Kick(CCSPlayerController? player, CommandInfo command)
     {
-        (List<CCSPlayerController> players, string targetname) = Find(player, command, 1, true, true, MultipleFlags.NORMAL);
+        (List<CCSPlayerController> players, string adminname, string targetname) = Find(player, command, 1, true, true, MultipleFlags.NORMAL);
 
         if (players.Count == 0)
         {
@@ -31,13 +31,18 @@ public partial class Admin
             return;
         }
 
-        string reason = command.GetArg(2) ?? Localizer["Unknown"];
+        string reason = command.GetArg(2);
+
+        if (reason == string.Empty)
+        {
+            reason = Localizer["Unknown"];
+        }
 
         target.Kick();
 
-        PrintToChatAll("css_kick", player?.PlayerName ?? "Console", targetname, reason);
+        PrintToChatAll("css_kick", adminname, targetname, reason);
 
-        Discord.SendMessage($"[{player?.SteamID ?? 0}] {player?.PlayerName ?? "Console"} -> css_kick <{targetname}> <{reason}>");
+        Discord.SendMessage($"[{player?.SteamID ?? 0}] {adminname} -> css_kick <{targetname}> <{reason}>");
     }
 
     [ConsoleCommand("css_changemap")]
@@ -104,9 +109,11 @@ public partial class Admin
 
     private void ExecuteMapCommand(string mapCommand, CCSPlayerController? player, string map)
     {
-        PrintToChatAll(mapCommand.Contains("workshop") ? "css_wsmap" : "css_map", player?.PlayerName ?? "Console", map);
+        var adminname = player?.PlayerName ?? Instance.Localizer["Console"];
 
-        Discord.SendMessage($"[{player?.SteamID ?? 0}] {player?.PlayerName ?? "Console"} -> {mapCommand}");
+        PrintToChatAll(mapCommand.Contains("workshop") ? "css_wsmap" : "css_map", adminname, map);
+
+        Discord.SendMessage($"[{player?.SteamID ?? 0}] {adminname} -> {mapCommand}");
 
         AddTimer(Config.ChangeMapDelay, () =>
         {
@@ -124,13 +131,15 @@ public partial class Admin
             return;
         }
 
+        var adminname = player?.PlayerName ?? Instance.Localizer["Console"];
+
         string arg = command.ArgString;
 
         Server.ExecuteCommand(arg);
 
-        PrintToChatAll("css_rcon", player?.PlayerName ?? "Console", arg);
+        PrintToChatAll("css_rcon", adminname, arg);
 
-        Discord.SendMessage($"[{player?.SteamID ?? 0}] {player?.PlayerName ?? "Console"} -> css_rcon <{arg}>");
+        Discord.SendMessage($"[{player?.SteamID ?? 0}] {adminname} -> css_rcon <{arg}>");
     }
 
     [ConsoleCommand("css_cvar")]
@@ -173,9 +182,11 @@ public partial class Admin
 
         Server.ExecuteCommand($"{cvarname} {value}");
 
-        PrintToChatAll("css_cvar", player?.PlayerName ?? "Console", cvar.Name, value);
+        var adminname = player?.PlayerName ?? Instance.Localizer["Console"];
 
-        Discord.SendMessage($"[{player?.SteamID ?? 0}] {player?.PlayerName ?? "Console"} -> css_cvar <{cvar.Name}> <{value}");
+        PrintToChatAll("css_cvar", adminname, cvar.Name, value);
+
+        Discord.SendMessage($"[{player?.SteamID ?? 0}] {adminname} -> css_cvar <{cvar.Name}> <{value}");
     }
 
     [ConsoleCommand("css_exec")]
@@ -192,9 +203,11 @@ public partial class Admin
 
         Server.ExecuteCommand($"exec {cfg}");
 
-        PrintToChatAll("css_exec", player?.PlayerName ?? "Console", cfg);
+        var adminname = player?.PlayerName ?? Instance.Localizer["Console"];
 
-        Discord.SendMessage($"[{player?.SteamID ?? 0}] {player?.PlayerName ?? "Console"} -> css_exec <{cfg}>");
+        PrintToChatAll("css_exec", adminname, cfg);
+
+        Discord.SendMessage($"[{player?.SteamID ?? 0}] {adminname} -> css_exec <{cfg}>");
     }
 
     [ConsoleCommand("css_rr")]
@@ -203,9 +216,11 @@ public partial class Admin
     {
         Server.ExecuteCommand("mp_restartgame 2");
 
-        PrintToChatAll("css_rr", player?.PlayerName ?? "Console");
+        var adminname = player?.PlayerName ?? Instance.Localizer["Console"];
 
-        Discord.SendMessage($"[{player?.SteamID ?? 0}] {player?.PlayerName ?? "Console"} -> css_rr");
+        PrintToChatAll("css_rr", adminname);
+
+        Discord.SendMessage($"[{player?.SteamID ?? 0}] {adminname} -> css_rr");
     }
 
     [ConsoleCommand("css_who")]
@@ -217,7 +232,7 @@ public partial class Admin
 
         if (command.ArgCount > 1)
         {
-            (List<CCSPlayerController> players, string targetname) = Find(player, command, 1, true, true, MultipleFlags.NORMAL);
+            (List<CCSPlayerController> players, string adminname, string targetname) = Find(player, command, 1, true, true, MultipleFlags.NORMAL);
 
             if (players.Count == 0)
             {
@@ -228,7 +243,7 @@ public partial class Admin
 
             PrintPlayerInfo(targetConsolePrint, target, targetname, true);
 
-            Discord.SendMessage($"[{player?.SteamID ?? 0}] {player?.PlayerName ?? "Console"} -> css_who <{targetname}>");
+            Discord.SendMessage($"[{player?.SteamID ?? 0}] {adminname} -> css_who <{targetname}>");
         }
         else
         {
@@ -237,7 +252,9 @@ public partial class Admin
                 PrintPlayerInfo(targetConsolePrint, target, string.Empty, false);
             }
 
-            Discord.SendMessage($"[{player?.SteamID ?? 0}] {player?.PlayerName ?? "Console"} -> css_who");
+            var adminname = player?.PlayerName ?? Instance.Localizer["Console"];
+
+            Discord.SendMessage($"[{player?.SteamID ?? 0}] {adminname} -> css_who");
         }
     }
 

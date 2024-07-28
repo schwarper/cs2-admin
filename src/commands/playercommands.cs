@@ -14,7 +14,7 @@ public partial class Admin : BasePlugin
     [CommandHelper(minArgs: 1, "<#userid|name|all @ commands> <damage>", whoCanExecute: CommandUsage.CLIENT_AND_SERVER)]
     public void Command_Slap(CCSPlayerController? player, CommandInfo command)
     {
-        (List<CCSPlayerController> players, string targetname) = Find(player, command, 1, false, true, MultipleFlags.IGNORE_DEAD_PLAYERS);
+        (List<CCSPlayerController> players, string adminname, string targetname) = Find(player, command, 1, false, true, MultipleFlags.IGNORE_DEAD_PLAYERS);
 
         if (players.Count == 0)
         {
@@ -38,14 +38,14 @@ public partial class Admin : BasePlugin
 
         if (players.Count == 1)
         {
-            PrintToChatAll("css_slap<player>", player?.PlayerName ?? "Console", targetname, damage);
+            PrintToChatAll("css_slap<player>", adminname, targetname, damage);
         }
         else
         {
-            PrintToChatAll("css_slap<multiple>", player?.PlayerName ?? "Console", targetname, damage);
+            PrintToChatAll("css_slap<multiple>", adminname, targetname, damage);
         }
 
-        Discord.SendMessage($"[{player?.SteamID ?? 0}] {player?.PlayerName ?? "Console"} -> css_slap <{command.GetArg(1)}> <{damage}>");
+        Discord.SendMessage($"[{player?.SteamID ?? 0}] {adminname} -> css_slap <{command.GetArg(1)}> <{damage}>");
     }
 
     [ConsoleCommand("css_slay")]
@@ -53,7 +53,7 @@ public partial class Admin : BasePlugin
     [CommandHelper(minArgs: 1, "<#userid|name|all @ commands>", whoCanExecute: CommandUsage.CLIENT_AND_SERVER)]
     public void Command_Slay(CCSPlayerController? player, CommandInfo command)
     {
-        (List<CCSPlayerController> players, string targetname) = Find(player, command, 1, false, true, MultipleFlags.IGNORE_DEAD_PLAYERS);
+        (List<CCSPlayerController> players, string adminname, string targetname) = Find(player, command, 1, false, true, MultipleFlags.IGNORE_DEAD_PLAYERS);
 
         if (players.Count == 0)
         {
@@ -67,14 +67,14 @@ public partial class Admin : BasePlugin
 
         if (players.Count == 1)
         {
-            PrintToChatAll("css_slay<player>", player?.PlayerName ?? "Console", targetname);
+            PrintToChatAll("css_slay<player>", adminname, targetname);
         }
         else
         {
-            PrintToChatAll("css_slay<player>", player?.PlayerName ?? "Console", targetname);
+            PrintToChatAll("css_slay<player>", adminname, targetname);
         }
 
-        Discord.SendMessage($"[{player?.SteamID ?? 0}] {player?.PlayerName ?? "Console"} -> css_slay <{command.GetArg(1)}>");
+        Discord.SendMessage($"[{player?.SteamID ?? 0}] {adminname} -> css_slay <{command.GetArg(1)}>");
     }
 
     [ConsoleCommand("css_rename")]
@@ -82,7 +82,7 @@ public partial class Admin : BasePlugin
     [CommandHelper(minArgs: 2, "<#userid|name> <newname>", whoCanExecute: CommandUsage.CLIENT_AND_SERVER)]
     public void Command_ReName(CCSPlayerController? player, CommandInfo command)
     {
-        (List<CCSPlayerController> players, string targetname) = Find(player, command, 2, true, true, MultipleFlags.NORMAL);
+        (List<CCSPlayerController> players, string adminname, string targetname) = Find(player, command, 2, true, true, MultipleFlags.NORMAL);
 
         if (players.Count == 0)
         {
@@ -99,10 +99,10 @@ public partial class Admin : BasePlugin
             return;
         }
 
-        PrintToChatAll("css_rename", player?.PlayerName ?? "Console", targetname, newname);
+        PrintToChatAll("css_rename", adminname, targetname, newname);
 
         target.Rename(newname);
 
-        Discord.SendMessage($"[{player?.SteamID ?? 0}] {player?.PlayerName ?? "Console"} -> css_rename <{targetname}> <{newname}>");
+        Discord.SendMessage($"[{player?.SteamID ?? 0}] {adminname} -> css_rename <{targetname}> <{newname}>");
     }
 }

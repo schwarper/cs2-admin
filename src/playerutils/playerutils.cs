@@ -1,35 +1,92 @@
 using CounterStrikeSharp.API;
 using CounterStrikeSharp.API.Core;
+using CounterStrikeSharp.API.Modules.Commands.Targeting;
 using CounterStrikeSharp.API.Modules.Memory;
 using CounterStrikeSharp.API.Modules.Timers;
 using CounterStrikeSharp.API.Modules.Utils;
+using System.Collections.Concurrent;
 using static Admin.Admin;
 using static Admin.Library;
 using Color = System.Drawing.Color;
+using Timer = CounterStrikeSharp.API.Modules.Timers.Timer;
 
 namespace Admin;
 
 public static class PlayerUtils
 {
-    private static void ChangeMovetype(this CBasePlayerPawn pawn, MoveType_t movetype)
+    public static void AddTimer(this CCSPlayerController player, Timer timer, PlayerTimerFlags flag)
     {
-        pawn.MoveType = movetype;
-        Schema.SetSchemaValue(pawn.Handle, "CBaseEntity", "m_nActualMoveType", movetype);
-        Utilities.SetStateChanged(pawn, "CBaseEntity", "m_MoveType");
+        player.RemoveTimer(flag);
+
+        if (!GlobalPlayerTimers.TryGetValue(player, out var timers))
+        {
+            timers = [];
+            GlobalPlayerTimers[player] = timers;
+        }
+
+        timers[flag] = timer;
     }
-    public static void Freeze(this CBasePlayerPawn pawn)
+    public static void RemoveTimer(this CCSPlayerController player, PlayerTimerFlags flag)
     {
-        ChangeMovetype(pawn, MoveType_t.MOVETYPE_OBSOLETE);
-        pawn.Glow(Color.Green);
+        if (GlobalPlayerTimers.TryGetValue(player, out var timers))
+        {
+            if (timers.TryGetValue(flag, out var timer))
+            {
+                timer.Kill();
+                timers.Remove(flag);
+
+                if (timers.Count == 0)
+                {
+                    GlobalPlayerTimers.Remove(player);
+                }
+            }
+        }
     }
-    public static void UnFreeze(this CBasePlayerPawn pawn)
+    public static void Ban(this CCSPlayerController player, string playername, CCSPlayerController? admin, string adminname, string reason, int duration)
     {
-        ChangeMovetype(pawn, MoveType_t.MOVETYPE_WALK);
-        pawn.Glow(Color.White);
+        Task.Run(() => Database.Ban(player, playername, admin, adminname, reason, duration));
+
+        player.Kick();
+    }
+    public static void Kick(this CCSPlayerController player)
+    {
+        Instance.AddTimer(Instance.Config.KickDelay, () =>
+        {
+            Server.ExecuteCommand($"kickid \"{player.UserId}\";");
+        });
+    }
+    public static void Freeze(this CCSPlayerController player, float value)
+    {
+        var playerPawn = player.PlayerPawn.Value;
+
+        if (playerPawn == null)
+        {
+            return;
+        }
+
+        ChangeMovetype(playerPawn, MoveType_t.MOVETYPE_OBSOLETE, Color.Green);
+
+        if (value > 0.0)
+        {
+            var timer = Instance.AddTimer(value, player.UnFreeze);
+            player.AddTimer(timer, PlayerTimerFlags.Freeze);
+        }
+    }
+    public static void UnFreeze(this CCSPlayerController player)
+    {
+        var playerPawn = player.PlayerPawn.Value;
+
+        if (playerPawn == null)
+        {
+            return;
+        }
+
+        ChangeMovetype(playerPawn, MoveType_t.MOVETYPE_WALK, Color.White);
+        player.RemoveTimer(PlayerTimerFlags.Freeze);
     }
     public static void Noclip(this CBasePlayerPawn pawn, bool noclip)
     {
-        ChangeMovetype(pawn, noclip ? MoveType_t.MOVETYPE_NOCLIP : MoveType_t.MOVETYPE_WALK);
+        ChangeMovetype(pawn, noclip ? MoveType_t.MOVETYPE_NOCLIP : MoveType_t.MOVETYPE_WALK, null);
     }
     public static void Health(this CCSPlayerController player, int health)
     {
@@ -98,8 +155,8 @@ public static class PlayerUtils
     }
     public static void Rename(this CCSPlayerController player, string newname)
     {
-        SchemaString<CBasePlayerController> playerName = new(player, "m_iszPlayerName");
-        playerName.Set(newname);
+        SchemaString<CBasePlayerController> adminname = new(player, "m_iszPlayerName");
+        adminname.Set(newname);
         Utilities.SetStateChanged(player, "CBasePlayerController", "m_iszPlayerName");
     }
     public static void TeleportToPlayer(this CCSPlayerPawn playerPawn, CCSPlayerPawn targetPawn)
@@ -162,7 +219,7 @@ public static class PlayerUtils
                 weapon.Remove();
             }
 
-            
+
             if (slotList.Any(slot => slot == _weapon.GearSlot))
             {
                 weapon.Remove();
@@ -182,15 +239,6 @@ public static class PlayerUtils
             player.GiveNamedItem(weapon);
         }
     }
-
-    public static void Kick(this CCSPlayerController player)
-    {
-        Instance.AddTimer(Instance.Config.KickDelay, () =>
-        {
-            Server.ExecuteCommand($"kickid \"{player.UserId}\";");
-        });
-    }
-
     public static void Beacon(this CCSPlayerController player)
     {
         Vector? absOrigin = player.PlayerPawn.Value?.AbsOrigin;
@@ -235,7 +283,17 @@ public static class PlayerUtils
 
         player.ExecuteClientCommand($"play sounds/tools/sfm/beep.vsnd_c");
     }
+    private static void ChangeMovetype(this CBasePlayerPawn pawn, MoveType_t movetype, Color? color)
+    {
+        pawn.MoveType = movetype;
+        Schema.SetSchemaValue(pawn.Handle, "CBaseEntity", "m_nActualMoveType", movetype);
+        Utilities.SetStateChanged(pawn, "CBaseEntity", "m_MoveType");
 
+        if (color != null)
+        {
+            pawn.Glow(Color.Green);
+        }
+    }
     private static Vector CalculateCirclePoint(float angle, float radius, Vector mid)
     {
         return new Vector(
@@ -244,7 +302,6 @@ public static class PlayerUtils
             mid.Z + 6.0f
         );
     }
-
     private static CBeam? CreateAndDrawBeam(Vector start, Vector end, Color color, float life, float width)
     {
         CBeam? beam = Utilities.CreateEntityByName<CBeam>("beam");
@@ -263,7 +320,6 @@ public static class PlayerUtils
 
         return beam;
     }
-
     private static void MoveBeams(List<CBeam> beams, Vector mid, float angle, float step, float radiusIncrement, float elapsed)
     {
         float radius = initialRadius + radiusIncrement * (elapsed / 0.1f);
@@ -275,7 +331,6 @@ public static class PlayerUtils
             TeleportLaser(beam, start, end);
         }
     }
-
     private static void TeleportLaser(CBeam beam, Vector start, Vector end)
     {
         if (beam != null && beam.IsValid)
@@ -287,7 +342,12 @@ public static class PlayerUtils
             Utilities.SetStateChanged(beam, "CBeam", "m_vecEndPos");
         }
     }
+    public enum PlayerTimerFlags
+    {
+        Freeze = 0
+    };
 
+    public static Dictionary<CCSPlayerController, Dictionary<PlayerTimerFlags, Timer>> GlobalPlayerTimers { get; set; } = [];
     private static readonly Random Random = new();
     private const int lines = 20;
     private const float radiusIncrement = 10.0f;

@@ -40,8 +40,10 @@ public partial class Admin
 
         ResetVote();
 
-        PrintToChatAll("css_vote", player?.PlayerName ?? "Console", question);
-        Discord.SendMessage($"[{player?.SteamID ?? 0}] {player?.PlayerName ?? "Console"} -> css_vote {options[0]}");
+        var adminname = player?.PlayerName ?? Instance.Localizer["Console"];
+
+        PrintToChatAll("css_vote", adminname, question);
+        Discord.SendMessage($"[{player?.SteamID ?? 0}] {adminname} -> css_vote {options[0]}");
 
         CenterHtmlMenu menu = GlobalMenu = VoteMenu(question, options);
         menu.OpenToAll();
@@ -137,7 +139,6 @@ public partial class Admin
                 });
             }
             catch (Exception) { };
-
         }
 
         return menu;
