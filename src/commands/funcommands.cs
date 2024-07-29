@@ -965,6 +965,69 @@ public partial class Admin : BasePlugin
         Discord.SendMessage($"[{player?.SteamID ?? 0}] {adminname} -> css_unshake <{command.GetArg(1)}>");
     }
 
+    [ConsoleCommand("css_blind")]
+    [RequiresPermissions("@css/slay")]
+    [CommandHelper(minArgs: 1, "<#userid|name|all @ commands> <time>", whoCanExecute: CommandUsage.CLIENT_AND_SERVER)]
+    public void Command_Blind(CCSPlayerController? player, CommandInfo command)
+    {
+        (List<CCSPlayerController> players, string adminname, string targetname) = Find(player, command, 1, false, true, MultipleFlags.IGNORE_DEAD_PLAYERS);
+
+        if (players.Count == 0)
+        {
+            return;
+        }
+
+        if (!float.TryParse(command.GetArg(2), out float value) || value <= 0.0)
+        {
+            value = 999f;
+        }
+
+        foreach (CCSPlayerController target in players)
+        {
+            target.Blind(value);
+        }
+
+        if (players.Count == 1)
+        {
+            PrintToChatAll("css_blind<player>", adminname, targetname, value);
+        }
+        else
+        {
+            PrintToChatAll("css_blind<multiple>", adminname, targetname, value);
+        }
+
+        Discord.SendMessage($"[{player?.SteamID ?? 0}] {adminname} -> css_blind <{command.GetArg(1)}> <{value}>");
+    }
+
+    [ConsoleCommand("css_unblind")]
+    [RequiresPermissions("@css/slay")]
+    [CommandHelper(minArgs: 1, "<#userid|name|all @ commands>", whoCanExecute: CommandUsage.CLIENT_AND_SERVER)]
+    public void Command_UnBlind(CCSPlayerController? player, CommandInfo command)
+    {
+        (List<CCSPlayerController> players, string adminname, string targetname) = Find(player, command, 1, false, true, MultipleFlags.IGNORE_DEAD_PLAYERS);
+
+        if (players.Count == 0)
+        {
+            return;
+        }
+
+        foreach (CCSPlayerController target in players)
+        {
+            target.UnBlind();
+        }
+
+        if (players.Count == 1)
+        {
+            PrintToChatAll("css_unblind<player>", adminname, targetname);
+        }
+        else
+        {
+            PrintToChatAll("css_unblind<multiple>", adminname, targetname);
+        }
+
+        Discord.SendMessage($"[{player?.SteamID ?? 0}] {adminname} -> css_unblind <{command.GetArg(1)}>");
+    }
+
     public static Dictionary<CCSPlayerController, (float X, float Y, float Z)> GlobalHRespawnPlayers { get; set; } = [];
 
     private readonly Dictionary<string, CsItem> GlobalWeaponDictionary = new()

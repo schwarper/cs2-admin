@@ -124,6 +124,10 @@
 	"css_shake<multiple>": "{blue}{0} {white}shook {green}{1}{white} for {2} seconds.",
 	"css_unshake<player>": "{blue}{0} {white}unshook {green}{1}{white}.",
 	"css_unshake<multiple>": "{blue}{0} {white}unshook {1}{white}.",
+	"css_blind<player>": "{blue}{0} {white}blinded {green}{1}{white} for {2} seconds.",
+	"css_blind<multiple>": "{blue}{0} {white}blinded {green}{1}{white} for {2} seconds.",
+	"css_unblind<player>": "{blue}{0} {white}unblinded {green}{1}{white}.",
+	"css_unblind<multiple>": "{blue}{0} {white}unblinded {1}{white}.",
 
 	"css_slap<player>": "{blue}{0} {white}slapped {green}{1} {white}and damaged {green}{2}{white}.",
 	"css_slap<multiple>": "{blue}{0} {white}slapped {green}{1} {white}and damaged {green}{2}{white}.",
