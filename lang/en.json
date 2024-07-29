@@ -120,6 +120,10 @@
 	"css_glow<multiple>": "{blue}{0}{white} changes the colour of {green}{1} {white}to {blue}{2}{white}.",
 	"css_beacon<player>": "{blue}{0} {white}set beacon for {green}{1} {white}to {green}{2}{white}.",
 	"css_beacon<multiple>": "{blue}{0} {white}set beacon for {1} {white}to {green}{2}{white}.",
+	"css_shake<player>": "{blue}{0} {white}shook {green}{1}{white} for {2} seconds.",
+	"css_shake<multiple>": "{blue}{0} {white}shook {green}{1}{white} for {2} seconds.",
+	"css_unshake<player>": "{blue}{0} {white}unshook {green}{1}{white}.",
+	"css_unshake<multiple>": "{blue}{0} {white}unshook {1}{white}.",
 
 	"css_slap<player>": "{blue}{0} {white}slapped {green}{1} {white}and damaged {green}{2}{white}.",
 	"css_slap<multiple>": "{blue}{0} {white}slapped {green}{1} {white}and damaged {green}{2}{white}.",

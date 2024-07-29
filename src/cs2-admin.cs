@@ -1,7 +1,6 @@
 using CounterStrikeSharp.API.Core;
 using CounterStrikeSharp.API.Core.Capabilities;
 using CounterStrikeSharp.API.Core.Translations;
-using CounterStrikeSharp.API.Modules.Timers;
 using TagsApi;
 
 namespace Admin;
@@ -17,9 +16,6 @@ public partial class Admin : BasePlugin, IPluginConfig<AdminConfig>
         Instance = this;
 
         Event.Load();
-
-        AddTimer(10.0f, OnBaseCommTimer, TimerFlags.REPEAT);
-        AddTimer(60.0f, async () => { await Database.RemoveExpiredBans(); }, TimerFlags.REPEAT);
     }
 
     public override void OnAllPluginsLoaded(bool hotReload)
@@ -46,11 +42,11 @@ public partial class Admin : BasePlugin, IPluginConfig<AdminConfig>
             }
         }
 
-        Task.Run(() => Database.CreateDatabaseAsync(config, usemysql));
-
         config.Tag = StringExtensions.ReplaceColorTags(config.Tag);
 
         Config = config;
+
+        Task.Run(() => Database.CreateDatabaseAsync(config, usemysql));
     }
 
     public static Admin Instance { get; set; } = new();

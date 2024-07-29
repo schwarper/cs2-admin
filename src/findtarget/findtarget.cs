@@ -8,14 +8,7 @@ namespace Admin;
 
 public static class FindTarget
 {
-    public enum MultipleFlags
-    {
-        NORMAL = 0,
-        IGNORE_DEAD_PLAYERS,
-        IGNORE_ALIVE_PLAYERS
-    }
-
-    public static (List<CCSPlayerController> players, string targetname) Find
+    public static (List<CCSPlayerController> players, string adminname, string targetname) Find
         (
             CCSPlayerController? player,
             CommandInfo command,
@@ -27,7 +20,7 @@ public static class FindTarget
     {
         if (command.ArgCount < minArgCount)
         {
-            return ([], string.Empty);
+            return ([], string.Empty, string.Empty);
         }
 
         TargetResult targetresult = command.GetArgTargetResult(1);
@@ -35,17 +28,17 @@ public static class FindTarget
         if (targetresult.Players.Count == 0)
         {
             command.ReplyToCommand(Instance.Config.Tag + Instance.Localizer["No matching client"]);
-            return ([], string.Empty);
+            return ([], string.Empty, string.Empty);
         }
         else if (singletarget && targetresult.Players.Count > 1)
         {
             command.ReplyToCommand(Instance.Config.Tag + Instance.Localizer["More than one client matched"]);
-            return ([], string.Empty);
+            return ([], string.Empty, string.Empty);
         }
         else if (!command.GetArg(1).StartsWith('@') && targetresult.Players.Count > 1)
         {
             command.ReplyToCommand(Instance.Config.Tag + Instance.Localizer["More than one client matched"]);
-            return ([], string.Empty);
+            return ([], string.Empty, string.Empty);
         }
 
         if (immunitycheck)
@@ -55,7 +48,7 @@ public static class FindTarget
             if (targetresult.Players.Count == 0)
             {
                 command.ReplyToCommand(Instance.Config.Tag + Instance.Localizer["You cannot target"]);
-                return ([], string.Empty);
+                return ([], string.Empty, string.Empty);
             }
         }
 
@@ -66,7 +59,7 @@ public static class FindTarget
             if (targetresult.Players.Count == 0)
             {
                 command.ReplyToCommand(Instance.Config.Tag + Instance.Localizer["You can target only alive players"]);
-                return ([], string.Empty);
+                return ([], string.Empty, string.Empty);
             }
         }
         else if (flags == MultipleFlags.IGNORE_ALIVE_PLAYERS)
@@ -76,7 +69,7 @@ public static class FindTarget
             if (targetresult.Players.Count == 0)
             {
                 command.ReplyToCommand(Instance.Config.Tag + Instance.Localizer["You can target only dead players"]);
-                return ([], string.Empty);
+                return ([], string.Empty, string.Empty);
             }
         }
 
@@ -106,6 +99,15 @@ public static class FindTarget
             };
         }
 
-        return (targetresult.Players, targetname);
+        string adminname = player?.PlayerName ?? Instance.Localizer["Console"];
+
+        return (targetresult.Players, adminname, targetname);
+    }
+
+    public enum MultipleFlags
+    {
+        NORMAL = 0,
+        IGNORE_DEAD_PLAYERS,
+        IGNORE_ALIVE_PLAYERS
     }
 }

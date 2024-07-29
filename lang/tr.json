@@ -130,6 +130,10 @@
 	"css_glow<multiple>": "{blue}{0}{white}, {green}{1}ın {white}rengini {blue}{2} {white}olarak değiştirdi.",
 	"css_beacon<player>": "{blue}{0}{white}, {green}{1} {white}adlı oyuncunun beacon değerini {green}{2} {white}yaptı.",
 	"css_beacon<multiple>": "{blue}{0}{white}, {1}ın {white}beacon değerini {green}{2} {white}yaptı.",
+	"css_shake<player>": "{blue}{0}{white}, {green}{1} {white}adlı oyuncuyu {green}{2} saniye {white}sarstı.",
+	"css_shake<multiple>": "{blue}{0}{white}, {1}ı {green}{2} saniye {white}sarstı.",
+	"css_unshake<player>": "{blue}{0}{white}, {green}{1} {white}adlı oyuncunun sarsıntısını durdurdu.",
+	"css_unshake<multiple>": "{blue}{0}{white}, {1}ın {white}sarsıntısını durdurdu.",
 
 	"css_slap<player>": "{blue}{0}{white}, {green}{1} {white}adlı oyuncuyu {green}{2} {white}gücüyle tokatladı.",
 	"css_slap<multiple>": "{blue}{0}{white}, {green}{1}ı {blue}{2} {white}gücüyle tokatladı.",

@@ -24,8 +24,10 @@ public partial class Admin
         string arg = command.GetCommandString;
         string message = arg[arg.IndexOf(' ')..];
 
-        Server.PrintToChatAll(Localizer["css_say", player?.PlayerName ?? "Console", message]);
-        Discord.SendMessage($"[{player?.SteamID ?? 0}] {player?.PlayerName ?? "Console"} -> css_say <{message}>");
+        string adminname = player?.PlayerName ?? Instance.Localizer["Console"];
+
+        Server.PrintToChatAll(Localizer["css_say", adminname, message]);
+        Discord.SendMessage($"[{player?.SteamID ?? 0}] {adminname} -> css_say <{message}>");
     }
 
     [ConsoleCommand("css_csay")]
@@ -41,12 +43,14 @@ public partial class Admin
         string arg = command.GetCommandString;
         string message = arg[arg.IndexOf(' ')..];
 
+        string adminname = player?.PlayerName ?? Instance.Localizer["Console"];
+
         Utilities.GetPlayers().ForEach(target =>
         {
-            target.PrintToCenter(Localizer["css_csay", player?.PlayerName ?? "Console", message]);
+            target.PrintToCenter(Localizer["css_csay", adminname, message]);
         });
 
-        Discord.SendMessage($"[{player?.SteamID ?? 0}] {player?.PlayerName ?? "Console"} -> css_csay <{message}>");
+        Discord.SendMessage($"[{player?.SteamID ?? 0}] {adminname} -> css_csay <{message}>");
     }
 
     [ConsoleCommand("css_dsay")]
@@ -63,11 +67,13 @@ public partial class Admin
         string arg = command.GetCommandString;
         string message = arg[arg.IndexOf(' ')..];
 
+        string adminname = player?.PlayerName ?? Instance.Localizer["Console"];
+
         VirtualFunctions.ClientPrintAll(HudDestination.Alert,
-            Localizer["css_csay", player?.PlayerName ?? "Console", message],
+            Localizer["css_csay", adminname, message],
             0, 0, 0, 0);
 
-        Discord.SendMessage($"[{player?.SteamID ?? 0}] {player?.PlayerName ?? "Console"} -> css_csay <{message}>");
+        Discord.SendMessage($"[{player?.SteamID ?? 0}] {adminname} -> css_csay <{message}>");
     }
 
     [ConsoleCommand("css_asay")]
@@ -84,12 +90,14 @@ public partial class Admin
         string arg = command.GetCommandString;
         string message = arg[arg.IndexOf(' ')..];
 
+        string adminname = player?.PlayerName ?? Instance.Localizer["Console"];
+
         foreach (CCSPlayerController target in Utilities.GetPlayers().Where(p => AdminManager.PlayerHasPermissions(p, "@css/chat")))
         {
-            target.PrintToChat(Localizer["css_asay", player?.PlayerName ?? "Console", message]);
+            target.PrintToChat(Localizer["css_asay", adminname, message]);
         }
 
-        Discord.SendMessage($"[{player?.SteamID ?? 0}] {player?.PlayerName ?? "Console"} -> css_asay <{message}>");
+        Discord.SendMessage($"[{player?.SteamID ?? 0}] {adminname} -> css_asay <{message}>");
     }
 
     [ConsoleCommand("css_psay")]
@@ -97,7 +105,7 @@ public partial class Admin
     [CommandHelper(minArgs: 2, "<#userid|name> <message> - sends public message", whoCanExecute: CommandUsage.CLIENT_AND_SERVER)]
     public void Command_PSay(CCSPlayerController? player, CommandInfo command)
     {
-        (List<CCSPlayerController> players, string targetname) = Find(player, command, 2, true, false, MultipleFlags.NORMAL);
+        (List<CCSPlayerController> players, string adminname, string targetname) = Find(player, command, 2, true, false, MultipleFlags.NORMAL);
 
         if (players.Count == 0)
         {
@@ -109,9 +117,9 @@ public partial class Admin
         string arg = command.GetCommandString;
         string message = arg[arg.IndexOf(' ')..];
 
-        command.ReplyToCommand(Localizer["css_psay", player?.PlayerName ?? "Console", targetname, message]);
-        target.PrintToChat(Localizer["css_psay", player?.PlayerName ?? "Console", targetname, message]);
+        command.ReplyToCommand(Localizer["css_psay", adminname, targetname, message]);
+        target.PrintToChat(Localizer["css_psay", adminname, targetname, message]);
 
-        Discord.SendMessage($"[{player?.SteamID ?? 0}] {player?.PlayerName ?? "Console"} -> css_psay <{targetname}> <{message}>");
+        Discord.SendMessage($"[{player?.SteamID ?? 0}] {adminname} -> css_psay <{targetname}> <{message}>");
     }
 }
