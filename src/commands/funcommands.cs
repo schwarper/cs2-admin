@@ -286,11 +286,11 @@ public partial class Admin : BasePlugin
             return;
         }
 
+        string arg = command.GetArg(2);
         string slot = string.Empty;
-
         List<gear_slot_t> slotList = [];
 
-        foreach (char c in command.GetArg(2))
+        foreach (char c in arg)
         {
             if (GlobalSlotDictionary.TryGetValue(c, out gear_slot_t value))
             {
@@ -319,7 +319,7 @@ public partial class Admin : BasePlugin
             PrintToChatAll("css_strip<multiple>", adminname, targetname, slot);
         }
 
-        Discord.SendMessage($"[{player?.SteamID ?? 0}] {adminname} -> css_strip <{command.GetArg(1)}>");
+        Discord.SendMessage($"[{player?.SteamID ?? 0}] {adminname} -> css_strip <{command.GetArg(1)}> <{arg}>");
     }
 
     [ConsoleCommand("css_hp")]

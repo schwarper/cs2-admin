@@ -1,9 +1,8 @@
-using CounterStrikeSharp.API;
+﻿using CounterStrikeSharp.API;
 using CounterStrikeSharp.API.Core;
 using CounterStrikeSharp.API.Modules.Memory;
 using CounterStrikeSharp.API.Modules.Timers;
 using CounterStrikeSharp.API.Modules.Utils;
-using Newtonsoft.Json.Linq;
 using static Admin.Admin;
 using static Admin.Library;
 using Color = System.Drawing.Color;
@@ -181,63 +180,66 @@ public static class PlayerUtils
     }
     public static void Strip(this CCSPlayerController player, List<gear_slot_t> slotList)
     {
-        NetworkedVector<CHandle<CBasePlayerWeapon>>? myweapons = player.PlayerPawn.Value?.WeaponServices?.MyWeapons;
+        CPlayer_WeaponServices? weaponServices = player.PlayerPawn.Value?.WeaponServices;
 
-        if (myweapons == null)
+        if (weaponServices == null)
         {
             return;
         }
 
-        List<string> weaponList = [];
+        List<CCSWeaponBase?> allWeapons = weaponServices.MyWeapons
+            .Where(w => w.IsValid && w.Value != null)
+            .Select(w => w?.Value?.As<CCSWeaponBase>())
+            .Where(wb => wb?.VData != null)
+            .ToList();
 
-        foreach (CHandle<CBasePlayerWeapon> myweapon in myweapons)
+        List<CCSWeaponBase?> weaponsToStrip = allWeapons
+            .Where(wb => wb?.VData != null && slotList.Contains(wb.VData.GearSlot))
+            .ToList();
+
+        if (allWeapons.Count == 0 || weaponsToStrip.Count == 0)
         {
-            CBasePlayerWeapon? weapon = myweapon.Value;
+            return;
+        }
 
-            if (weapon == null || !weapon.IsValid)
+        List<CCSWeaponBase?> remainingWeapons = allWeapons.Except(weaponsToStrip).ToList();
+
+        List<gear_slot_t> slots = new List<gear_slot_t>
+        {
+            gear_slot_t.GEAR_SLOT_RIFLE,
+            gear_slot_t.GEAR_SLOT_PISTOL,
+            gear_slot_t.GEAR_SLOT_KNIFE,
+            gear_slot_t.GEAR_SLOT_GRENADES,
+            gear_slot_t.GEAR_SLOT_C4
+        }.Except(slotList).ToList();
+
+        foreach (gear_slot_t slot in slots)
+        {
+            if (remainingWeapons.Any(i => i?.VData?.GearSlot == slot))
             {
-                continue;
-            }
-
-            CCSWeaponBaseVData? _weapon = weapon.As<CCSWeaponBase>().VData;
-
-            if (_weapon == null)
-            {
-                continue;
-            }
-
-            /*
-             * TO DO
-             * NEED T0 TEST
-             * NEED TO FIND ANOTHER WAY
-            if (slotList.Any(slot => slot == _weapon.GearSlot))
-            {
-                player.PlayerPawn.Value.WeaponServices.ActiveWeapon.Raw = myweapon.Raw;
-
-                player.DropActiveWeapon();
-                weapon.Remove();
-            }
-
-
-            if (slotList.Any(slot => slot == _weapon.GearSlot))
-            {
-                weapon.Remove();
-            }
-            */
-
-            if (!slotList.Any(slot => slot == _weapon.GearSlot))
-            {
-                weaponList.Add(weapon.DesignerName);
+                player.ExecuteClientCommand($"slot{slots.IndexOf(slot) + 1}");
+                break;
             }
         }
 
-        player.RemoveWeapons();
-
-        foreach (string weapon in weaponList)
+        if (!remainingWeapons.Any(i => i?.VData != null && slots.Contains(i.VData.GearSlot)))
         {
-            player.GiveNamedItem(weapon);
+            player.RemoveWeapons();
+            return;
         }
+
+        Server.NextFrame(() =>
+        {
+            foreach (CCSWeaponBase? weapon in weaponsToStrip)
+            {
+                if (weapon != null && weapon.IsValid)
+                {
+                    Utilities.RemoveItemByDesignerName(player, weapon.DesignerName);
+                }
+            }
+        });
     }
+
     public static void Beacon(this CCSPlayerController player)
     {
         Vector? absOrigin = player.PlayerPawn.Value?.AbsOrigin;
@@ -286,7 +288,7 @@ public static class PlayerUtils
     {
         player.UnShake();
 
-        var entity = Utilities.CreateEntityByName<CEnvShake>("env_shake");
+        CEnvShake? entity = Utilities.CreateEntityByName<CEnvShake>("env_shake");
 
         if (entity == null || !entity.IsValid)
         {
@@ -300,7 +302,7 @@ public static class PlayerUtils
             return;
         }
 
-        var absOrigin = playerPawn.AbsOrigin;
+        Vector? absOrigin = playerPawn.AbsOrigin;
 
         if (absOrigin == null)
         {
@@ -318,22 +320,30 @@ public static class PlayerUtils
         entity.AcceptInput("SetParent", playerPawn, playerPawn, "!activator");
 
         GlobalPlayerShakes.Add(player, entity);
+
+        if (value > 0.0)
+        {
+            Timer timer = Instance.AddTimer(value, () => player.UnShake());
+            player.AddTimer(timer, PlayerTimerFlags.Shake);
+        }
     }
     public static void UnShake(this CCSPlayerController player)
     {
-        if (GlobalPlayerShakes.TryGetValue(player, out var entity))
+        if (GlobalPlayerShakes.TryGetValue(player, out CEnvShake? entity))
         {
             entity.AcceptInput("StopShake");
             entity.Remove();
 
             GlobalPlayerShakes.Remove(player);
+
+            player.RemoveTimer(PlayerTimerFlags.Shake);
         }
     }
     public static void Blind(this CCSPlayerController player, float value)
     {
         player.UnBlind();
 
-        var entity = Utilities.CreateEntityByName<CEnvFade>("env_fade");
+        CEnvFade? entity = Utilities.CreateEntityByName<CEnvFade>("env_fade");
 
         if (entity == null || !entity.IsValid)
         {
@@ -347,14 +357,14 @@ public static class PlayerUtils
             return;
         }
 
-        var absOrigin = playerPawn.AbsOrigin;
+        Vector? absOrigin = playerPawn.AbsOrigin;
 
         if (absOrigin == null)
         {
             return;
         }
 
-        entity.Duration = 1.0f;
+        entity.Duration = 0.1f;
         entity.HoldDuration = value;
         entity.FadeColor = Color.Black;
         entity.Flags = 4;
@@ -365,16 +375,24 @@ public static class PlayerUtils
         entity.AcceptInput("Fade");
 
         GlobalPlayerFades.Add(player, entity);
+
+        if (value > 0.0)
+        {
+            Timer timer = Instance.AddTimer(value, () => player.UnBlind());
+            player.AddTimer(timer, PlayerTimerFlags.Blind);
+        }
     }
     public static void UnBlind(this CCSPlayerController player)
     {
-        if (GlobalPlayerFades.TryGetValue(player, out var entity))
+        if (GlobalPlayerFades.TryGetValue(player, out CEnvFade? entity))
         {
-            entity.HoldDuration = 1.0f;
+            entity.Duration = 0;
+            entity.HoldDuration = 0;
             entity.AcceptInput("Fade");
-            entity.Remove();
 
             GlobalPlayerFades.Remove(player);
+
+            player.RemoveTimer(PlayerTimerFlags.Blind);
         }
     }
     private static void ChangeMovetype(this CBasePlayerPawn pawn, MoveType_t movetype, Color? color)
@@ -439,7 +457,9 @@ public static class PlayerUtils
     public enum PlayerTimerFlags
     {
         Freeze = 0,
-        Beacon
+        Beacon,
+        Shake,
+        Blind
     };
 
     public static Dictionary<CCSPlayerController, Dictionary<PlayerTimerFlags, Timer>> GlobalPlayerTimers { get; set; } = [];
