@@ -6,122 +6,121 @@ using CounterStrikeSharp.API.Modules.Commands;
 using CounterStrikeSharp.API.Modules.Entities;
 using Newtonsoft.Json.Linq;
 
-namespace Admin;
-
-public partial class Admin
+namespace Admin
 {
-    public readonly string GlobalAdminsFilename = $"{Server.GameDirectory}/csgo/addons/counterstrikesharp/configs/admins.json";
-
-    [ConsoleCommand("css_addadmin")]
-    [RequiresPermissions("@css/ban")]
-    [CommandHelper(minArgs: 2, "<steamid> <group> <immunity>", whoCanExecute: CommandUsage.CLIENT_AND_SERVER)]
-    public void Command_Addadmin(CCSPlayerController? player, CommandInfo command)
+    public partial class Admin
     {
-        string steamid = command.GetArg(1);
+        private readonly string Filename = Path.Combine(Server.GameDirectory, "csgo", "addons", "counterstrikesharp", "configs", "admins.json");
 
-        if (!SteamID.TryParse(steamid, out SteamID? steamId) || steamId == null)
+        [ConsoleCommand("css_addadmin")]
+        [RequiresPermissions("@css/ban")]
+        [CommandHelper(minArgs: 3, "<steamid> <group> <immunity>", whoCanExecute: CommandUsage.CLIENT_AND_SERVER)]
+        public void Command_Addadmin(CCSPlayerController? player, CommandInfo command)
         {
-            command.ReplyToCommand(Config.Tag + Localizer["Must be a steamid"]);
-            return;
-        }
+            string steamid = command.GetArg(1);
 
-        string group = command.GetArg(2);
-
-        if (!int.TryParse(command.GetArg(3), out int immunity))
-        {
-            immunity = 0;
-        }
-
-        try
-        {
-            dynamic newItem = new
+            if (!SteamID.TryParse(steamid, out SteamID? steamId) || steamId == null)
             {
-                groups = new[] { $"#{group}" },
-                identity = $"{steamId.SteamId64}",
-                immunity,
-            };
+                command.ReplyToCommand(Config.Tag + Localizer["Must be a steamid"]);
+                return;
+            }
 
-            string updatedJson;
+            steamid = steamId.SteamId64.ToString();
 
-            if (File.Exists(GlobalAdminsFilename))
+            if (!int.TryParse(command.GetArg(3), out int immunity) || immunity <= 0)
             {
-                string text = File.ReadAllText(GlobalAdminsFilename);
+                command.ReplyToCommand(Config.Tag + Localizer["Must be higher than zero"]);
+                return;
+            }
 
-                JObject jsonObject = JObject.Parse(text);
+            string group = command.GetArg(2);
 
-                if (jsonObject[steamid] != null)
+            try
+            {
+                JObject jsonObject;
+
+                if (File.Exists(Filename))
+                {
+                    string text = File.ReadAllText(Filename);
+                    jsonObject = JObject.Parse(text);
+                }
+                else
+                {
+                    jsonObject = new JObject();
+                }
+
+                bool adminExists = jsonObject.Properties().Any(item => item.Value["identity"]?.ToString() == steamid);
+
+                if (adminExists)
                 {
                     command.ReplyToCommand(Config.Tag + Localizer["css_adminisexist"]);
                     return;
                 }
 
-                jsonObject[steamid] = JToken.FromObject(newItem);
-
-                updatedJson = jsonObject.ToString();
-            }
-            else
-            {
-                JObject jsonObject = new()
+                object newAdmin = new
                 {
-                    [steamid] = JToken.FromObject(newItem)
+                    identity = steamId.SteamId64.ToString(),
+                    immunity,
+                    groups = new List<string> { group }
                 };
 
-                updatedJson = jsonObject.ToString();
-            }
+                jsonObject[steamid] = JToken.FromObject(newAdmin);
 
-            File.WriteAllText(GlobalAdminsFilename, updatedJson);
+                File.WriteAllText(Filename, jsonObject.ToString());
 
-            Server.ExecuteCommand("css_admins_reload");
+                Server.ExecuteCommand("css_admins_reload");
 
-            command.ReplyToCommand(Config.Tag + Localizer["css_addadmin"]);
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine("[cs2-admin] Error reading file: " + ex.Message);
-        }
-    }
-
-    [ConsoleCommand("css_removeadmin")]
-    [RequiresPermissions("@css/ban")]
-    [CommandHelper(minArgs: 1, "<steamid>", whoCanExecute: CommandUsage.CLIENT_AND_SERVER)]
-    public void Command_Removeadmin(CCSPlayerController? player, CommandInfo command)
-    {
-        string steamid = command.GetArg(1);
-
-        if (!SteamID.TryParse(steamid, out SteamID? steamId) || steamId == null)
-        {
-            command.ReplyToCommand(Config.Tag + Localizer["Must be a steamid"]);
-            return;
-        }
-
-        if (File.Exists(GlobalAdminsFilename))
-        {
-            try
-            {
-                string text = File.ReadAllText(GlobalAdminsFilename);
-
-                JObject jsonObject = JObject.Parse(text);
-
-                if (jsonObject[steamid] != null)
-                {
-                    jsonObject.Remove(steamid);
-
-                    string updatedJson = jsonObject.ToString();
-
-                    File.WriteAllText(GlobalAdminsFilename, updatedJson);
-
-                    Server.ExecuteCommand("css_admins_reload");
-
-                    command.ReplyToCommand(Config.Tag + Localizer["css_removeadmin"]);
-                }
-                else
-                {
-                    command.ReplyToCommand(Config.Tag + Localizer["css_adminnotfound"]);
-                }
+                command.ReplyToCommand(Config.Tag + Localizer["css_addadmin"]);
             }
             catch (Exception ex)
             {
-                Console.WriteLine("[cs2-admin] Error reading or writing file: " + ex.Message);
+                Console.WriteLine("[cs2-admin] Error processing file: " + ex.Message);
+            }
+        }
+
+        [ConsoleCommand("css_removeadmin")]
+        [RequiresPermissions("@css/ban")]
+        [CommandHelper(minArgs: 1, "<steamid>", whoCanExecute: CommandUsage.CLIENT_AND_SERVER)]
+        public void Command_Removeadmin(CCSPlayerController? player, CommandInfo command)
+        {
+            string steamid = command.GetArg(1);
+
+            if (!SteamID.TryParse(steamid, out SteamID? steamId) || steamId == null)
+            {
+                command.ReplyToCommand(Config.Tag + Localizer["Must be a steamid"]);
+                return;
+            }
+
+            if (!File.Exists(Filename))
+            {
+                command.ReplyToCommand(Config.Tag + Localizer["css_adminnotfound"]);
+                return;
+            }
+
+            try
+            {
+                string text = File.ReadAllText(Filename);
+                JObject jsonObject = JObject.Parse(text);
+
+                bool adminExists = jsonObject.Properties().Any(item => item.Value["identity"]?.ToString() == steamid);
+
+                if (!adminExists)
+                {
+                    command.ReplyToCommand(Config.Tag + Localizer["css_adminnotfound"]);
+                    return;
+                }
+
+                jsonObject.Remove(steamId.SteamId64.ToString());
+
+                File.WriteAllText(Filename, jsonObject.ToString());
+
+                Server.ExecuteCommand("css_admins_reload");
+
+                command.ReplyToCommand(Config.Tag + Localizer["css_removeadmin"]);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("[cs2-admin] Error processing file: " + ex.Message);
             }
         }
     }

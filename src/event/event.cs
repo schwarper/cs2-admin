@@ -2,11 +2,11 @@ using CounterStrikeSharp.API;
 using CounterStrikeSharp.API.Core;
 using CounterStrikeSharp.API.Modules.Commands;
 using CounterStrikeSharp.API.Modules.Entities;
+using CounterStrikeSharp.API.Modules.Timers;
 using CounterStrikeSharp.API.Modules.Utils;
 using System.Drawing;
 using static Admin.Admin;
 using static CounterStrikeSharp.API.Core.Listeners;
-using Timer = CounterStrikeSharp.API.Modules.Timers.Timer;
 using Vector = CounterStrikeSharp.API.Modules.Utils.Vector;
 
 namespace Admin;
@@ -25,6 +25,9 @@ public static class Event
         Instance.RegisterEventHandler<EventPlayerDisconnect>(OnPlayerDisconnect);
         Instance.RegisterEventHandler<EventRoundStart>(OnRoundStart);
         Instance.RegisterEventHandler<EventPlayerConnectFull>(OnPlayerConnect);
+
+        Instance.AddTimer(10.0f, async () => await OnBaseCommTimer(), TimerFlags.REPEAT);
+        Instance.AddTimer(60.0f, async () => await Database.RemoveExpiredBans(), TimerFlags.REPEAT);
     }
 
     public static void Unload()
@@ -67,7 +70,9 @@ public static class Event
             return HookResult.Continue;
         }
 
-        DeleteBeaconTimer(player);
+        player.UnShake();
+        player.RemoveTimer(PlayerUtils.PlayerTimerFlags.Freeze);
+        player.RemoveTimer(PlayerUtils.PlayerTimerFlags.Beacon);
 
         GlobalHRespawnPlayers.Remove(player);
 
@@ -98,7 +103,9 @@ public static class Event
             return HookResult.Continue;
         }
 
-        DeleteBeaconTimer(player);
+        player.UnShake();
+        player.RemoveTimer(PlayerUtils.PlayerTimerFlags.Freeze);
+        player.RemoveTimer(PlayerUtils.PlayerTimerFlags.Beacon);
 
         Vector? absOrigin = player.PlayerPawn.Value?.AbsOrigin;
 
@@ -132,7 +139,7 @@ public static class Event
 
         int? userid = player.UserId;
 
-        if (await Database.IsBanned(steamId.SteamId64))
+        if (await Database.IsBannedAsync(steamId.SteamId64))
         {
             Server.NextFrame(() => Server.ExecuteCommand($"kickid {userid}"));
         }
@@ -147,7 +154,9 @@ public static class Event
             return HookResult.Continue;
         }
 
-        DeleteBeaconTimer(player);
+        player.UnShake();
+        player.RemoveTimer(PlayerUtils.PlayerTimerFlags.Freeze);
+        player.RemoveTimer(PlayerUtils.PlayerTimerFlags.Beacon);
 
         GlobalHRespawnPlayers.Remove(player);
         PlayerGagList.Remove(player.SteamID);
@@ -172,16 +181,7 @@ public static class Event
             return HookResult.Continue;
         }
 
-        Task.Run(() => Database.LoadPlayer(player));
+        Task.Run(() => Database.LoadPlayer(player.SteamID));
         return HookResult.Continue;
-    }
-
-    private static void DeleteBeaconTimer(CCSPlayerController player)
-    {
-        if (GlobalBeaconTimer.TryGetValue(player, out Timer? timer) && timer != null)
-        {
-            timer.Kill();
-            GlobalBeaconTimer.Remove(player);
-        }
     }
 }

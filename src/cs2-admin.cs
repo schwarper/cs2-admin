@@ -1,7 +1,7 @@
+using CounterStrikeSharp.API;
 using CounterStrikeSharp.API.Core;
 using CounterStrikeSharp.API.Core.Capabilities;
 using CounterStrikeSharp.API.Core.Translations;
-using CounterStrikeSharp.API.Modules.Timers;
 using TagsApi;
 
 namespace Admin;
@@ -17,16 +17,20 @@ public partial class Admin : BasePlugin, IPluginConfig<AdminConfig>
         Instance = this;
 
         Event.Load();
-
-        AddTimer(10.0f, OnBaseCommTimer, TimerFlags.REPEAT);
-        AddTimer(60.0f, async () => { await Database.RemoveExpiredBans(); }, TimerFlags.REPEAT);
     }
 
     public override void OnAllPluginsLoaded(bool hotReload)
     {
-        PluginCapability<ITagApi> Capability = new("tags:api");
+        try
+        {
+            PluginCapability<ITagApi> Capability = new("tags:api");
 
-        TagApi = Capability.Get();
+            TagApi = Capability.Get();
+        }
+        catch (Exception)
+        {
+            TagApi = null;
+        }
     }
 
     public override void Unload(bool hotReload)
@@ -36,19 +40,22 @@ public partial class Admin : BasePlugin, IPluginConfig<AdminConfig>
 
     public void OnConfigParsed(AdminConfig config)
     {
-        bool usemysql = config.Database.UseMySql;
-
-        if (usemysql)
+        if (config.Database.UseMySql)
         {
             if (string.IsNullOrEmpty(config.Database.Host) || string.IsNullOrEmpty(config.Database.Name) || string.IsNullOrEmpty(config.Database.User))
             {
                 throw new Exception("You need to setup Database credentials in config.");
             }
         }
-
-        Task.Run(() => Database.CreateDatabaseAsync(config, usemysql));
+        else
+        {
+            string filename = Path.Combine(Server.GameDirectory, "csgo", "addons", "counterstrikesharp", "configs", "cs2-admin.db");
+            Database.SetFileName(filename);
+        }
 
         config.Tag = StringExtensions.ReplaceColorTags(config.Tag);
+
+        Task.Run(() => Database.CreateDatabaseAsync(config));
 
         Config = config;
     }
