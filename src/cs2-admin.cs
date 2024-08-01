@@ -21,10 +21,16 @@ public partial class Admin : BasePlugin, IPluginConfig<AdminConfig>
 
     public override void OnAllPluginsLoaded(bool hotReload)
     {
-        //PluginCapability<ITagApi> Capability = new("tags:api");
+        try
+        {
+            PluginCapability<ITagApi> Capability = new("tags:api");
 
-        //TagApi = Capability.Get();
-        TagApi = null;
+            TagApi = Capability.Get();
+        }
+        catch (Exception)
+        {
+            TagApi = null;
+        }
     }
 
     public override void Unload(bool hotReload)
@@ -43,7 +49,7 @@ public partial class Admin : BasePlugin, IPluginConfig<AdminConfig>
         }
         else
         {
-            var filename = Path.Combine(Server.GameDirectory, "csgo", "addons", "counterstrikesharp", "configs", "cs2-admin.db");
+            string filename = Path.Combine(Server.GameDirectory, "csgo", "addons", "counterstrikesharp", "configs", "cs2-admin.db");
             Database.SetFileName(filename);
         }
 

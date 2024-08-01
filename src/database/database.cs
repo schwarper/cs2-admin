@@ -34,7 +34,7 @@ public static class Database
     {
         if (config.Database.UseMySql)
         {
-            var builder = new MySqlConnectionStringBuilder
+            MySqlConnectionStringBuilder builder = new()
             {
                 Server = config.Database.Host,
                 Database = config.Database.Name,
