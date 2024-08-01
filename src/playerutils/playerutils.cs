@@ -1,8 +1,10 @@
 ﻿using CounterStrikeSharp.API;
 using CounterStrikeSharp.API.Core;
+using CounterStrikeSharp.API.Modules.Commands.Targeting;
 using CounterStrikeSharp.API.Modules.Memory;
 using CounterStrikeSharp.API.Modules.Timers;
 using CounterStrikeSharp.API.Modules.Utils;
+using System;
 using static Admin.Admin;
 using static Admin.Library;
 using Color = System.Drawing.Color;
@@ -343,13 +345,6 @@ public static class PlayerUtils
     {
         player.UnBlind();
 
-        CEnvFade? entity = Utilities.CreateEntityByName<CEnvFade>("env_fade");
-
-        if (entity == null || !entity.IsValid)
-        {
-            return;
-        }
-
         CCSPlayerPawn? playerPawn = player.PlayerPawn.Value;
 
         if (playerPawn == null)
@@ -357,24 +352,13 @@ public static class PlayerUtils
             return;
         }
 
-        Vector? absOrigin = playerPawn.AbsOrigin;
+        playerPawn.FlashMaxAlpha = 255;
+        playerPawn.FlashDuration = 9999;
+        playerPawn.BlindStartTime = Server.CurrentTime;
+        playerPawn.BlindUntilTime = 9999;
 
-        if (absOrigin == null)
-        {
-            return;
-        }
-
-        entity.Duration = 0.1f;
-        entity.HoldDuration = value;
-        entity.FadeColor = Color.Black;
-        entity.Flags = 4;
-        entity.AcceptInput("SetParent", playerPawn, playerPawn, "!activator");
-
-        entity.Teleport(new Vector(absOrigin.X, absOrigin.Y, absOrigin.Z + 100), QAngle.Zero, Vector.Zero);
-        entity.DispatchSpawn();
-        entity.AcceptInput("Fade");
-
-        GlobalPlayerFades.Add(player, entity);
+        Utilities.SetStateChanged(playerPawn, "CCSPlayerPawnBase", "m_flFlashMaxAlpha");
+        Utilities.SetStateChanged(playerPawn, "CCSPlayerPawnBase", "m_flFlashDuration");
 
         if (value > 0.0)
         {
@@ -384,15 +368,16 @@ public static class PlayerUtils
     }
     public static void UnBlind(this CCSPlayerController player)
     {
-        if (GlobalPlayerFades.TryGetValue(player, out CEnvFade? entity))
+        CCSPlayerPawn? playerPawn = player.PlayerPawn.Value;
+
+        if (playerPawn == null)
         {
-            entity.Duration = 0;
-            entity.HoldDuration = 0;
-            entity.AcceptInput("Fade");
+            return;
+        }
 
-            GlobalPlayerFades.Remove(player);
-
-            player.RemoveTimer(PlayerTimerFlags.Blind);
+        if (playerPawn.BlindUntilTime == 9999)
+        {
+            playerPawn.BlindUntilTime = Server.CurrentTime - 1;
         }
     }
     private static void ChangeMovetype(this CBasePlayerPawn pawn, MoveType_t movetype, Color? color)
@@ -435,6 +420,7 @@ public static class PlayerUtils
     private static void MoveBeams(List<CBeam> beams, Vector mid, float angle, float step, float radiusIncrement, float elapsed)
     {
         float radius = initialRadius + radiusIncrement * (elapsed / 0.1f);
+
         foreach (CBeam beam in beams)
         {
             Vector start = CalculateCirclePoint(angle, radius, mid);
@@ -464,7 +450,6 @@ public static class PlayerUtils
 
     public static Dictionary<CCSPlayerController, Dictionary<PlayerTimerFlags, Timer>> GlobalPlayerTimers { get; set; } = [];
     public static Dictionary<CCSPlayerController, CEnvShake> GlobalPlayerShakes { get; set; } = [];
-    public static Dictionary<CCSPlayerController, CEnvFade> GlobalPlayerFades { get; set; } = [];
     private static readonly Random Random = new();
     private const int lines = 20;
     private const float radiusIncrement = 10.0f;

@@ -1,4 +1,5 @@
-﻿using CounterStrikeSharp.API.Core;
+﻿using CounterStrikeSharp.API;
+using CounterStrikeSharp.API.Core;
 using Dapper;
 using Microsoft.Data.Sqlite;
 using MySqlConnector;
@@ -9,22 +10,31 @@ namespace Admin;
 
 public static class Database
 {
+    private static string FileName = string.Empty;
     private static string GlobalDatabaseConnectionString = string.Empty;
 
     private static async Task<DbConnection> ConnectAsync()
     {
-        DbConnection connection = Instance.Config.Database.UseMySql ?
-            new MySqlConnection(GlobalDatabaseConnectionString) :
-            new SqliteConnection(GlobalDatabaseConnectionString);
+        SQLitePCL.Batteries.Init();
+
+        DbConnection connection = string.IsNullOrEmpty(GlobalDatabaseConnectionString) ?
+            new SqliteConnection($"Data Source={FileName}") :
+            new MySqlConnection(GlobalDatabaseConnectionString);
 
         await connection.OpenAsync();
         return connection;
     }
 
-    public static async Task CreateDatabaseAsync(AdminConfig config, bool useMySql)
+    public static void SetFileName(string filename)
     {
-        DbConnectionStringBuilder builder = useMySql ?
-            new MySqlConnectionStringBuilder
+        FileName = filename;
+    }
+
+    public static async Task CreateDatabaseAsync(AdminConfig config)
+    {
+        if (config.Database.UseMySql)
+        {
+            var builder = new MySqlConnectionStringBuilder
             {
                 Server = config.Database.Host,
                 Database = config.Database.Name,
@@ -36,25 +46,17 @@ public static class Database
                 MaximumPoolSize = 640,
                 ConnectionIdleTimeout = 30,
                 AllowZeroDateTime = true
-            }
-            :
-            new SqliteConnectionStringBuilder
-            {
-                DataSource = "cs2-admin.db",
-                Mode = SqliteOpenMode.ReadWriteCreate,
-                Cache = SqliteCacheMode.Shared,
-                Pooling = true,
-                DefaultTimeout = 30
             };
 
-        GlobalDatabaseConnectionString = builder.ConnectionString;
+            GlobalDatabaseConnectionString = builder.ConnectionString;
+        }
 
         using DbConnection connection = await ConnectAsync();
         using DbTransaction transaction = await connection.BeginTransactionAsync();
 
         try
         {
-            await CreateTableAsync(connection, transaction, useMySql);
+            await CreateTableAsync(connection, transaction, config.Database.UseMySql);
             await transaction.CommitAsync();
         }
         catch (Exception)
@@ -279,17 +281,17 @@ public static class Database
         }
     }
 
-    public static async Task LoadPlayer(CCSPlayerController player)
+    public static async Task LoadPlayer(ulong steamid)
     {
         using DbConnection connection = await ConnectAsync();
 
-        IEnumerable<dynamic> results = await connection.QueryAsync("SELECT * FROM basecomm WHERE steamid = @steamid", new { steamid = player.SteamID });
+        IEnumerable<dynamic> results = await connection.QueryAsync("SELECT * FROM basecomm WHERE steamid = @steamid", new { steamid });
 
         foreach (dynamic result in results)
         {
             if (result.command == "GAG")
             {
-                TagApi?.GagPlayer(player.SteamID);
+                TagApi?.GagPlayer(steamid);
             }
 
             PlayerTemporaryPunishList.Add(new PunishInfo
@@ -405,5 +407,7 @@ public static class Database
         using DbConnection connection = await ConnectAsync();
 
         await connection.ExecuteAsync("DELETE FROM baseban WHERE end < @end", new { @end = DateTime.Now });
+
+        Server.PrintToChatAll($"DELETE FROM baseban WHERE end < {DateTime.Now}");
     }
 }

@@ -1,3 +1,4 @@
+using CounterStrikeSharp.API;
 using CounterStrikeSharp.API.Core;
 using CounterStrikeSharp.API.Core.Capabilities;
 using CounterStrikeSharp.API.Core.Translations;
@@ -20,9 +21,10 @@ public partial class Admin : BasePlugin, IPluginConfig<AdminConfig>
 
     public override void OnAllPluginsLoaded(bool hotReload)
     {
-        PluginCapability<ITagApi> Capability = new("tags:api");
+        //PluginCapability<ITagApi> Capability = new("tags:api");
 
-        TagApi = Capability.Get();
+        //TagApi = Capability.Get();
+        TagApi = null;
     }
 
     public override void Unload(bool hotReload)
@@ -32,21 +34,24 @@ public partial class Admin : BasePlugin, IPluginConfig<AdminConfig>
 
     public void OnConfigParsed(AdminConfig config)
     {
-        bool usemysql = config.Database.UseMySql;
-
-        if (usemysql)
+        if (config.Database.UseMySql)
         {
             if (string.IsNullOrEmpty(config.Database.Host) || string.IsNullOrEmpty(config.Database.Name) || string.IsNullOrEmpty(config.Database.User))
             {
                 throw new Exception("You need to setup Database credentials in config.");
             }
         }
+        else
+        {
+            var filename = Path.Combine(Server.GameDirectory, "csgo", "addons", "counterstrikesharp", "configs", "cs2-admin.db");
+            Database.SetFileName(filename);
+        }
 
         config.Tag = StringExtensions.ReplaceColorTags(config.Tag);
 
-        Config = config;
+        Task.Run(() => Database.CreateDatabaseAsync(config));
 
-        Task.Run(() => Database.CreateDatabaseAsync(config, usemysql));
+        Config = config;
     }
 
     public static Admin Instance { get; set; } = new();
