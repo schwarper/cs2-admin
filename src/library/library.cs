@@ -88,6 +88,11 @@ public static class Library
 
         foreach (CCSPlayerController player in Utilities.GetPlayers())
         {
+            if (player.IsBot)
+            {
+                continue;
+            }
+
             if (Instance.Config.ShowNameCommands.Contains(message.Split('<').First()) && Instance.Config.ShowNameFlag != string.Empty && !AdminManager.PlayerHasPermissions(player, Instance.Config.ShowNameFlag))
             {
                 if (args.Length > 0 && args[0]?.ToString() == "Console")
