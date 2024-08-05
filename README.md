@@ -90,6 +90,10 @@ An admin command plugin with mysql support
 ♦ css_glow <#userid|name|all @ commands> <color>
 ♦ css_color <#userid|name|all @ commands> <color>
 ♦ css_beacon <#userid|name|all @ commands> <value>
+♦ css_shake <#userid|name|all @ commands> <time>
+♦ css_unshake <#userid|name|all @ commands>
+♦ css_blind <#userid|name|all @ commands> <time>
+♦ css_unblind <#userid|name|all @ commands>
 
 //playercommands
 ♦ css_slap <#userid|name|all @ commands> <damage>
