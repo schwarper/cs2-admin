@@ -122,7 +122,6 @@ public partial class Admin
         foreach (CCSPlayerController target in players)
         {
             PlayerGagList.Add(target.SteamID);
-            TagApi?.GagPlayer(target.SteamID);
         }
 
         if (players.Count == 1)
@@ -152,7 +151,6 @@ public partial class Admin
         foreach (CCSPlayerController target in players)
         {
             PlayerGagList.Remove(target.SteamID);
-            TagApi?.UngagPlayer(target.SteamID);
         }
 
         if (players.Count == 1)
@@ -183,7 +181,6 @@ public partial class Admin
         {
             target.VoiceFlags = VoiceFlags.Muted;
             PlayerGagList.Add(target.SteamID);
-            TagApi?.GagPlayer(target.SteamID);
         }
 
         if (players.Count == 1)
@@ -214,7 +211,6 @@ public partial class Admin
         {
             target.VoiceFlags = VoiceFlags.Normal;
             PlayerGagList.Remove(target.SteamID);
-            TagApi?.UngagPlayer(target.SteamID);
         }
 
         if (players.Count == 1)

@@ -289,11 +289,6 @@ public static class Database
 
         foreach (dynamic result in results)
         {
-            if (result.command == "GAG")
-            {
-                TagApi?.GagPlayer(steamid);
-            }
-
             PlayerTemporaryPunishList.Add(new PunishInfo
             {
                 SteamID = result.steamid,

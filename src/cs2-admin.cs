@@ -2,14 +2,13 @@ using CounterStrikeSharp.API;
 using CounterStrikeSharp.API.Core;
 using CounterStrikeSharp.API.Core.Capabilities;
 using CounterStrikeSharp.API.Core.Translations;
-using TagsApi;
 
 namespace Admin;
 
 public partial class Admin : BasePlugin, IPluginConfig<AdminConfig>
 {
     public override string ModuleName => "Admin";
-    public override string ModuleVersion => "1.0.0";
+    public override string ModuleVersion => "1.1";
     public override string ModuleAuthor => "schwarper";
 
     public override void Load(bool hotReload)
@@ -17,20 +16,6 @@ public partial class Admin : BasePlugin, IPluginConfig<AdminConfig>
         Instance = this;
 
         Event.Load();
-    }
-
-    public override void OnAllPluginsLoaded(bool hotReload)
-    {
-        try
-        {
-            PluginCapability<ITagApi> Capability = new("tags:api");
-
-            TagApi = Capability.Get();
-        }
-        catch (Exception)
-        {
-            TagApi = null;
-        }
     }
 
     public override void Unload(bool hotReload)
@@ -62,5 +47,4 @@ public partial class Admin : BasePlugin, IPluginConfig<AdminConfig>
 
     public static Admin Instance { get; set; } = new();
     public AdminConfig Config { get; set; } = new AdminConfig();
-    public static ITagApi? TagApi { get; set; }
 }
