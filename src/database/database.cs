@@ -402,7 +402,5 @@ public static class Database
         using DbConnection connection = await ConnectAsync();
 
         await connection.ExecuteAsync("DELETE FROM baseban WHERE end < @end", new { @end = DateTime.Now });
-
-        Server.PrintToChatAll($"DELETE FROM baseban WHERE end < {DateTime.Now}");
     }
 }
