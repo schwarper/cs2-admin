@@ -12,20 +12,12 @@ namespace BaseComm;
 
 public static class Library
 {
-    public enum MultipleFlags
-    {
-        NORMAL = 0,
-        IGNORE_DEAD_PLAYERS,
-        IGNORE_ALIVE_PLAYERS
-    }
-
     public static bool ProcessTargetString(
         CCSPlayerController? player,
         CommandInfo info,
         string targetstr,
         bool singletarget,
         bool immunitycheck,
-        MultipleFlags flags,
         out List<CCSPlayerController> players,
         out string adminname,
         out string targetname)
@@ -57,27 +49,6 @@ public static class Library
             if (targetResult.Players.Count == 0)
             {
                 info.ReplyToCommand(Instance.Config.Tag + Instance.Localizer["You cannot target"]);
-                return false;
-            }
-        }
-
-        if (flags == MultipleFlags.IGNORE_DEAD_PLAYERS)
-        {
-            targetResult.Players.RemoveAll(target => !target.PawnIsAlive);
-
-            if (targetResult.Players.Count == 0)
-            {
-                info.ReplyToCommand(Instance.Config.Tag + Instance.Localizer["You can target only alive players"]);
-                return false;
-            }
-        }
-        else if (flags == MultipleFlags.IGNORE_ALIVE_PLAYERS)
-        {
-            targetResult.Players.RemoveAll(target => target.PawnIsAlive);
-
-            if (targetResult.Players.Count == 0)
-            {
-                info.ReplyToCommand(Instance.Config.Tag + Instance.Localizer["You can target only dead players"]);
                 return false;
             }
         }

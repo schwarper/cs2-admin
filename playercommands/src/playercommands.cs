@@ -105,7 +105,7 @@ public class PlayerCommands : BasePlugin, IPluginConfig<Config>
     {
         string[] args = info.ArgString.Split(' ', StringSplitOptions.RemoveEmptyEntries);
 
-        if (!ProcessTargetString(player, info, args[0], false, true, MultipleFlags.NORMAL, out List<CCSPlayerController>? players, out string? adminname, out string? targetname))
+        if (!ProcessTargetString(player, info, args[0], true, true, MultipleFlags.NORMAL, out List<CCSPlayerController>? players, out string? adminname, out string? targetname))
         {
             return;
         }

@@ -201,11 +201,6 @@ public class FunCommands : BasePlugin, IPluginConfig<Config>
     [CommandHelper(minArgs: 1, "<gravity>")]
     public void Command_Gravity(CCSPlayerController? player, CommandInfo info)
     {
-        if (info.ArgCount < 1)
-        {
-            return;
-        }
-
         if (!int.TryParse(info.GetArg(1), out int value))
         {
             info.ReplyToCommand(Config.Tag + Localizer["Must be an integer"]);

@@ -13,8 +13,9 @@
   "No matching client": "{white}Eşleşen bir oyuncu bulunamadı.",
   "More than one client matched": "{white}Verilen biçim düzeniyle birden fazla alıcı eşleşti.",
   "Unable to target": "{white}Bu oyuncuyu hedefleyemezsiniz.",
-  "Unable to targets": "{white}Bu oyuncuları hedefleyemezsiniz.",
   "Must be a string": "{white}Girdiğiniz değer bir yazı olmalıdır.",
+  "You can target only dead players": "{white}Sadece ölü kişilere bu komutu uygulayabilirsiniz.",
+  "You can target only alive players": "{white}Sadece yaşayan kişilere bu komutu uygulayabilirsiniz.",
 
   "css_slap<player>": "{blue}{0}{white}, {green}{1} {white}adlı oyuncuyu {green}{2} {white}gücüyle tokatladı.",
   "css_slap<multiple>": "{blue}{0}{white}, {green}{1}ı {blue}{2} {white}gücüyle tokatladı.",
