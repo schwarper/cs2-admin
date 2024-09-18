@@ -4,12 +4,9 @@ using CounterStrikeSharp.API.Core.Attributes.Registration;
 using CounterStrikeSharp.API.Core.Translations;
 using CounterStrikeSharp.API.Modules.Admin;
 using CounterStrikeSharp.API.Modules.Commands;
-using CounterStrikeSharp.API.Modules.Commands.Targeting;
 using CounterStrikeSharp.API.Modules.Memory;
 using CounterStrikeSharp.API.Modules.Utils;
-using System.Linq;
-using System.Reflection.Metadata;
-using static CounterStrikeSharp.API.Modules.Commands.Targeting.Target;
+using static BaseComm.Library;
 
 namespace BaseComm;
 
@@ -19,11 +16,14 @@ public class BaseComm : BasePlugin, IPluginConfig<Config>
     public override string ModuleVersion => "0.0.1";
     public override string ModuleAuthor => "schwarper";
 
+    public static BaseComm Instance { get; set; } = new BaseComm();
     public static HashSet<CCSPlayerController> PlayerGagList { get; set; } = [];
     public Config Config { get; set; } = new Config();
 
     public override void Load(bool hotReload)
     {
+        Instance = this;
+
         AddCommandListener("say", Command_Say, HookMode.Pre);
         AddCommandListener("say_team", Command_Say, HookMode.Pre);
     }
@@ -61,9 +61,9 @@ public class BaseComm : BasePlugin, IPluginConfig<Config>
     [CommandHelper(minArgs: 1, usage: "<player> - Removes a player's ability to use voice.")]
     public void Command_Mute(CCSPlayerController? player, CommandInfo info)
     {
-        string[] args = info.ArgString.Split(' ', StringSplitOptions.RemoveEmptyEntries); ;
+        string[] args = info.ArgString.Split(' ', StringSplitOptions.RemoveEmptyEntries);
 
-        if (!ProcessTargetString(player, info, args[0], false, out List<CCSPlayerController>? players, out string? adminname, out string? targetname))
+        if (!ProcessTargetString(player, info, args[0], false, true, MultipleFlags.NORMAL, out List<CCSPlayerController>? players, out string? adminname, out string? targetname))
         {
             return;
         }
@@ -88,9 +88,9 @@ public class BaseComm : BasePlugin, IPluginConfig<Config>
     [CommandHelper(minArgs: 1, usage: "<player> - Removes a player's ability to use chat.")]
     public void Command_Gag(CCSPlayerController? player, CommandInfo info)
     {
-        string[] args = info.ArgString.Split(' ', StringSplitOptions.RemoveEmptyEntries); ;
+        string[] args = info.ArgString.Split(' ', StringSplitOptions.RemoveEmptyEntries);
 
-        if (!ProcessTargetString(player, info, args[0], false, out List<CCSPlayerController>? players, out string? adminname, out string? targetname))
+        if (!ProcessTargetString(player, info, args[0], false, true, MultipleFlags.NORMAL, out List<CCSPlayerController>? players, out string? adminname, out string? targetname))
         {
             return;
         }
@@ -115,9 +115,9 @@ public class BaseComm : BasePlugin, IPluginConfig<Config>
     [CommandHelper(minArgs: 1, usage: "<player> - Removes a player's ability to use chat.")]
     public void Command_Silence(CCSPlayerController? player, CommandInfo info)
     {
-        string[] args = info.ArgString.Split(' ', StringSplitOptions.RemoveEmptyEntries); ;
+        string[] args = info.ArgString.Split(' ', StringSplitOptions.RemoveEmptyEntries);
 
-        if (!ProcessTargetString(player, info, args[0], false, out List<CCSPlayerController>? players, out string? adminname, out string? targetname))
+        if (!ProcessTargetString(player, info, args[0], false, true, MultipleFlags.NORMAL, out List<CCSPlayerController>? players, out string? adminname, out string? targetname))
         {
             return;
         }
@@ -143,9 +143,9 @@ public class BaseComm : BasePlugin, IPluginConfig<Config>
     [CommandHelper(minArgs: 1, usage: "<player> - Restores a player's ability to use voice.")]
     public void Command_Unmute(CCSPlayerController? player, CommandInfo info)
     {
-        string[] args = info.ArgString.Split(' ', StringSplitOptions.RemoveEmptyEntries); ;
+        string[] args = info.ArgString.Split(' ', StringSplitOptions.RemoveEmptyEntries);
 
-        if (!ProcessTargetString(player, info, args[0], false, out List<CCSPlayerController>? players, out string? adminname, out string? targetname))
+        if (!ProcessTargetString(player, info, args[0], false, true, MultipleFlags.NORMAL, out List<CCSPlayerController>? players, out string? adminname, out string? targetname))
         {
             return;
         }
@@ -170,9 +170,9 @@ public class BaseComm : BasePlugin, IPluginConfig<Config>
     [CommandHelper(minArgs: 1, usage: "<player> - Restores a player's ability to use chat.")]
     public void Command_Ungag(CCSPlayerController? player, CommandInfo info)
     {
-        string[] args = info.ArgString.Split(' ', StringSplitOptions.RemoveEmptyEntries); ;
+        string[] args = info.ArgString.Split(' ', StringSplitOptions.RemoveEmptyEntries);
 
-        if (!ProcessTargetString(player, info, args[0], false, out List<CCSPlayerController>? players, out string? adminname, out string? targetname))
+        if (!ProcessTargetString(player, info, args[0], false, true, MultipleFlags.NORMAL, out List<CCSPlayerController>? players, out string? adminname, out string? targetname))
         {
             return;
         }
@@ -197,9 +197,9 @@ public class BaseComm : BasePlugin, IPluginConfig<Config>
     [CommandHelper(minArgs: 1, usage: "<player> - Restores a player's ability to use voice and chat.")]
     public void Command_Unsilence(CCSPlayerController? player, CommandInfo info)
     {
-        string[] args = info.ArgString.Split(' ', StringSplitOptions.RemoveEmptyEntries); ;
+        string[] args = info.ArgString.Split(' ', StringSplitOptions.RemoveEmptyEntries);
 
-        if (!ProcessTargetString(player, info, args[0], false, out List<CCSPlayerController>? players, out string? adminname, out string? targetname))
+        if (!ProcessTargetString(player, info, args[0], false, true, MultipleFlags.NORMAL, out List<CCSPlayerController>? players, out string? adminname, out string? targetname))
         {
             return;
         }
@@ -225,85 +225,5 @@ public class BaseComm : BasePlugin, IPluginConfig<Config>
     {
         PlayerGagList.Clear();
         return HookResult.Continue;
-    }
-
-    private void SendMessageToAllPlayers(HudDestination destination, string messageKey, params object[] args)
-    {
-        Microsoft.Extensions.Localization.LocalizedString message = Localizer[messageKey, args];
-        VirtualFunctions.ClientPrintAll(destination, Config.Tag + message, 0, 0, 0, 0);
-    }
-
-    private bool ProcessTargetString(
-        CCSPlayerController? player,
-        CommandInfo info,
-        string targetstr,
-        bool singletarget,
-        out List<CCSPlayerController> players,
-        out string adminname,
-        out string targetname)
-    {
-        players = [];
-        adminname = string.Empty;
-        targetname = string.Empty;
-
-        TargetResult targetResult = new Target(targetstr).GetTarget(player);
-
-        if (targetResult.Players.Count == 0)
-        {
-            info.ReplyToCommand(Config.Tag + Localizer["No matching client"]);
-            return false;
-        }
-        else if (targetResult.Players.Count > 1)
-        {
-            if (!TargetTypeMap.ContainsKey(targetstr) || singletarget)
-            {
-                info.ReplyToCommand(Config.Tag + Localizer["More than one client matched"]);
-                return false;
-            }
-
-            targetResult.Players.RemoveAll(target => !AdminManager.CanPlayerTarget(player, target));
-
-            if (targetResult.Players.Count == 0)
-            {
-                info.ReplyToCommand(Config.Tag + Localizer["Unable to targets"]);
-                return false;
-            }
-        }
-        else
-        {
-            CCSPlayerController target = targetResult.Players[0];
-
-            if (!AdminManager.CanPlayerTarget(player, target))
-            {
-                info.ReplyToCommand(Config.Tag + Localizer["Unable to target"]);
-                return false;
-            }
-
-            players = [target];
-            adminname = player?.PlayerName ?? Localizer["Console"];
-            targetname = target.PlayerName;
-            return true;
-        }
-
-        TargetTypeMap.TryGetValue(targetstr, out TargetType type);
-
-        players = targetResult.Players;
-        adminname = player?.PlayerName ?? Localizer["Console"];
-        targetname = type switch
-        {
-            TargetType.GroupAll => Localizer["all"],
-            TargetType.GroupBots => Localizer["bots"],
-            TargetType.GroupHumans => Localizer["humans"],
-            TargetType.GroupAlive => Localizer["alive"],
-            TargetType.GroupDead => Localizer["dead"],
-            TargetType.GroupNotMe => Localizer["notme"],
-            TargetType.PlayerMe => targetResult.Players[0].PlayerName,
-            TargetType.TeamCt => Localizer["ct"],
-            TargetType.TeamT => Localizer["t"],
-            TargetType.TeamSpec => Localizer["spec"],
-            _ => targetResult.Players[0].PlayerName
-        };
-
-        return true;
     }
 }

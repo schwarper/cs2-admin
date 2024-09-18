@@ -5,8 +5,8 @@ using CounterStrikeSharp.API.Core.Translations;
 using CounterStrikeSharp.API.Modules.Admin;
 using CounterStrikeSharp.API.Modules.Commands;
 using CounterStrikeSharp.API.Modules.Commands.Targeting;
-using CounterStrikeSharp.API.Modules.Memory;
 using CounterStrikeSharp.API.Modules.Utils;
+using static BaseChat.Library;
 
 namespace BaseChat;
 
@@ -16,7 +16,13 @@ public class BaseChat : BasePlugin, IPluginConfig<Config>
     public override string ModuleVersion => "0.0.1";
     public override string ModuleAuthor => "schwarper";
 
+    public static BaseChat Instance { get; set; } = new BaseChat();
     public Config Config { get; set; } = new Config();
+
+    public override void Load(bool hotReload)
+    {
+        Instance = this;
+    }
 
     public void OnConfigParsed(Config config)
     {
@@ -87,7 +93,7 @@ public class BaseChat : BasePlugin, IPluginConfig<Config>
 
     [ConsoleCommand("css_psay")]
     [RequiresPermissions("@css/chat")]
-    [CommandHelper(minArgs: 2, "<#userid|name> <message> - sends public message", whoCanExecute: CommandUsage.CLIENT_AND_SERVER)]
+    [CommandHelper(minArgs: 2, usage: "<#userid|name> <message> - sends public message")]
     public void Command_PSay(CCSPlayerController? player, CommandInfo info)
     {
         string[] args = info.ArgString.Split(' ', StringSplitOptions.RemoveEmptyEntries);
@@ -113,17 +119,5 @@ public class BaseChat : BasePlugin, IPluginConfig<Config>
 
         info.ReplyToCommand(Localizer["css_psay", adminname, targetname, message]);
         SendMessageToPlayer(target, HudDestination.Chat, "css_psay", adminname, targetname, message);
-    }
-
-    private void SendMessageToAllPlayers(HudDestination destination, string messageKey, params object[] args)
-    {
-        Microsoft.Extensions.Localization.LocalizedString message = Localizer[messageKey, args];
-        VirtualFunctions.ClientPrintAll(destination, message, 0, 0, 0, 0);
-    }
-
-    private void SendMessageToPlayer(CCSPlayerController player, HudDestination destination, string messageKey, params object[] args)
-    {
-        Microsoft.Extensions.Localization.LocalizedString message = Localizer[messageKey, args];
-        VirtualFunctions.ClientPrint(player.Handle, destination, message, 0, 0, 0, 0);
     }
 }

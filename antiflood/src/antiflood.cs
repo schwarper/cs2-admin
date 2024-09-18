@@ -8,7 +8,6 @@ using CounterStrikeSharp.API.Modules.Cvars;
 using CounterStrikeSharp.API.Modules.Memory;
 using CounterStrikeSharp.API.Modules.Utils;
 using System.Collections.Concurrent;
-using System.Reflection.Metadata;
 
 namespace AntiFlood;
 

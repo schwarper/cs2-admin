@@ -4,12 +4,10 @@ using CounterStrikeSharp.API.Core.Attributes.Registration;
 using CounterStrikeSharp.API.Core.Translations;
 using CounterStrikeSharp.API.Modules.Admin;
 using CounterStrikeSharp.API.Modules.Commands;
-using CounterStrikeSharp.API.Modules.Commands.Targeting;
 using CounterStrikeSharp.API.Modules.Entities;
-using CounterStrikeSharp.API.Modules.Memory;
 using CounterStrikeSharp.API.Modules.Utils;
 using CounterStrikeSharp.API.ValveConstants.Protobuf;
-using Microsoft.Extensions.Localization;
+using static BaseBans.Library;
 using static CounterStrikeSharp.API.Core.Listeners;
 
 namespace BaseBans;
@@ -20,7 +18,6 @@ public class BaseBans : BasePlugin, IPluginConfig<Config>
     public override string ModuleVersion => "0.0.1";
     public override string ModuleAuthor => "schwarper";
 
-    private static readonly HttpClient _httpClient = new();
     public static BaseBans Instance { get; set; } = new();
     public Config Config { get; set; } = new Config();
 
@@ -64,30 +61,20 @@ public class BaseBans : BasePlugin, IPluginConfig<Config>
     [CommandHelper(minArgs: 2, usage: "<#userid|name> <minutes|0> [reason]")]
     public void Command_Ban(CCSPlayerController? player, CommandInfo info)
     {
-        string[] args = info.ArgString.Split(' ', StringSplitOptions.RemoveEmptyEntries); ;
+        string[] args = info.ArgString.Split(' ', StringSplitOptions.RemoveEmptyEntries);
 
-        TargetResult targetResult = new Target(args[0]).GetTarget(player);
-
-        if (targetResult.Players.Count == 0)
+        if (!ProcessTargetString(player, info, args[0], true, true, MultipleFlags.NORMAL, out List<CCSPlayerController>? players, out string? adminname, out string? targetname))
         {
-            info.ReplyToCommand(Config.Tag + Localizer["No matching client"]);
-            return;
-        }
-        else if (targetResult.Players.Count > 1)
-        {
-            info.ReplyToCommand(Config.Tag + Localizer["More than one client matched"]);
             return;
         }
 
-        CCSPlayerController target = targetResult.Players[0];
+        CCSPlayerController target = players[0];
 
         if (!AdminManager.CanPlayerTarget(player, target))
         {
             info.ReplyToCommand(Config.Tag + Localizer["Unable to target"]);
             return;
         }
-
-        string targetname = target.PlayerName;
 
         if (Database.IsBanned(target.SteamID))
         {
@@ -101,7 +88,6 @@ public class BaseBans : BasePlugin, IPluginConfig<Config>
         }
 
         ulong adminsteamid = player?.SteamID ?? 0;
-        string adminname = player?.PlayerName ?? Localizer["Console"];
         string reason = string.Join(' ', args[2..]);
 
         if (duration == 0)
@@ -172,7 +158,7 @@ public class BaseBans : BasePlugin, IPluginConfig<Config>
     [CommandHelper(minArgs: 2, usage: "<duration> <steamid> [reason]")]
     public void Command_AddBan(CCSPlayerController? player, CommandInfo info)
     {
-        string[] args = info.ArgString.Split(' ', StringSplitOptions.RemoveEmptyEntries); ;
+        string[] args = info.ArgString.Split(' ', StringSplitOptions.RemoveEmptyEntries);
 
         if (!SteamIDTryParse(args[1], out ulong steamid))
         {
@@ -232,59 +218,5 @@ public class BaseBans : BasePlugin, IPluginConfig<Config>
         });
 
         Utilities.GetPlayerFromSteamId(steamid)?.Disconnect(NetworkDisconnectionReason.NETWORK_DISCONNECT_STEAM_BANNED);
-    }
-
-    private static bool SteamIDTryParse(string id, out ulong steamId)
-    {
-        steamId = 0;
-
-        if (id.Length != 17)
-        {
-            return false;
-        }
-
-        if (!ulong.TryParse(id, out steamId))
-        {
-            return false;
-        }
-
-        const ulong minSteamID = 76561197960265728;
-
-        return steamId >= minSteamID;
-    }
-
-    private static async Task<string> GetPlayerNameFromSteamID(ulong steamID)
-    {
-        try
-        {
-            using HttpResponseMessage response = await _httpClient.GetAsync($"https://steamcommunity.com/profiles/{steamID}/?xml=1");
-            response.EnsureSuccessStatusCode();
-
-            string xmlContent = await response.Content.ReadAsStringAsync();
-
-            System.Xml.XmlDocument xmlDoc = new();
-            xmlDoc.LoadXml(xmlContent);
-
-            System.Xml.XmlNode? nameNode = xmlDoc.SelectSingleNode("//steamID");
-
-            string? name = nameNode?.InnerText.Trim();
-
-            if (string.IsNullOrWhiteSpace(name))
-            {
-                return steamID.ToString();
-            }
-
-            return name;
-        }
-        catch (Exception)
-        {
-            return steamID.ToString();
-        }
-    }
-
-    private void SendMessageToAllPlayers(HudDestination destination, string messageKey, params object[] args)
-    {
-        LocalizedString message = Localizer[messageKey, args];
-        VirtualFunctions.ClientPrintAll(destination, Config.Tag + message, 0, 0, 0, 0);
     }
 }
