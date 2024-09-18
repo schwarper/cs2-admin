@@ -1,0 +1,10 @@
+{
+  "Console": "Panel",
+
+  "css_vote": "{blue}{0}{white}, {green}{1} {white}için oylama başlattı.",
+  "css_vote<title>": "{0} için oy ver",
+  "css_vote<results>": "{blue}{0} {white}için oylama sonuçları",
+  "css_vote<resultsanswer>": "{blue}{0} {white}- {green}{1} {white}oy",
+  "css_vote<optiontext>": "{0} - {1} oy",
+  "css_vote<inprogress>": "{white}Zaten bir oylama var. Oylamanın bitmesini bekleyin."
+}

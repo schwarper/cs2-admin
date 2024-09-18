@@ -1,0 +1,30 @@
+{
+  "all": "all players",
+  "bots": "bots",
+  "humans": "humans",
+  "alive": "alive players",
+  "dead": "dead players",
+  "notme": "all players except self",
+  "ct": "ct players",
+  "t": "t players",
+  "spec": "spec players",
+  "Console": "Console",
+
+  "No matching client": "{white}No matching client was found.",
+  "More than one client matched": "{white}More than one client matched the given pattern.",
+  "Unable to target": "{white}You cannot target this player.",
+  "Unable to targets": "{white}You cannot target these players.",
+
+  "css_mute<player>": "{blue}{0} {white}muted {green}{1}{white}.",
+  "css_mute<multiple>": "{blue}{0} {white}muted {green}{1}{white}.",
+  "css_unmute<player>": "{blue}{0} {white}unmuted {green}{1}{white}.",
+  "css_unmute<multiple>": "{blue}{0} {white}unmuted {green}{1}{white}.",
+  "css_gag<player>": "{blue}{0} {white}gagged {green}{1}{white}.",
+  "css_gag<multiple>": "{blue}{0} {white}gagged {green}{1}{white}.",
+  "css_ungag<player>": "{blue}{0} {white}ungagged {green}{1}{white}.",
+  "css_ungag<multiple>": "{blue}{0} {white}ungagged {green}{1}{white}.",
+  "css_silence<player>": "{blue}{0} {white}muted & gagged {green}{1}{white}.",
+  "css_silence<multiple>": "{blue}{0} {white}muted & gagged {green}{1}{white}.",
+  "css_unsilence<player>": "{blue}{0} {white}unmuted & ungagged {green}{1}{white}.",
+  "css_unsilence<multiple>": "{blue}{0} {white}unmuted & ungagged {green}{1}{white}."
+}

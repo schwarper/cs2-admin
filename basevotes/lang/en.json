@@ -1,0 +1,10 @@
+{
+  "Console": "Console",
+
+  "css_vote": "{blue}{0} {white}started a vote for {green}{1}{white}.",
+  "css_vote<title>": "Vote for {0}",
+  "css_vote<results>": "Vote results for {blue}{0}{white}",
+  "css_vote<resultsanswer>": "{blue}{0} {white}- {green}{1} {white}votes",
+  "css_vote<optiontext>": "{0} - {1} votes",
+  "css_vote<inprogress>": "{white}There is already a vote in progress. Please wait for the vote to finish."
+}

@@ -1,0 +1,30 @@
+{
+  "all": "bütün oyuncular",
+  "bots": "botlar",
+  "humans": "insanlar",
+  "alive": "yaşayan oyuncular",
+  "dead": "ölü oyuncular",
+  "notme": "kendisi hariç bütün oyuncular",
+  "ct": "ct takımındaki oyuncular",
+  "t": "t takımındaki oyuncular",
+  "spec": "izleyici takımındaki oyuncular",
+  "Console": "Panel",
+
+  "No matching client": "{white}Eşleşen bir oyuncu bulunamadı.",
+  "More than one client matched": "{white}Verilen biçim düzeniyle birden fazla alıcı eşleşti.",
+  "Unable to target": "{white}Bu oyuncuyu hedefleyemezsiniz.",
+  "Unable to targets": "{white}Bu oyuncuları hedefleyemezsiniz.",
+
+  "css_mute<player>": "{blue}{0}{white}, {green}{1} {white}adlı oyuncunun mikrofonunu susturdu.",
+  "css_mute<multiple>": "{blue}{0}{white}, {green}{1}ın {white}mikrofonunu susturdu.",
+  "css_unmute<player>": "{blue}{0}{white}, {green}{1} {white}adlı oyuncunun mikrofon susturmasını kaldırdı.",
+  "css_unmute<multiple>": "{blue}{0}{white}, {green}{1}ın {white}mikrofon susturmasını kaldırdı.",
+  "css_gag<player>": "{blue}{0}{white}, {green}{1} {white}adlı oyuncunun yazısını susturdu.",
+  "css_gag<multiple>": "{blue}{0}{white}, {green}{1}ın {white}yazısını susturdu.",
+  "css_ungag<player>": "{blue}{0}{white}, {green}{1} {white}adlı oyuncunun yazı yazma yasağını kaldırdı.",
+  "css_ungag<multiple>": "{blue}{0}{white}, {green}{1}ın {white}yazı yazma yasağını kaldırdı.",
+  "css_silence<player>": "{blue}{0}{white}, {green}{1} {white}adlı oyuncunun mikrofon ve yazısını susturdu.",
+  "css_silence<multiple>": "{blue}{0}{white}, {green}{1}ın {white}mikrofon ve yazısını susturdu.",
+  "css_unsilence<player>": "{blue}{0}{white}, {green}{1} {white}adlı oyuncunun mikrofon ve yazı yazma yasağını kaldırdı.",
+  "css_unsilence<multiple>": "{blue}{0}{white}, {green}{1}ın {white}mikrofon ve yazı yazma yasağını kaldırdı."
+}

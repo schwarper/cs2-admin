@@ -1,0 +1,11 @@
+{
+  "Console": "Panel",
+  "No matching client": "{white}Eşleşen alıcı bulunamadı.",
+  "More than one client matched": "{white}Verilen biçim düzeniyle birden fazla alıcı eşleşti.",
+
+  "css_say": "{red}[HERKES] {blue}{0}{white}: {green}{1}",
+  "css_csay": "{0}: {1}",
+  "css_hsay": "{0}: {1}",
+  "css_asay": "{red}[ADMINLER] {blue}{0}{white}: {green}{1}",
+  "css_psay": "{white}[{blue}{0} {white}-> {blue}{1}{white}]: {green}{2}"
+}
