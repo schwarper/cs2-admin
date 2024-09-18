@@ -7,6 +7,8 @@ using CounterStrikeSharp.API.Modules.Commands;
 using CounterStrikeSharp.API.Modules.Commands.Targeting;
 using CounterStrikeSharp.API.Modules.Memory;
 using CounterStrikeSharp.API.Modules.Utils;
+using System.Linq;
+using System.Reflection.Metadata;
 using static CounterStrikeSharp.API.Modules.Commands.Targeting.Target;
 
 namespace BaseComm;
@@ -20,10 +22,38 @@ public class BaseComm : BasePlugin, IPluginConfig<Config>
     public static HashSet<CCSPlayerController> PlayerGagList { get; set; } = [];
     public Config Config { get; set; } = new Config();
 
+    public override void Load(bool hotReload)
+    {
+        AddCommandListener("say", Command_Say, HookMode.Pre);
+        AddCommandListener("say_team", Command_Say, HookMode.Pre);
+    }
+
+    public override void Unload(bool hotReload)
+    {
+        RemoveCommandListener("say", Command_Say, HookMode.Pre);
+        RemoveCommandListener("say_team", Command_Say, HookMode.Pre);
+    }
+
     public void OnConfigParsed(Config config)
     {
         config.Tag = StringExtensions.ReplaceColorTags(config.Tag);
         Config = config;
+    }
+
+    public HookResult Command_Say(CCSPlayerController? player, CommandInfo info)
+    {
+        if (player == null)
+        {
+            return HookResult.Continue;
+        }
+
+        if (PlayerGagList.Contains(player))
+        {
+            VirtualFunctions.ClientPrint(player.Handle, HudDestination.Chat, Config.Tag + Localizer["You are gagged"], 0, 0, 0, 0);
+            return HookResult.Handled;
+        }
+
+        return HookResult.Continue;
     }
 
     [ConsoleCommand("css_mute")]
@@ -257,6 +287,7 @@ public class BaseComm : BasePlugin, IPluginConfig<Config>
 
         TargetTypeMap.TryGetValue(targetstr, out TargetType type);
 
+        players = targetResult.Players;
         adminname = player?.PlayerName ?? Localizer["Console"];
         targetname = type switch
         {

@@ -20,7 +20,7 @@ public class PlayerCommands : BasePlugin, IPluginConfig<Config>
     public override string ModuleAuthor => "schwarper";
 
     public Config Config { get; set; } = new Config();
-    private static Random Random = new Random();
+    private static readonly Random Random = new();
 
     public void OnConfigParsed(Config config)
     {
@@ -35,12 +35,12 @@ public class PlayerCommands : BasePlugin, IPluginConfig<Config>
     {
         string[] args = info.ArgString.Split(' ', StringSplitOptions.RemoveEmptyEntries);
 
-        if (!ProcessTargetString(player, info, args[0], false, false, out List<CCSPlayerController>? players, out string? adminname, out string? targetname))
+        if (!ProcessTargetString(player, info, args[0], false, true, out List<CCSPlayerController>? players, out string? adminname, out string? targetname))
         {
             return;
         }
 
-        if (!int.TryParse(args[1], out int damage))
+        if (args.Length < 2 || !int.TryParse(args[1], out int damage))
         {
             damage = 0;
         }
@@ -70,7 +70,7 @@ public class PlayerCommands : BasePlugin, IPluginConfig<Config>
     [CommandHelper(minArgs: 1, usage: "<#userid|name|all @ commands>")]
     public void Command_Slay(CCSPlayerController? player, CommandInfo info)
     {
-        if (!ProcessTargetString(player, info, info.GetArg(1), false, false, out List<CCSPlayerController>? players, out string? adminname, out string? targetname))
+        if (!ProcessTargetString(player, info, info.GetArg(1), false, true, out List<CCSPlayerController>? players, out string? adminname, out string? targetname))
         {
             return;
         }
@@ -103,7 +103,7 @@ public class PlayerCommands : BasePlugin, IPluginConfig<Config>
     {
         string[] args = info.ArgString.Split(' ', StringSplitOptions.RemoveEmptyEntries);
 
-        if (!ProcessTargetString(player, info, args[0], true, true, out List<CCSPlayerController>? players, out string? adminname, out string? targetname))
+        if (!ProcessTargetString(player, info, args[0], true, false, out List<CCSPlayerController>? players, out string? adminname, out string? targetname))
         {
             return;
         }
@@ -223,7 +223,7 @@ public class PlayerCommands : BasePlugin, IPluginConfig<Config>
         {
             CCSPlayerController target = targetResult.Players[0];
 
-            if (!AdminManager.CanPlayerTarget(player, target) || singleignoredead && !target.PawnIsAlive)
+            if (!AdminManager.CanPlayerTarget(player, target) || (singleignoredead && !target.PawnIsAlive))
             {
                 info.ReplyToCommand(Config.Tag + Localizer["Unable to target"]);
                 return false;
@@ -237,6 +237,7 @@ public class PlayerCommands : BasePlugin, IPluginConfig<Config>
 
         TargetTypeMap.TryGetValue(targetstr, out TargetType type);
 
+        players = targetResult.Players;
         adminname = player?.PlayerName ?? Localizer["Console"];
         targetname = type switch
         {

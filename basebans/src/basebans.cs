@@ -1,6 +1,7 @@
 ﻿using CounterStrikeSharp.API;
 using CounterStrikeSharp.API.Core;
 using CounterStrikeSharp.API.Core.Attributes.Registration;
+using CounterStrikeSharp.API.Core.Translations;
 using CounterStrikeSharp.API.Modules.Admin;
 using CounterStrikeSharp.API.Modules.Commands;
 using CounterStrikeSharp.API.Modules.Commands.Targeting;
@@ -39,6 +40,7 @@ public class BaseBans : BasePlugin, IPluginConfig<Config>
     {
         await Database.CreateDatabaseAsync(config);
 
+        config.Tag = StringExtensions.ReplaceColorTags(config.Tag);
         Config = config;
     }
 

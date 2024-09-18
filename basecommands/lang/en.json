@@ -9,9 +9,9 @@
   "You don't have permissions to change sv_cheats": "{white}You don't have the authority to change the {blue}sv_cheats {white}cvar.",
 
   "Kicked": "{blue}{0} {white}kicked '{green}{1}{white}'",
-  "Kicked reason": "{blue}{0} {white}kick '{green}{1}{white}' (reason = {green}{2}{white})",
+  "Kicked reason": "{blue}{0} {white}kicked '{green}{1}{white}' (reason = {green}{2}{white})",
   "Sent Rcon": "{blue}{0} {white}sent the command {green}{1} {white}via rcon.",
-  "Cvar value": "{white}Cvar {blue}{0} is {blue}{1}{white}.",
+  "Cvar value": "{white}Cvar {blue}{0} {white}is {blue}{1}{white}.",
   "Cvar changed": "{blue}{0} {white}changed the cvar {green}{1} {white}to {green}{2}{white}.",
   "Executed config": "{blue}{0} {white}executed the file {green}{1}{white}.",
   "Restarted Round": "{blue}{0}{white}, restarted round.",

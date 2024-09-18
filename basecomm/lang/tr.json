@@ -14,6 +14,7 @@
   "More than one client matched": "{white}Verilen biçim düzeniyle birden fazla alıcı eşleşti.",
   "Unable to target": "{white}Bu oyuncuyu hedefleyemezsiniz.",
   "Unable to targets": "{white}Bu oyuncuları hedefleyemezsiniz.",
+  "You are gagged": "{white}You are gagged temporarily.",
 
   "css_mute<player>": "{blue}{0}{white}, {green}{1} {white}adlı oyuncunun mikrofonunu susturdu.",
   "css_mute<multiple>": "{blue}{0}{white}, {green}{1}ın {white}mikrofonunu susturdu.",

@@ -5,7 +5,10 @@ using CounterStrikeSharp.API.Core.Translations;
 using CounterStrikeSharp.API.Modules.Admin;
 using CounterStrikeSharp.API.Modules.Commands;
 using CounterStrikeSharp.API.Modules.Cvars;
+using CounterStrikeSharp.API.Modules.Memory;
+using CounterStrikeSharp.API.Modules.Utils;
 using System.Collections.Concurrent;
+using System.Reflection.Metadata;
 
 namespace AntiFlood;
 
@@ -87,7 +90,7 @@ public class AntiFlood : BasePlugin, IPluginConfig<Config>
         {
             if (playerData.tokenCount >= 3)
             {
-                info.ReplyToCommand(Config.Tag + Localizer["Flooding the server"]);
+                VirtualFunctions.ClientPrint(player.Handle, HudDestination.Chat, Config.Tag + Localizer["Flooding the server"], 0, 0, 0, 0);
                 playerData.lastduration = newduration + 3.0f;
                 return HookResult.Handled;
             }

@@ -14,6 +14,7 @@
   "More than one client matched": "{white}More than one client matched the given pattern.",
   "Unable to target": "{white}You cannot target this player.",
   "Unable to targets": "{white}You cannot target these players.",
+  "You are gagged": "{white}Geçici olarak yazı yazamazsınız.",
 
   "css_mute<player>": "{blue}{0} {white}muted {green}{1}{white}.",
   "css_mute<multiple>": "{blue}{0} {white}muted {green}{1}{white}.",

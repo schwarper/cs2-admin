@@ -59,7 +59,7 @@ public class BaseCommands : BasePlugin, IPluginConfig<Config>
         string targetname = target.PlayerName;
         string reason = string.Join(' ', args[1..]);
 
-        if (string.IsNullOrWhiteSpace(reason))
+        if (!string.IsNullOrWhiteSpace(reason))
         {
             SendMessageToAllPlayers(HudDestination.Chat, "Kicked reason", adminname, targetname, reason);
         }
@@ -198,7 +198,7 @@ public class BaseCommands : BasePlugin, IPluginConfig<Config>
     {
         Action<string> targetConsolePrint = (player != null) ? player.PrintToConsole : Server.PrintToConsole;
 
-        if (info.ArgCount == 1)
+        if (info.ArgString.Length > 0)
         {
             TargetResult targetResult = info.GetArgTargetResult(1);
 
