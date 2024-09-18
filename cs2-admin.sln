@@ -13,6 +13,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "basechat", "basechat\basech
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "basecommands", "basecommands\basecommands.csproj", "{CCC26F37-64AC-403E-89D6-4D07521A6B69}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "playercommands", "playercommands\playercommands.csproj", "{D9500665-F14F-48E0-AB80-5ED76D8DC9E2}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -39,6 +41,10 @@ Global
 		{CCC26F37-64AC-403E-89D6-4D07521A6B69}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{CCC26F37-64AC-403E-89D6-4D07521A6B69}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{CCC26F37-64AC-403E-89D6-4D07521A6B69}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D9500665-F14F-48E0-AB80-5ED76D8DC9E2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D9500665-F14F-48E0-AB80-5ED76D8DC9E2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D9500665-F14F-48E0-AB80-5ED76D8DC9E2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D9500665-F14F-48E0-AB80-5ED76D8DC9E2}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
