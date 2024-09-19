@@ -39,18 +39,7 @@ public static class Database
         DatabaseConnectionString = builder.ConnectionString;
 
         await using DbConnection connection = await ConnectAsync();
-        await using DbTransaction transaction = await connection.BeginTransactionAsync();
-
-        try
-        {
-            await connection.ExecuteAsync(CreateBasebanTableSql, transaction: transaction);
-            await connection.ExecuteAsync(CreateBasebanLogTableSql, transaction: transaction);
-        }
-        catch (Exception ex)
-        {
-            await transaction.RollbackAsync();
-            throw new Exception(ex.Message);
-        }
+        await connection.ExecuteAsync(CreateBasebanTableSql);
     }
 
     public static bool IsBanned(ulong steamid)
@@ -61,121 +50,73 @@ public static class Database
     public static async Task<bool> IsBannedAsync(ulong steamid)
     {
         await using DbConnection connection = await ConnectAsync().ConfigureAwait(false);
-        bool exists = await connection.ExecuteScalarAsync<bool>(DeleteAndSelectSql, new { steamid }).ConfigureAwait(false);
+
+        await connection.ExecuteAsync(UpdateExpiredBansSql).ConfigureAwait(false);
+
+        bool exists = await connection.ExecuteScalarAsync<bool>(SelectBansSql, new { steamid }).ConfigureAwait(false);
         return exists;
     }
 
-    public static async Task Ban(string playername, ulong playersteamid, string adminname, ulong adminsteamid, string reason, int duration)
+    public static async Task Ban(string playername, ulong steamid, string adminname, ulong adminsteamid, string reason, int duration)
     {
         DateTime created = DateTime.Now;
         DateTime end = duration == 0 ? DateTime.MaxValue : created.AddMinutes(duration);
 
         await using DbConnection connection = await ConnectAsync();
-        await using DbTransaction transaction = await connection.BeginTransactionAsync();
 
-        try
+        await connection.ExecuteAsync(InsertBasebanSql, new
         {
-            await connection.ExecuteAsync(InsertBasebanSql, new
-            {
-                steamid = playersteamid,
-                duration,
-                created,
-                end
-            }, transaction: transaction);
-
-            await connection.ExecuteAsync(InsertBasebanLogSql, new
-            {
-                player_steamid = playersteamid,
-                player_name = playername,
-                admin_steamid = adminsteamid,
-                admin_name = adminname,
-                command = "ban",
-                reason,
-                duration,
-                date = created
-            }, transaction: transaction);
-
-            await transaction.CommitAsync();
-        }
-        catch (Exception)
-        {
-            await transaction.RollbackAsync();
-            throw;
-        }
+            steamid,
+            playername,
+            adminsteamid,
+            adminname,
+            reason,
+            duration,
+            created,
+            end,
+            status = "ACTIVE"
+        });
     }
 
-    public static async Task Unban(string playername, ulong steamid, string adminname, ulong adminsteamid)
+    public static async Task Unban(ulong steamid)
     {
-        DateTime created = DateTime.Now;
-
         await using DbConnection connection = await ConnectAsync();
-        await using DbTransaction transaction = await connection.BeginTransactionAsync();
-
-        try
-        {
-            await connection.ExecuteAsync(DeleteBasebanSql, new { steamid }, transaction: transaction);
-
-            await connection.ExecuteAsync(InsertBasebanLogSql, new
-            {
-                player_steamid = steamid,
-                player_name = playername,
-                admin_steamid = adminsteamid,
-                admin_name = adminname,
-                command = "unban",
-                reason = string.Empty,
-                duration = 0,
-                date = created
-            }, transaction: transaction);
-
-            await transaction.CommitAsync();
-        }
-        catch (Exception)
-        {
-            await transaction.RollbackAsync();
-            throw;
-        }
+        await connection.ExecuteAsync(UpdateStatusBasebanSql, new { steamid, status = "UNBANNED" });
     }
 
     private const string CreateBasebanTableSql = @"
-            CREATE TABLE IF NOT EXISTS baseban (
-                id INT AUTO_INCREMENT PRIMARY KEY,
-                steamid BIGINT UNSIGNED NOT NULL,
-                duration INT NOT NULL,
-                created DateTime NOT NULL,
-                end DateTime NOT NULL,
-                UNIQUE (steamid)
-            );
-        ";
-
-    private const string CreateBasebanLogTableSql = @"
-            CREATE TABLE IF NOT EXISTS baseban_log (
-                player_steamid BIGINT UNSIGNED NOT NULL,
-                player_name VARCHAR(128),
-                admin_steamid BIGINT UNSIGNED,
-                admin_name VARCHAR(128) NOT NULL,
-                command VARCHAR(128) NOT NULL,
-                reason VARCHAR(128),
-                duration INT,
-                date DateTime NOT NULL
-            );
-        ";
+        CREATE TABLE IF NOT EXISTS baseban (
+            id INT AUTO_INCREMENT PRIMARY KEY,
+            steamid BIGINT UNSIGNED NOT NULL,
+            playername VARCHAR(128) NOT NULL,
+            adminsteamid BIGINT UNSIGNED NOT NULL,
+            adminname VARCHAR(128) NOT NULL,
+            reason VARCHAR(128),
+            duration INT NOT NULL,
+            created DateTime NOT NULL,
+            end DateTime NOT NULL,
+            status ENUM('ACTIVE', 'UNBANNED', 'EXPIRED') NOT NULL
+        );
+    ";
 
     private const string InsertBasebanSql = @"
-        INSERT INTO baseban (steamid, duration, created, end) 
-        VALUES (@steamid, @duration, @created, @end);
+        INSERT INTO baseban (steamid, playername, adminsteamid, adminname, reason, duration, created, end, status) 
+        VALUES (@steamid, @playername, @adminsteamid, @adminname, @reason, @duration, @created, @end, @status);
     ";
 
-    private const string InsertBasebanLogSql = @"
-        INSERT INTO baseban_log (player_steamid, player_name, admin_steamid, admin_name, command, reason, duration, date)
-        VALUES (@player_steamid, @player_name, @admin_steamid, @admin_name, @command, @reason, @duration, @date);
+    private const string UpdateStatusBasebanSql = @"
+        UPDATE baseban 
+        SET status = @status 
+        WHERE steamid = @steamid;
     ";
 
-    private const string DeleteBasebanSql = "DELETE FROM baseban WHERE steamid = @steamid;";
+    private const string UpdateExpiredBansSql = @"
+        UPDATE baseban 
+        SET status = 'EXPIRED' 
+        WHERE end <= NOW() AND status = 'ACTIVE';
+    ";
 
-    private const string DeleteAndSelectSql = @"
-        DELETE FROM baseban 
-        WHERE steamid = @steamid AND end <= NOW();
-    
-        SELECT EXISTS(SELECT 1 FROM baseban WHERE steamid = @steamid LIMIT 1);
+    private const string SelectBansSql = @"
+        SELECT EXISTS(SELECT 1 FROM baseban WHERE steamid = @steamid AND status = 'ACTIVE' LIMIT 1);
     ";
 }

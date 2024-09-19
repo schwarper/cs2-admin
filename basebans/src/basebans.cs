@@ -147,7 +147,7 @@ public class BaseBans : BasePlugin, IPluginConfig<Config>
         {
             string playername = await GetPlayerNameFromSteamID(steamid);
 
-            await Database.Unban(playername, steamid, adminname, adminsteamid);
+            await Database.Unban(steamid);
             await Discord.SendEmbedMessage(playername, steamid, adminname, adminsteamid, string.Empty, -1, false);
         });
 

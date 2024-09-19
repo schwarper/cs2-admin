@@ -1,0 +1,25 @@
+{
+  "all": "all players",
+  "bots": "bots",
+  "humans": "humans",
+  "alive": "alive players",
+  "dead": "dead players",
+  "notme": "all players except self",
+  "ct": "ct players",
+  "t": "t players",
+  "spec": "spec players",
+  "Console": "Console",
+
+  "No matching client": "{white}No matching client was found.",
+  "More than one client matched": "{white}More than one client matched the given pattern.",
+  "Unable to target": "{white}You cannot target this player.",
+  "Must be a string": "{white}The entered value must be a string.",
+  "You can target only dead players": "{white}You can target only dead players.",
+  "You can target only alive players": "{white}You can target only alive players",
+
+  "css_slap<player>": "{blue}{0} {white}slapped {green}{1} {white}and damaged {green}{2}{white}.",
+  "css_slap<multiple>": "{blue}{0} {white}slapped {green}{1} {white}and damaged {green}{2}{white}.",
+  "css_slay<player>": "{blue}{0} {white}killed {green}{1}{white}.",
+  "css_slay<multiple>": "{blue}{0} {white}killed {1}{white}.",
+  "css_rename": "{blue}{0} {white}changed the name of {green}{1} {white}to {green}{2}{white}."
+}
