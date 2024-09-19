@@ -66,7 +66,7 @@ public class BaseComm : BasePlugin, IPluginConfig<Config>
 
     [ConsoleCommand("css_mute")]
     [RequiresPermissions("@css/chat")]
-    [CommandHelper(minArgs: 1, usage: "<player> - Removes a player's ability to use voice.")]
+    [CommandHelper(minArgs: 1, usage: "<#userid|name|all @ commands> - Removes a player's ability to use voice.")]
     public void Command_Mute(CCSPlayerController? player, CommandInfo info)
     {
         string[] args = info.ArgString.Split(' ', StringSplitOptions.RemoveEmptyEntries);
@@ -93,7 +93,7 @@ public class BaseComm : BasePlugin, IPluginConfig<Config>
 
     [ConsoleCommand("css_gag")]
     [RequiresPermissions("@css/chat")]
-    [CommandHelper(minArgs: 1, usage: "<player> - Removes a player's ability to use chat.")]
+    [CommandHelper(minArgs: 1, usage: "<#userid|name|all @ commands> - Removes a player's ability to use chat.")]
     public void Command_Gag(CCSPlayerController? player, CommandInfo info)
     {
         string[] args = info.ArgString.Split(' ', StringSplitOptions.RemoveEmptyEntries);
@@ -120,7 +120,7 @@ public class BaseComm : BasePlugin, IPluginConfig<Config>
 
     [ConsoleCommand("css_silence")]
     [RequiresPermissions("@css/chat")]
-    [CommandHelper(minArgs: 1, usage: "<player> - Removes a player's ability to use chat.")]
+    [CommandHelper(minArgs: 1, usage: "<#userid|name|all @ commands> - Removes a player's ability to use voice or chat.")]
     public void Command_Silence(CCSPlayerController? player, CommandInfo info)
     {
         string[] args = info.ArgString.Split(' ', StringSplitOptions.RemoveEmptyEntries);
@@ -148,7 +148,7 @@ public class BaseComm : BasePlugin, IPluginConfig<Config>
 
     [ConsoleCommand("css_unmute")]
     [RequiresPermissions("@css/chat")]
-    [CommandHelper(minArgs: 1, usage: "<player> - Restores a player's ability to use voice.")]
+    [CommandHelper(minArgs: 1, usage: "<#userid|name|all @ commands> - Restores a player's ability to use voice.")]
     public void Command_Unmute(CCSPlayerController? player, CommandInfo info)
     {
         string[] args = info.ArgString.Split(' ', StringSplitOptions.RemoveEmptyEntries);
@@ -175,7 +175,7 @@ public class BaseComm : BasePlugin, IPluginConfig<Config>
 
     [ConsoleCommand("css_ungag")]
     [RequiresPermissions("@css/chat")]
-    [CommandHelper(minArgs: 1, usage: "<player> - Restores a player's ability to use chat.")]
+    [CommandHelper(minArgs: 1, usage: "<#userid|name|all @ commands> - Restores a player's ability to use chat.")]
     public void Command_Ungag(CCSPlayerController? player, CommandInfo info)
     {
         string[] args = info.ArgString.Split(' ', StringSplitOptions.RemoveEmptyEntries);
@@ -202,7 +202,7 @@ public class BaseComm : BasePlugin, IPluginConfig<Config>
 
     [ConsoleCommand("css_unsilence")]
     [RequiresPermissions("@css/chat")]
-    [CommandHelper(minArgs: 1, usage: "<player> - Restores a player's ability to use voice and chat.")]
+    [CommandHelper(minArgs: 1, usage: "<#userid|name|all @ commands> - Restores a player's ability to use voice and chat.")]
     public void Command_Unsilence(CCSPlayerController? player, CommandInfo info)
     {
         string[] args = info.ArgString.Split(' ', StringSplitOptions.RemoveEmptyEntries);

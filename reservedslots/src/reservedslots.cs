@@ -15,17 +15,18 @@ public class ReservedSlots : BasePlugin
     public override string ModuleAuthor => "schwarper";
     public override string ModuleDescription => "Provides basic reserved slots";
 
-    public FakeConVar<int> sm_reserved_slots = new("sm_reserved_slots", "Number of reserved player slots", 0);
-    public FakeConVar<bool> sm_hide_slots = new("sm_hide_slots", "If set to 1, reserved slots will be hidden (subtracted from the max slot count)", false);
-    public FakeConVar<int> sm_reserve_type = new("sm_reserve_type", "Method of reserving slots", 0);
-    public FakeConVar<int> sm_reserve_maxadmins = new("sm_reserve_maxadmins", "Maximum amount of admins to let in the server with reserve type 2", 0);
-    public FakeConVar<int> sm_reserve_kicktype = new("sm_reserve_kicktype", "How to select a client to kick (if appropriate)", 0);
+    public FakeConVar<int> css_reserved_slots = new("css_reserved_slots", "Number of reserved player slots", 0);
+    public FakeConVar<bool> css_hide_slots = new("css_hide_slots", "If set to 1, reserved slots will be hidden (subtracted from the max slot count)", false);
+    public FakeConVar<int> css_reserve_type = new("css_reserve_type", "Method of reserving slots", 0);
+    public FakeConVar<int> css_reserve_maxadmins = new("css_reserve_maxadmins", "Maximum amount of admins to let in the server with reserve type 2", 0);
+    public FakeConVar<int> css_reserve_kicktype = new("css_reserve_kicktype", "How to select a client to kick (if appropriate)", 0);
     public ConVar sv_visiblemaxplayers = null!;
+    private const string playerdesignername = "cs_player_controller";
 
     private enum KickType
     {
         Kick_HighestPing = 0,
-        //KickType.Kick_HighestTime,
+        Kick_HighestTime,
         Kick_Random,
     };
 
@@ -78,20 +79,20 @@ public class ReservedSlots : BasePlugin
             return HookResult.Continue;
         }
 
-        int reserved = sm_reserved_slots.Value;
+        int reserved = css_reserved_slots.Value;
 
         if (reserved > 0)
         {
             int clients = GetClientCount();
             int limit = Server.MaxPlayers - reserved;
 
-            int type = sm_reserve_type.Value;
+            int type = css_reserve_type.Value;
 
             if (type == 0)
             {
                 if (clients <= limit || player.IsBot || PlayerHasPermissions(player, "@css/reservation"))
                 {
-                    if (sm_hide_slots.Value)
+                    if (css_hide_slots.Value)
                     {
                         SetVisibleMaxSlots(clients, limit);
                     }
@@ -111,13 +112,11 @@ public class ReservedSlots : BasePlugin
 
                         if (target != null)
                         {
-                            /* Kick public player to free the reserved slot again */
                             AddTimer(0.1f, () => OnTimedKick(target));
                         }
                     }
                     else
                     {
-                        /* Kick player because there are no public slots left */
                         AddTimer(0.1f, () => OnTimedKick(player));
                     }
                 }
@@ -129,23 +128,19 @@ public class ReservedSlots : BasePlugin
                     AdminsList.Add(player);
                 }
 
-                if (clients > limit && AdminsList.Count < sm_reserve_maxadmins.Value)
+                if (clients > limit && AdminsList.Count < css_reserve_maxadmins.Value)
                 {
-                    /* Server is full, reserved slots aren't and client doesn't have reserved slots access */
-
                     if (AdminsList.Contains(player))
                     {
                         CCSPlayerController? target = SelectKickClient();
 
                         if (target != null)
                         {
-                            /* Kick public player to free the reserved slot again */
                             AddTimer(0.1f, () => OnTimedKick(target));
                         }
                     }
                     else
                     {
-                        /* Kick player because there are no public slots left */
                         AddTimer(0.1f, () => OnTimedKick(player));
                     }
                 }
@@ -173,21 +168,19 @@ public class ReservedSlots : BasePlugin
 
     public void SlotCountChanged()
     {
-        sm_reserved_slots.ValueChanged += (_, value) =>
+        css_reserved_slots.ValueChanged += (_, value) =>
         {
-            value = Math.Max(0, value);
-
-            if (value == 0)
+            if (value <= 0)
             {
                 ResetVisibleMax();
             }
-            else if (sm_hide_slots.Value)
+            else if (css_hide_slots.Value)
             {
                 SetVisibleMaxSlots(GetClientCount(), Server.MaxPlayers - value);
             }
         };
 
-        sm_hide_slots.ValueChanged += (_, value) =>
+        css_hide_slots.ValueChanged += (_, value) =>
         {
             if (!value)
             {
@@ -198,30 +191,13 @@ public class ReservedSlots : BasePlugin
                 SetVisibleMaxSlots(GetClientCount(), Server.MaxPlayers - (value ? 1 : 0));
             }
         };
-
-        sm_reserve_type.ValueChanged += (_, value) =>
-        {
-            value = Math.Max(0, value);
-            value = Math.Min(value, 2);
-        };
-
-        sm_reserve_maxadmins.ValueChanged += (_, value) =>
-        {
-            value = Math.Max(0, value);
-        };
-
-        sm_reserve_kicktype.ValueChanged += (_, value) =>
-        {
-            value = Math.Max(0, value);
-            value = Math.Min(value, (int)Enum.GetValues(typeof(KickType)).Cast<KickType>().Max());
-        };
     }
 
     public void CheckHiddenSlots()
     {
-        if (sm_hide_slots.Value)
+        if (css_hide_slots.Value)
         {
-            SetVisibleMaxSlots(GetClientCount(), Server.MaxPlayers - (sm_hide_slots.Value ? 1 : 0));
+            SetVisibleMaxSlots(GetClientCount(), Server.MaxPlayers - (css_hide_slots.Value ? 1 : 0));
         }
     }
 
@@ -248,7 +224,7 @@ public class ReservedSlots : BasePlugin
 
     public CCSPlayerController? SelectKickClient()
     {
-        KickType type = (KickType)sm_reserve_kicktype.Value;
+        KickType type = (KickType)css_reserve_kicktype.Value;
 
         float highestValue = 0;
         CCSPlayerController? highestValuePlayer = null;
@@ -259,8 +235,6 @@ public class ReservedSlots : BasePlugin
         bool specFound = false;
 
         float value;
-
-        const string playerdesignername = "cs_player_controller";
 
         for (int i = 0; i < Server.MaxPlayers; i++)
         {
@@ -284,12 +258,10 @@ public class ReservedSlots : BasePlugin
                 {
                     value = player.Ping;
                 }
-                /*
                 else if (type == KickType.Kick_HighestTime)
                 {
-                    value = player.LocalTime;
+                    value = -player.CreateTime;
                 }
-                */
                 else
                 {
                     value = Random.Shared.Next(0, 100);
@@ -324,6 +296,20 @@ public class ReservedSlots : BasePlugin
 
     public static int GetClientCount()
     {
-        return Utilities.GetPlayers().Count;
+        int count = 0;
+
+        for (int i = 0; i < Server.MaxPlayers; i++)
+        {
+            CCSPlayerController? player = Utilities.GetEntityFromIndex<CCSPlayerController>(i + 1);
+
+            if (player?.DesignerName != playerdesignername || player.IsBot)
+            {
+                continue;
+            }
+
+            count++;
+        }
+
+        return count;
     }
 }
