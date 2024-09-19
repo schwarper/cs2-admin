@@ -17,6 +17,7 @@ public class BaseCommands : BasePlugin, IPluginConfig<Config>
     public override string ModuleName => "Basic Commands";
     public override string ModuleVersion => "0.0.1";
     public override string ModuleAuthor => "schwarper";
+    public override string ModuleDescription => "Basic Admin Commands";
 
     public static BaseCommands Instance = new();
     public Config Config { get; set; } = new Config();

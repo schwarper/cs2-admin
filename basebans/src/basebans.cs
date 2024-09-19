@@ -17,6 +17,7 @@ public class BaseBans : BasePlugin, IPluginConfig<Config>
     public override string ModuleName => "Basic Ban Commands";
     public override string ModuleVersion => "0.0.1";
     public override string ModuleAuthor => "schwarper";
+    public override string ModuleDescription => "Basic Banning Commands";
 
     public static BaseBans Instance { get; set; } = new();
     public Config Config { get; set; } = new Config();

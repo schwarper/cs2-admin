@@ -15,6 +15,7 @@ public class BaseChat : BasePlugin, IPluginConfig<Config>
     public override string ModuleName => "Basic Chat";
     public override string ModuleVersion => "0.0.1";
     public override string ModuleAuthor => "schwarper";
+    public override string ModuleDescription => "Basic Communication Commands";
 
     public static BaseChat Instance { get; set; } = new BaseChat();
     public Config Config { get; set; } = new Config();

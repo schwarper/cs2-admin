@@ -13,6 +13,7 @@ public class PlayerCommands : BasePlugin, IPluginConfig<Config>
     public override string ModuleName => "Player Commands";
     public override string ModuleVersion => "0.0.1";
     public override string ModuleAuthor => "schwarper";
+    public override string ModuleDescription => "Misc. Player Commands";
 
     public static PlayerCommands Instance { get; set; } = new PlayerCommands();
     public Config Config { get; set; } = new Config();

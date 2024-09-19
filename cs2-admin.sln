@@ -17,6 +17,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "playercommands", "playercom
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "funcommands", "funcommands\funcommands.csproj", "{2E276175-E290-4D43-84B1-4DF9BE2891A8}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "basevotes", "basevotes\basevotes.csproj", "{B0E67D2D-3EC8-48BA-B173-68A9C6EA58DF}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -51,6 +53,10 @@ Global
 		{2E276175-E290-4D43-84B1-4DF9BE2891A8}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2E276175-E290-4D43-84B1-4DF9BE2891A8}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2E276175-E290-4D43-84B1-4DF9BE2891A8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B0E67D2D-3EC8-48BA-B173-68A9C6EA58DF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B0E67D2D-3EC8-48BA-B173-68A9C6EA58DF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B0E67D2D-3EC8-48BA-B173-68A9C6EA58DF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B0E67D2D-3EC8-48BA-B173-68A9C6EA58DF}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

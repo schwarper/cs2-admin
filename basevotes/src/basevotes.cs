@@ -4,10 +4,9 @@ using CounterStrikeSharp.API.Core.Attributes.Registration;
 using CounterStrikeSharp.API.Core.Translations;
 using CounterStrikeSharp.API.Modules.Admin;
 using CounterStrikeSharp.API.Modules.Commands;
-using CounterStrikeSharp.API.Modules.Memory;
 using CounterStrikeSharp.API.Modules.Menu;
-using CounterStrikeSharp.API.Modules.Timers;
 using CounterStrikeSharp.API.Modules.Utils;
+using static BaseVotes.Library;
 using Timer = CounterStrikeSharp.API.Modules.Timers.Timer;
 
 namespace BaseVotes;
@@ -17,13 +16,20 @@ public class BaseVotes : BasePlugin, IPluginConfig<Config>
     public override string ModuleName => "Basic Votes";
     public override string ModuleVersion => "0.0.1";
     public override string ModuleAuthor => "schwarper";
+    public override string ModuleDescription => "Basic Vote Commands";
 
+    public static BaseVotes Instance { get; set; } = new BaseVotes();
     public Config Config { get; set; } = new Config();
-    private readonly Dictionary<CCSPlayerController, (string, ChatMenuOption)> GlobalVotePlayers = [];
-    private CenterHtmlMenu GlobalMenu = null!;
-    private bool GlobalVoteInProgress = false;
+    public Dictionary<CCSPlayerController, (string, ChatMenuOption)> GlobalVotePlayers { get; set; } = [];
+    public CenterHtmlMenu? GlobalMenu { get; set; } = null;
+    public bool GlobalVoteInProgress => GlobalMenu != null;
     private readonly Dictionary<string, int> GlobalVoteAnswers = [];
     private Timer? GlobalTimer;
+
+    public override void Load(bool hotReload)
+    {
+        Instance = this;
+    }
 
     public void OnConfigParsed(Config config)
     {
@@ -34,39 +40,37 @@ public class BaseVotes : BasePlugin, IPluginConfig<Config>
     [ConsoleCommand("css_vote")]
     [RequiresPermissions("@css/generic")]
     [CommandHelper(minArgs: 2, usage: "<question> [... Options ...]")]
-    public void Command_Vote(CCSPlayerController? player, CommandInfo command)
+    public void Command_Vote(CCSPlayerController? player, CommandInfo info)
     {
         if (GlobalVoteInProgress)
         {
-            command.ReplyToCommand(Config.Tag + Localizer["css_vote<inprogress>"]);
+            SendMessageToReplyToCommand(info, "css_vote<inprogress>");
             return;
         }
 
-        string question = command.GetArg(1);
+        string[] args = info.ArgString.Split(' ', StringSplitOptions.RemoveEmptyEntries);
 
         List<string> options = [];
 
-        for (int i = 2; i < command.ArgCount; i++)
+        foreach (string option in args[1..])
         {
-            options.Add(command.GetArg(i));
+            options.Add(option);
         }
 
         ResetVote();
 
         string adminname = player?.PlayerName ?? Localizer["Console"];
 
-        SendMessageToAllPlayers(HudDestination.Chat, "css_vote", adminname, question);
+        SendMessageToAllPlayers(HudDestination.Chat, "css_vote", adminname, args[0]);
 
-        CenterHtmlMenu menu = GlobalMenu = VoteMenu(question, options);
-        menu.OpenToAll();
+        GlobalMenu = VoteMenu(args[0], options);
+        GlobalMenu.OpenToAll();
 
-        GlobalVoteInProgress = true;
-
-        GlobalTimer = AddTimer(15.0f, () => EndVote(question), TimerFlags.STOP_ON_MAPCHANGE);
+        GlobalTimer = AddTimer(15.0f, () => EndVote(args[0]));
     }
 
     [ConsoleCommand("css_revote")]
-    public void Command_Revote(CCSPlayerController? player, CommandInfo command)
+    public void Command_Revote(CCSPlayerController? player, CommandInfo info)
     {
         if (player == null)
         {
@@ -75,19 +79,19 @@ public class BaseVotes : BasePlugin, IPluginConfig<Config>
 
         if (!GlobalVoteInProgress)
         {
-            command.ReplyToCommand(Config.Tag + Localizer["Vote is not in progress"]);
+            SendMessageToReplyToCommand(info, "Vote is not in progress");
             return;
         }
 
         if (!GlobalVotePlayers.TryGetValue(player, out (string, ChatMenuOption) value))
         {
-            command.ReplyToCommand(Config.Tag + Localizer["You haven't voted yet"]);
+            SendMessageToReplyToCommand(info, "You haven't voted yet");
             return;
         }
 
         GlobalVoteAnswers[value.Item1]--;
 
-        ChatMenuOption? o = GlobalMenu.MenuOptions.Find(o => o.Equals(GlobalVotePlayers[player].Item2));
+        ChatMenuOption? o = GlobalMenu?.MenuOptions.Find(o => o.Equals(GlobalVotePlayers[player].Item2));
 
         if (o != null)
         {
@@ -98,12 +102,12 @@ public class BaseVotes : BasePlugin, IPluginConfig<Config>
 
         GlobalVotePlayers.Remove(player);
 
-        command.ReplyToCommand(Config.Tag + Localizer["css_revote"]);
+        SendMessageToReplyToCommand(info, "css_revote");
     }
 
     [ConsoleCommand("css_cancelvote")]
     [RequiresPermissions("@css/generic")]
-    public void Command_Cancelvote(CCSPlayerController? player, CommandInfo command)
+    public void Command_Cancelvote(CCSPlayerController? player, CommandInfo info)
     {
         if (player == null)
         {
@@ -112,7 +116,7 @@ public class BaseVotes : BasePlugin, IPluginConfig<Config>
 
         if (!GlobalVoteInProgress)
         {
-            command.ReplyToCommand(Config.Tag + Localizer["Vote is not in progress"]);
+            SendMessageToReplyToCommand(info, "Vote is not in progress");
             return;
         }
 
@@ -158,8 +162,6 @@ public class BaseVotes : BasePlugin, IPluginConfig<Config>
 
     private void EndVote(string question)
     {
-        GlobalVoteInProgress = false;
-
         SendMessageToAllPlayers(HudDestination.Chat, "css_vote<results>", question);
 
         foreach (KeyValuePair<string, int> kvp in GlobalVoteAnswers)
@@ -169,6 +171,7 @@ public class BaseVotes : BasePlugin, IPluginConfig<Config>
 
         GlobalVoteAnswers.Clear();
         GlobalVotePlayers.Clear();
+        GlobalMenu = null;
 
         foreach (CCSPlayerController target in Utilities.GetPlayers())
         {
@@ -178,15 +181,9 @@ public class BaseVotes : BasePlugin, IPluginConfig<Config>
 
     private void ResetVote()
     {
-        GlobalVoteInProgress = false;
         GlobalVoteAnswers.Clear();
         GlobalVotePlayers.Clear();
         GlobalTimer?.Kill();
-    }
-
-    private void SendMessageToAllPlayers(HudDestination destination, string messageKey, params object[] args)
-    {
-        Microsoft.Extensions.Localization.LocalizedString message = Localizer[messageKey, args];
-        VirtualFunctions.ClientPrintAll(destination, Config.Tag + message, 0, 0, 0, 0);
+        GlobalMenu = null;
     }
 }

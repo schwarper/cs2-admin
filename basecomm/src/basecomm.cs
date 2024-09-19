@@ -15,6 +15,7 @@ public class BaseComm : BasePlugin, IPluginConfig<Config>
     public override string ModuleName => "Basic Comm Control";
     public override string ModuleVersion => "0.0.1";
     public override string ModuleAuthor => "schwarper";
+    public override string ModuleDescription => "Provides methods of controlling communication.";
 
     public static BaseComm Instance { get; set; } = new BaseComm();
     public static HashSet<CCSPlayerController> PlayerGagList { get; set; } = [];
@@ -47,7 +48,7 @@ public class BaseComm : BasePlugin, IPluginConfig<Config>
             return HookResult.Continue;
         }
 
-        var arg = info.GetArg(1);
+        string arg = info.GetArg(1);
 
         if (CoreConfig.SilentChatTrigger.Any(i => arg.StartsWith(i)))
         {
