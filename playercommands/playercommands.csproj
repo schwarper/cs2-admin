@@ -3,8 +3,9 @@
 		<TargetFramework>net8.0</TargetFramework>
 		<ImplicitUsings>enable</ImplicitUsings>
 		<Nullable>enable</Nullable>
-		<OutputPath>$(ProjectDir)..\BuildOutput\playercommands\</OutputPath>
 		<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+		<OutputPath>$(ProjectDir)..\BuildOutput\playercommands\</OutputPath>
+		<AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
 	</PropertyGroup>
 
 	<ItemGroup>

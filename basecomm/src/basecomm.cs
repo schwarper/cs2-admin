@@ -47,6 +47,13 @@ public class BaseComm : BasePlugin, IPluginConfig<Config>
             return HookResult.Continue;
         }
 
+        var arg = info.GetArg(1);
+
+        if (CoreConfig.SilentChatTrigger.Any(i => arg.StartsWith(i)))
+        {
+            return HookResult.Continue;
+        }
+
         if (PlayerGagList.Contains(player))
         {
             VirtualFunctions.ClientPrint(player.Handle, HudDestination.Chat, Config.Tag + Localizer["You are gagged"], 0, 0, 0, 0);

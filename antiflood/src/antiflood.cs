@@ -5,8 +5,10 @@ using CounterStrikeSharp.API.Core.Translations;
 using CounterStrikeSharp.API.Modules.Admin;
 using CounterStrikeSharp.API.Modules.Commands;
 using CounterStrikeSharp.API.Modules.Cvars;
+using CounterStrikeSharp.API.Modules.Entities;
 using CounterStrikeSharp.API.Modules.Memory;
 using CounterStrikeSharp.API.Modules.Utils;
+using Microsoft.Extensions.Localization;
 using System.Collections.Concurrent;
 
 namespace AntiFlood;
@@ -32,6 +34,23 @@ public class AntiFlood : BasePlugin, IPluginConfig<Config>
     {
         AddCommandListener("say", Command_Say, HookMode.Pre);
         AddCommandListener("say_team", Command_Say, HookMode.Pre);
+
+        if (hotReload)
+        {
+            const string playerdesignername = "cs_player_controller";
+
+            for (int i = 0; i < Server.MaxPlayers; i++)
+            {
+                CCSPlayerController? player = Utilities.GetEntityFromIndex<CCSPlayerController>(i + 1);
+
+                if (player?.DesignerName != playerdesignername)
+                {
+                    continue;
+                }
+
+                playerInfo.TryAdd(player.SteamID, new PlayerInfo());
+            }
+        }
     }
 
     public override void Unload(bool hotReload)
@@ -89,7 +108,7 @@ public class AntiFlood : BasePlugin, IPluginConfig<Config>
         {
             if (playerData.tokenCount >= 3)
             {
-                VirtualFunctions.ClientPrint(player.Handle, HudDestination.Chat, Config.Tag + Localizer["Flooding the server"], 0, 0, 0, 0);
+                SendMessageToPlayer(player, HudDestination.Chat, "Flooding the server");
                 playerData.lastduration = newduration + 3.0f;
                 return HookResult.Handled;
             }
@@ -105,5 +124,14 @@ public class AntiFlood : BasePlugin, IPluginConfig<Config>
 
         playerData.lastduration = newduration;
         return HookResult.Continue;
+    }
+
+    public void SendMessageToPlayer(CCSPlayerController player, HudDestination destination, string messageKey, params object[] args)
+    {
+        using (new WithTemporaryCulture(player.GetLanguage()))
+        {
+            LocalizedString message = Localizer[messageKey, args];
+            VirtualFunctions.ClientPrint(player.Handle, destination, Config.Tag + message, 0, 0, 0, 0);
+        }
     }
 }

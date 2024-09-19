@@ -1,4 +1,6 @@
-﻿using CounterStrikeSharp.API.Core;
+﻿using CounterStrikeSharp.API;
+using CounterStrikeSharp.API.Core;
+using CounterStrikeSharp.API.Core.Translations;
 using CounterStrikeSharp.API.Modules.Admin;
 using CounterStrikeSharp.API.Modules.Commands;
 using CounterStrikeSharp.API.Modules.Commands.Targeting;
@@ -30,14 +32,14 @@ public static class Library
 
         if (targetResult.Players.Count == 0)
         {
-            info.ReplyToCommand(Instance.Config.Tag + Instance.Localizer["No matching client"]);
+            SendMessageToReplyToCommand(info, "No matching client");
             return false;
         }
         else if (targetResult.Players.Count > 1)
         {
             if (singletarget || !TargetTypeMap.ContainsKey(targetstr))
             {
-                info.ReplyToCommand(Instance.Config.Tag + Instance.Localizer["More than one client matched"]);
+                SendMessageToReplyToCommand(info, "More than one client matched");
                 return false;
             }
         }
@@ -48,36 +50,78 @@ public static class Library
 
             if (targetResult.Players.Count == 0)
             {
-                info.ReplyToCommand(Instance.Config.Tag + Instance.Localizer["You cannot target"]);
+                SendMessageToReplyToCommand(info, "You cannot target");
                 return false;
             }
         }
 
-        TargetTypeMap.TryGetValue(targetstr, out TargetType type);
-
-        targetname = type switch
+        if (targetResult.Players.Count == 1)
         {
-            TargetType.GroupAll => Instance.Localizer["all"],
-            TargetType.GroupBots => Instance.Localizer["bots"],
-            TargetType.GroupHumans => Instance.Localizer["humans"],
-            TargetType.GroupAlive => Instance.Localizer["alive"],
-            TargetType.GroupDead => Instance.Localizer["dead"],
-            TargetType.GroupNotMe => Instance.Localizer["notme"],
-            TargetType.PlayerMe => targetResult.Players.First().PlayerName,
-            TargetType.TeamCt => Instance.Localizer["ct"],
-            TargetType.TeamT => Instance.Localizer["t"],
-            TargetType.TeamSpec => Instance.Localizer["spec"],
-            _ => targetResult.Players.First().PlayerName
-        };
+            targetname = targetResult.Players[0].PlayerName;
+        }
+        else
+        {
+            TargetTypeMap.TryGetValue(targetstr, out TargetType type);
+
+            targetname = type switch
+            {
+                TargetType.GroupAll => Instance.Localizer["all"],
+                TargetType.GroupBots => Instance.Localizer["bots"],
+                TargetType.GroupHumans => Instance.Localizer["humans"],
+                TargetType.GroupAlive => Instance.Localizer["alive"],
+                TargetType.GroupDead => Instance.Localizer["dead"],
+                TargetType.GroupNotMe => Instance.Localizer["notme"],
+                TargetType.PlayerMe => targetResult.Players.First().PlayerName,
+                TargetType.TeamCt => Instance.Localizer["ct"],
+                TargetType.TeamT => Instance.Localizer["t"],
+                TargetType.TeamSpec => Instance.Localizer["spec"],
+                _ => targetResult.Players.First().PlayerName
+            };
+        }
 
         adminname = player?.PlayerName ?? Instance.Localizer["Console"];
         players = targetResult.Players;
         return true;
     }
 
+    public static void SendMessageToPlayer(CCSPlayerController player, HudDestination destination, string messageKey, params object[] args)
+    {
+        using (new WithTemporaryCulture(player.GetLanguage()))
+        {
+            LocalizedString message = Instance.Localizer[messageKey, args];
+            VirtualFunctions.ClientPrint(player.Handle, destination, Instance.Config.Tag + message, 0, 0, 0, 0);
+        }
+    }
+
     public static void SendMessageToAllPlayers(HudDestination destination, string messageKey, params object[] args)
     {
-        LocalizedString message = Instance.Localizer[messageKey, args];
-        VirtualFunctions.ClientPrintAll(destination, Instance.Config.Tag + message, 0, 0, 0, 0);
+        const string playerdesignername = "cs_player_controller";
+
+        for (int i = 0; i < Server.MaxPlayers; i++)
+        {
+            CCSPlayerController? target = Utilities.GetEntityFromIndex<CCSPlayerController>(i + 1);
+
+            if (target?.DesignerName != playerdesignername)
+            {
+                continue;
+            }
+
+            SendMessageToPlayer(target, HudDestination.Chat, messageKey, args);
+        }
+    }
+
+    public static void SendMessageToReplyToCommand(CommandInfo info, string messageKey, params object[] args)
+    {
+        if (info.CallingPlayer == null)
+        {
+            Server.PrintToConsole(Instance.Config.Tag + Instance.Localizer[messageKey, args]);
+        }
+        else
+        {
+            SendMessageToPlayer(info.CallingPlayer,
+                info.CallingContext == CommandCallingContext.Console ? HudDestination.Console : HudDestination.Chat,
+                messageKey,
+                args);
+        }
     }
 }

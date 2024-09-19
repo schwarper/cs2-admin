@@ -7,7 +7,7 @@
   "Already banned": "{blue}{0} {white} zaten yasaklı.",
   "Not already banned": "{blue}{0} {white}zaten yasaklı değil.",
   "Permabanned": "{blue}{0} {white}kalıcı olarak '{green}{1}{white}' yasakladı.",
-  "Permabanned reason": "{white}{0}kalıcı olarak '{green}{1}{white}' yasakladı. (nedeni = {green}{3}{white})",
+  "Permabanned reason": "{blue}{0} {white}kalıcı olarak '{green}{1}{white}' yasakladı. (nedeni = {green}{3}{white})",
   "Banned": "{blue}{0} {white}{2} dakikalığına '{green}{1}{white}' yasakladı.",
   "Banned reason": "{blue}{0} {white}{2} dakikalığına '{green}{1}{white}' yasakladı. (nedeni = {green}{3}{white})",
   "Removed bans matching": "{blue}{0} {white}yasağı kaldırdı. (filtre '{green}{1}{white}').",

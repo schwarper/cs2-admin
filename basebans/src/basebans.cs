@@ -72,13 +72,13 @@ public class BaseBans : BasePlugin, IPluginConfig<Config>
 
         if (!AdminManager.CanPlayerTarget(player, target))
         {
-            info.ReplyToCommand(Config.Tag + Localizer["Unable to target"]);
+            SendMessageToReplyToCommand(info, "Unable to target");
             return;
         }
 
         if (Database.IsBanned(target.SteamID))
         {
-            info.ReplyToCommand(Config.Tag + Localizer["Already banned", targetname]);
+            SendMessageToReplyToCommand(info, "Already banned", targetname);
             return;
         }
 
@@ -129,13 +129,13 @@ public class BaseBans : BasePlugin, IPluginConfig<Config>
     {
         if (!SteamIDTryParse(info.GetArg(1), out ulong steamid))
         {
-            info.ReplyToCommand(Config.Tag + Localizer["Invalid SteamID specified"]);
+            SendMessageToReplyToCommand(info, "Invalid SteamID specified");
             return;
         }
 
         if (!Database.IsBanned(steamid))
         {
-            info.ReplyToCommand(Config.Tag + Localizer["Not already banned", steamid]);
+            SendMessageToReplyToCommand(info, "Not already banned", steamid);
             return;
         }
 
@@ -150,7 +150,7 @@ public class BaseBans : BasePlugin, IPluginConfig<Config>
             await Discord.SendEmbedMessage(playername, steamid, adminname, adminsteamid, string.Empty, -1, false);
         });
 
-        Server.PrintToChatAll(Localizer["Removed bans matching", adminname, steamid]);
+        SendMessageToAllPlayers(HudDestination.Chat, "Removed bans matching", adminname, steamid);
     }
 
     [ConsoleCommand("css_addban")]
@@ -162,19 +162,19 @@ public class BaseBans : BasePlugin, IPluginConfig<Config>
 
         if (!SteamIDTryParse(args[1], out ulong steamid))
         {
-            info.ReplyToCommand(Config.Tag + Localizer["Invalid SteamID specified"]);
+            SendMessageToReplyToCommand(info, "Invalid SteamID specified");
             return;
         }
 
         if (Database.IsBanned(steamid))
         {
-            info.ReplyToCommand(Config.Tag + Localizer["Already banned", steamid]);
+            SendMessageToReplyToCommand(info, "Already banned", steamid);
             return;
         }
 
         if (player != null && AdminManager.GetPlayerImmunity(player) < AdminManager.GetPlayerAdminData(new SteamID(steamid))?.Immunity)
         {
-            info.ReplyToCommand(Config.Tag + Localizer["Unable to target"]);
+            SendMessageToReplyToCommand(info, "Unable to target");
             return;
         }
 

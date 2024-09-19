@@ -111,7 +111,7 @@ public class FunCommands : BasePlugin, IPluginConfig<Config>
 
         if (!int.TryParse(args[1], out int value))
         {
-            info.ReplyToCommand(Config.Tag + Localizer["Must be an integer"]);
+            SendMessageToReplyToCommand(info, "Must be an integer");
             return;
         }
 
@@ -149,7 +149,7 @@ public class FunCommands : BasePlugin, IPluginConfig<Config>
             return;
         }
 
-        if (!float.TryParse(args[1], out float value) || value <= 0.0)
+        if (args.Length < 2 || !float.TryParse(args[1], out float value) || value <= 0.0)
         {
             value = -1.0f;
         }
@@ -174,9 +174,7 @@ public class FunCommands : BasePlugin, IPluginConfig<Config>
     [CommandHelper(minArgs: 1, "<#userid|name|all @ commands>")]
     public void Command_UnFreeze(CCSPlayerController? player, CommandInfo info)
     {
-        string[] args = info.ArgString.Split(' ', StringSplitOptions.RemoveEmptyEntries);
-
-        if (!ProcessTargetString(player, info, args[0], false, true, MultipleFlags.IGNORE_DEAD_PLAYERS, out List<CCSPlayerController>? players, out string adminname, out string targetname))
+        if (!ProcessTargetString(player, info, info.GetArg(1), false, true, MultipleFlags.IGNORE_DEAD_PLAYERS, out List<CCSPlayerController>? players, out string adminname, out string targetname))
         {
             return;
         }
@@ -203,7 +201,7 @@ public class FunCommands : BasePlugin, IPluginConfig<Config>
     {
         if (!int.TryParse(info.GetArg(1), out int value))
         {
-            info.ReplyToCommand(Config.Tag + Localizer["Must be an integer"]);
+            SendMessageToReplyToCommand(info, "Must be an integer");
             return;
         }
 
@@ -211,7 +209,7 @@ public class FunCommands : BasePlugin, IPluginConfig<Config>
 
         if (cvar == null)
         {
-            info.ReplyToCommand(Localizer["Cvar is not found", "sv_gravity"]);
+            SendMessageToReplyToCommand(info, "Cvar is not found", "sv_gravity");
             return;
         }
 
@@ -219,7 +217,7 @@ public class FunCommands : BasePlugin, IPluginConfig<Config>
 
         string adminname = player?.PlayerName ?? Instance.Localizer["Console"];
 
-        SendMessageToAllPlayers(HudDestination.Chat, "css_cvar", adminname, "sv_gravity", value);
+        SendMessageToAllPlayers(HudDestination.Chat, "Cvar changed", adminname, "sv_gravity", value);
     }
 
     [ConsoleCommand("css_revive")]
@@ -227,9 +225,7 @@ public class FunCommands : BasePlugin, IPluginConfig<Config>
     [CommandHelper(minArgs: 1, "<#userid|name|all @ commands>")]
     public void Command_Revive(CCSPlayerController? player, CommandInfo info)
     {
-        string[] args = info.ArgString.Split(' ', StringSplitOptions.RemoveEmptyEntries);
-
-        if (!ProcessTargetString(player, info, args[0], false, false, MultipleFlags.NORMAL, out List<CCSPlayerController>? players, out string adminname, out string targetname))
+        if (!ProcessTargetString(player, info, info.GetArg(1), false, false, MultipleFlags.NORMAL, out List<CCSPlayerController>? players, out string adminname, out string targetname))
         {
             return;
         }
@@ -254,9 +250,7 @@ public class FunCommands : BasePlugin, IPluginConfig<Config>
     [CommandHelper(minArgs: 1, "<#userid|name|all @ commands>")]
     public void Command_Respawn(CCSPlayerController? player, CommandInfo info)
     {
-        string[] args = info.ArgString.Split(' ', StringSplitOptions.RemoveEmptyEntries);
-
-        if (!ProcessTargetString(player, info, args[0], false, false, MultipleFlags.IGNORE_ALIVE_PLAYERS, out List<CCSPlayerController>? players, out string adminname, out string targetname))
+        if (!ProcessTargetString(player, info, info.GetArg(1), false, false, MultipleFlags.IGNORE_ALIVE_PLAYERS, out List<CCSPlayerController>? players, out string adminname, out string targetname))
         {
             return;
         }
@@ -288,42 +282,16 @@ public class FunCommands : BasePlugin, IPluginConfig<Config>
             return;
         }
 
-        bool succeed = int.TryParse(info.GetArg(2), out int value);
+        int value = 0;
 
-        if (succeed)
+        if (args.Length > 1 && !int.TryParse(args[1], out value))
         {
-            value = Math.Max(0, Math.Min(1, value));
-
-            bool noclip = Convert.ToBoolean(value);
-
-            foreach (CBasePlayerPawn? targetPawn in players.Select(p => p.Pawn.Value))
-            {
-                if (targetPawn == null)
-                {
-                    continue;
-                }
-
-                targetPawn.Noclip(noclip);
-            }
-
-            if (players.Count == 1)
-            {
-                SendMessageToAllPlayers(HudDestination.Chat, "css_noclip<player>", adminname, targetname, value);
-            }
-            else
-            {
-                SendMessageToAllPlayers(HudDestination.Chat, "css_noclip<multiple>", adminname, targetname, value);
-            }
+            SendMessageToReplyToCommand(info, "Must be an integer");
+            return;
         }
-        else
+        else if (args.Length == 1)
         {
-            if (players.Count != 1)
-            {
-                info.ReplyToCommand(Config.Tag + Localizer["Must be an integer"]);
-                return;
-            }
-
-            CBasePlayerPawn? targetPawn = players.First().Pawn.Value;
+            CBasePlayerPawn? targetPawn = players[0].PlayerPawn.Value;
 
             if (targetPawn == null)
             {
@@ -331,12 +299,30 @@ public class FunCommands : BasePlugin, IPluginConfig<Config>
             }
 
             value = targetPawn.MoveType == MoveType_t.MOVETYPE_NOCLIP ? 0 : 1;
+        }
 
-            targetPawn.Noclip(Convert.ToBoolean(value));
+        bool noclip = Convert.ToBoolean(value);
 
+        foreach (CBasePlayerPawn? targetPawn in players.Select(p => p.PlayerPawn.Value))
+        {
+            if (targetPawn == null)
+            {
+                continue;
+            }
+
+            targetPawn.Noclip(noclip);
+        }
+
+        if (players.Count == 1)
+        {
             SendMessageToAllPlayers(HudDestination.Chat, "css_noclip<player>", adminname, targetname, value);
         }
+        else
+        {
+            SendMessageToAllPlayers(HudDestination.Chat, "css_noclip<multiple>", adminname, targetname, value);
+        }
     }
+
 
     [ConsoleCommand("css_weapon")]
     [ConsoleCommand("css_give")]
@@ -351,11 +337,14 @@ public class FunCommands : BasePlugin, IPluginConfig<Config>
             return;
         }
 
-        string weapon = info.GetArg(2);
-
-        if (!GlobalWeaponDictionary.TryGetValue(weapon, out CsItem weaponname))
+        if (args[1].StartsWith("weapon_"))
         {
-            info.ReplyToCommand(Config.Tag + Localizer["Weapon is not exist"]);
+            args[1] = args[1][7..];
+        }
+
+        if (!GlobalWeaponDictionary.TryGetValue(args[1], out CsItem weaponname))
+        {
+            SendMessageToReplyToCommand(info, "Weapon is not exist");
             return;
         }
 
@@ -386,16 +375,18 @@ public class FunCommands : BasePlugin, IPluginConfig<Config>
             return;
         }
 
-        string arg = info.GetArg(2);
-        string slot = string.Empty;
         List<gear_slot_t> slotList = [];
+        string slot = string.Empty;
 
-        foreach (char c in arg)
+        if (args.Length > 1)
         {
-            if (GlobalSlotDictionary.TryGetValue(c, out gear_slot_t value))
+            foreach (char c in args[1])
             {
-                slotList.Add(value);
-                slot += c;
+                if (GlobalSlotDictionary.TryGetValue(c, out gear_slot_t value))
+                {
+                    slotList.Add(value);
+                    slot += c;
+                }
             }
         }
 
@@ -432,15 +423,15 @@ public class FunCommands : BasePlugin, IPluginConfig<Config>
             return;
         }
 
-        if (!int.TryParse(info.GetArg(2), out int value))
+        if (!int.TryParse(args[1], out int value))
         {
-            info.ReplyToCommand(Config.Tag + Localizer["Must be an integer"]);
+            SendMessageToReplyToCommand(info, "Must be an integer");
             return;
         }
 
         if (value <= 0)
         {
-            info.ReplyToCommand(Config.Tag + Localizer["Must be higher than zero"]);
+            SendMessageToReplyToCommand(info, "Must be higher than zero");
             return;
         }
 
@@ -469,9 +460,9 @@ public class FunCommands : BasePlugin, IPluginConfig<Config>
     [CommandHelper(minArgs: 2, "<team> <health> - Sets team players' spawn health")]
     public void Command_SetHp(CCSPlayerController? player, CommandInfo info)
     {
-        string arg = info.GetArg(1);
+        string[] args = info.ArgString.Split(' ', StringSplitOptions.RemoveEmptyEntries);
 
-        CsTeam team = arg switch
+        CsTeam team = args[0] switch
         {
             string s when s.ToUpper().StartsWith('T') => CsTeam.Terrorist,
             string s when s.ToUpper().StartsWith('C') => CsTeam.CounterTerrorist,
@@ -482,19 +473,19 @@ public class FunCommands : BasePlugin, IPluginConfig<Config>
 
         if (team == CsTeam.None)
         {
-            info.ReplyToCommand(Config.Tag + Localizer["No team exists"]);
+            SendMessageToReplyToCommand(info, "No team exists");
             return;
         }
 
-        if (!int.TryParse(info.GetArg(2), out int value))
+        if (!int.TryParse(args[1], out int value))
         {
-            info.ReplyToCommand(Config.Tag + Localizer["Must be an integer"]);
+            SendMessageToReplyToCommand(info, "Must be an integer");
             return;
         }
 
         if (value <= 0)
         {
-            info.ReplyToCommand(Localizer["Must be higher than zero"]);
+            SendMessageToReplyToCommand(info, "Must be higher than zero");
             return;
         }
 
@@ -524,9 +515,9 @@ public class FunCommands : BasePlugin, IPluginConfig<Config>
             return;
         }
 
-        if (!float.TryParse(info.GetArg(2), out float value))
+        if (!float.TryParse(args[1], out float value))
         {
-            info.ReplyToCommand(Config.Tag + Localizer["Must be an integer"]);
+            SendMessageToReplyToCommand(info, "Must be an integer");
             return;
         }
 
@@ -563,9 +554,9 @@ public class FunCommands : BasePlugin, IPluginConfig<Config>
             return;
         }
 
-        if (!int.TryParse(info.GetArg(2), out int value))
+        if (!int.TryParse(args[1], out int value))
         {
-            info.ReplyToCommand(Config.Tag + Localizer["Must be an integer"]);
+            SendMessageToReplyToCommand(info, "Must be an integer");
             return;
         }
 
@@ -605,7 +596,7 @@ public class FunCommands : BasePlugin, IPluginConfig<Config>
             return;
         }
 
-        string teamarg = info.GetArg(2).ToLower();
+        string teamarg = args[1].ToLower();
         string teamname;
         CsTeam team;
 
@@ -663,9 +654,7 @@ public class FunCommands : BasePlugin, IPluginConfig<Config>
     [CommandHelper(minArgs: 1, "<#userid|name>")]
     public void Command_Swap(CCSPlayerController? player, CommandInfo info)
     {
-        string[] args = info.ArgString.Split(' ', StringSplitOptions.RemoveEmptyEntries);
-
-        if (!ProcessTargetString(player, info, args[0], false, false, MultipleFlags.NORMAL, out List<CCSPlayerController>? players, out string adminname, out string targetname))
+        if (!ProcessTargetString(player, info, info.GetArg(1), false, false, MultipleFlags.NORMAL, out List<CCSPlayerController>? players, out string adminname, out string targetname))
         {
             return;
         }
@@ -703,21 +692,14 @@ public class FunCommands : BasePlugin, IPluginConfig<Config>
     [CommandHelper(minArgs: 1, "<#userid|name|all @ commands>")]
     public void Command_Bury(CCSPlayerController? player, CommandInfo info)
     {
-        string[] args = info.ArgString.Split(' ', StringSplitOptions.RemoveEmptyEntries);
-
-        if (!ProcessTargetString(player, info, args[0], false, true, MultipleFlags.IGNORE_DEAD_PLAYERS, out List<CCSPlayerController>? players, out string adminname, out string targetname))
+        if (!ProcessTargetString(player, info, info.GetArg(1), false, true, MultipleFlags.IGNORE_DEAD_PLAYERS, out List<CCSPlayerController>? players, out string adminname, out string targetname))
         {
             return;
         }
 
         foreach (CBasePlayerPawn? targetPawn in players.Select(p => p.Pawn.Value))
         {
-            if (targetPawn == null)
-            {
-                continue;
-            }
-
-            targetPawn.Bury();
+            targetPawn?.Bury();
         }
 
         if (players.Count == 1)
@@ -735,21 +717,14 @@ public class FunCommands : BasePlugin, IPluginConfig<Config>
     [CommandHelper(minArgs: 1, "<#userid|name|all @ commands>")]
     public void Command_UnBury(CCSPlayerController? player, CommandInfo info)
     {
-        string[] args = info.ArgString.Split(' ', StringSplitOptions.RemoveEmptyEntries);
-
-        if (!ProcessTargetString(player, info, args[0], false, true, MultipleFlags.IGNORE_DEAD_PLAYERS, out List<CCSPlayerController>? players, out string adminname, out string targetname))
+        if (!ProcessTargetString(player, info, info.GetArg(1), false, true, MultipleFlags.IGNORE_DEAD_PLAYERS, out List<CCSPlayerController>? players, out string adminname, out string targetname))
         {
             return;
         }
 
         foreach (CBasePlayerPawn? targetPawn in players.Select(p => p.Pawn.Value))
         {
-            if (targetPawn?.AbsOrigin == null || targetPawn.AbsRotation == null)
-            {
-                continue;
-            }
-
-            targetPawn.UnBury();
+            targetPawn?.UnBury();
         }
 
         if (players.Count == 1)
@@ -784,9 +759,7 @@ public class FunCommands : BasePlugin, IPluginConfig<Config>
             return;
         }
 
-        string[] args = info.ArgString.Split(' ', StringSplitOptions.RemoveEmptyEntries);
-
-        if (!ProcessTargetString(player, info, args[0], true, false, MultipleFlags.IGNORE_DEAD_PLAYERS, out List<CCSPlayerController>? players, out string adminname, out string targetname))
+        if (!ProcessTargetString(player, info, info.GetArg(1), true, false, MultipleFlags.IGNORE_DEAD_PLAYERS, out List<CCSPlayerController>? players, out string adminname, out string targetname))
         {
             return;
         }
@@ -814,9 +787,7 @@ public class FunCommands : BasePlugin, IPluginConfig<Config>
             return;
         }
 
-        string[] args = info.ArgString.Split(' ', StringSplitOptions.RemoveEmptyEntries);
-
-        if (!ProcessTargetString(player, info, args[0], false, true, MultipleFlags.IGNORE_DEAD_PLAYERS, out List<CCSPlayerController>? players, out string adminname, out string targetname))
+        if (!ProcessTargetString(player, info, info.GetArg(1), false, true, MultipleFlags.IGNORE_DEAD_PLAYERS, out List<CCSPlayerController>? players, out string adminname, out string targetname))
         {
             return;
         }
@@ -854,9 +825,7 @@ public class FunCommands : BasePlugin, IPluginConfig<Config>
     [CommandHelper(minArgs: 1, "<#userid|name> - Respawns a player in his last known death position.")]
     public void Command_HRespawn(CCSPlayerController? player, CommandInfo info)
     {
-        string[] args = info.ArgString.Split(' ', StringSplitOptions.RemoveEmptyEntries);
-
-        if (!ProcessTargetString(player, info, args[0], false, false, MultipleFlags.IGNORE_ALIVE_PLAYERS, out List<CCSPlayerController>? players, out string adminname, out string targetname))
+        if (!ProcessTargetString(player, info, info.GetArg(1), false, false, MultipleFlags.IGNORE_ALIVE_PLAYERS, out List<CCSPlayerController>? players, out string adminname, out string targetname))
         {
             return;
         }
@@ -893,13 +862,11 @@ public class FunCommands : BasePlugin, IPluginConfig<Config>
 
         Color color = Color.White;
 
-        string colorstring = info.GetArg(2);
-
-        if (!string.IsNullOrEmpty(colorstring))
+        if (args.Length > 1)
         {
-            if (!Enum.TryParse(colorstring, true, out KnownColor knownColor))
+            if (!Enum.TryParse(args[1], true, out KnownColor knownColor))
             {
-                info.ReplyToCommand(Config.Tag + Localizer["No color exists"]);
+                SendMessageToReplyToCommand(info, "No color exists");
                 return;
             }
 
@@ -938,7 +905,7 @@ public class FunCommands : BasePlugin, IPluginConfig<Config>
             return;
         }
 
-        if (!float.TryParse(info.GetArg(2), out float value) || value <= 0.0)
+        if (args.Length < 2 || !float.TryParse(args[1], out float value) || value <= 0.0)
         {
             value = 999f;
         }
@@ -963,9 +930,7 @@ public class FunCommands : BasePlugin, IPluginConfig<Config>
     [CommandHelper(minArgs: 1, "<#userid|name|all @ commands>")]
     public void Command_UnShake(CCSPlayerController? player, CommandInfo info)
     {
-        string[] args = info.ArgString.Split(' ', StringSplitOptions.RemoveEmptyEntries);
-
-        if (!ProcessTargetString(player, info, args[0], false, true, MultipleFlags.IGNORE_DEAD_PLAYERS, out List<CCSPlayerController>? players, out string adminname, out string targetname))
+        if (!ProcessTargetString(player, info, info.GetArg(1), false, true, MultipleFlags.IGNORE_DEAD_PLAYERS, out List<CCSPlayerController>? players, out string adminname, out string targetname))
         {
             return;
         }
@@ -997,7 +962,7 @@ public class FunCommands : BasePlugin, IPluginConfig<Config>
             return;
         }
 
-        if (!float.TryParse(info.GetArg(2), out float value) || value <= 0.0)
+        if (args.Length < 2 || !float.TryParse(args[1], out float value) || value <= 0.0)
         {
             value = 999f;
         }
@@ -1022,9 +987,7 @@ public class FunCommands : BasePlugin, IPluginConfig<Config>
     [CommandHelper(minArgs: 1, "<#userid|name|all @ commands>")]
     public void Command_UnBlind(CCSPlayerController? player, CommandInfo info)
     {
-        string[] args = info.ArgString.Split(' ', StringSplitOptions.RemoveEmptyEntries);
-
-        if (!ProcessTargetString(player, info, args[0], false, true, MultipleFlags.IGNORE_DEAD_PLAYERS, out List<CCSPlayerController>? players, out string adminname, out string targetname))
+        if (!ProcessTargetString(player, info, info.GetArg(1), false, true, MultipleFlags.IGNORE_DEAD_PLAYERS, out List<CCSPlayerController>? players, out string adminname, out string targetname))
         {
             return;
         }

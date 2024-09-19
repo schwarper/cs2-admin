@@ -95,10 +95,6 @@ public static class Discord
             {
                 Console.WriteLine($"HTTP request error: {response.StatusCode} - {responseContent}");
             }
-            else
-            {
-                Console.WriteLine("Message sent successfully.");
-            }
         }
         catch (HttpRequestException httpRequestException)
         {

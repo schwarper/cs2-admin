@@ -35,7 +35,7 @@ public class PlayerCommands : BasePlugin, IPluginConfig<Config>
     {
         string[] args = info.ArgString.Split(' ', StringSplitOptions.RemoveEmptyEntries);
 
-        if (!ProcessTargetString(player, info, args[0], false, true, MultipleFlags.IGNORE_ALIVE_PLAYERS, out List<CCSPlayerController>? players, out string? adminname, out string? targetname))
+        if (!ProcessTargetString(player, info, args[0], false, true, MultipleFlags.IGNORE_DEAD_PLAYERS, out List<CCSPlayerController>? players, out string? adminname, out string? targetname))
         {
             return;
         }
@@ -72,7 +72,7 @@ public class PlayerCommands : BasePlugin, IPluginConfig<Config>
     {
         string[] args = info.ArgString.Split(' ', StringSplitOptions.RemoveEmptyEntries);
 
-        if (!ProcessTargetString(player, info, args[0], false, true, MultipleFlags.IGNORE_ALIVE_PLAYERS, out List<CCSPlayerController>? players, out string? adminname, out string? targetname))
+        if (!ProcessTargetString(player, info, args[0], false, true, MultipleFlags.IGNORE_DEAD_PLAYERS, out List<CCSPlayerController>? players, out string? adminname, out string? targetname))
         {
             return;
         }
@@ -116,7 +116,7 @@ public class PlayerCommands : BasePlugin, IPluginConfig<Config>
 
         if (string.IsNullOrEmpty(newname))
         {
-            info.ReplyToCommand(Config.Tag + Localizer["Must be a string"]);
+            SendMessageToReplyToCommand(info, "Must be a string");
             return;
         }
 

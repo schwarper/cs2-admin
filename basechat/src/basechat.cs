@@ -102,12 +102,12 @@ public class BaseChat : BasePlugin, IPluginConfig<Config>
 
         if (targetResult.Players.Count == 0)
         {
-            info.ReplyToCommand(Config.Tag + Localizer["No matching client"]);
+            SendMessageToReplyToCommand(info, "No matching client");
             return;
         }
         else if (targetResult.Players.Count > 1)
         {
-            info.ReplyToCommand(Config.Tag + Localizer["More than one client matched"]);
+            SendMessageToReplyToCommand(info, "More than one client matched");
             return;
         }
 
@@ -117,7 +117,7 @@ public class BaseChat : BasePlugin, IPluginConfig<Config>
         string adminname = player?.PlayerName ?? Localizer["Console"];
         string message = string.Join(" ", args[1..]);
 
-        info.ReplyToCommand(Localizer["css_psay", adminname, targetname, message]);
+        SendMessageToReplyToCommand(info, "css_psay", adminname, targetname, message);
         SendMessageToPlayer(target, HudDestination.Chat, "css_psay", adminname, targetname, message);
     }
 }

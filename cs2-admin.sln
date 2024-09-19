@@ -15,11 +15,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "basecommands", "basecommand
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "playercommands", "playercommands\playercommands.csproj", "{D9500665-F14F-48E0-AB80-5ED76D8DC9E2}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{EDE92757-E651-4748-BD03-221B143455C5}"
-	ProjectSection(SolutionItems) = preProject
-		TO DO.txt = TO DO.txt
-	EndProjectSection
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "funcommands", "funcommands\funcommands.csproj", "{2E276175-E290-4D43-84B1-4DF9BE2891A8}"
 EndProject
 Global

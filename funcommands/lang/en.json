@@ -63,5 +63,6 @@
   "css_blind<player>": "{blue}{0} {white}blinded {green}{1}{white} for {2} seconds.",
   "css_blind<multiple>": "{blue}{0} {white}blinded {green}{1}{white} for {2} seconds.",
   "css_unblind<player>": "{blue}{0} {white}unblinded {green}{1}{white}.",
-  "css_unblind<multiple>": "{blue}{0} {white}unblinded {1}{white}."
+  "css_unblind<multiple>": "{blue}{0} {white}unblinded {1}{white}.",
+  "Cvar changed": "{blue}{0} {white}changed the cvar {green}{1} {white}to {green}{2}{white}."
 }

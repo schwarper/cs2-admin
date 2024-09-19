@@ -7,6 +7,7 @@ using CounterStrikeSharp.API.Modules.Commands;
 using CounterStrikeSharp.API.Modules.Commands.Targeting;
 using CounterStrikeSharp.API.Modules.Cvars;
 using CounterStrikeSharp.API.Modules.Utils;
+using CounterStrikeSharp.API.ValveConstants.Protobuf;
 using static BaseCommands.Library;
 
 namespace BaseCommands;
@@ -42,12 +43,12 @@ public class BaseCommands : BasePlugin, IPluginConfig<Config>
 
         if (targetResult.Players.Count == 0)
         {
-            info.ReplyToCommand(Config.Tag + Localizer["No matching client"]);
+            SendMessageToReplyToCommand(info, "No matching client");
             return;
         }
         else if (targetResult.Players.Count > 1)
         {
-            info.ReplyToCommand(Config.Tag + Localizer["More than one client matched"]);
+            SendMessageToReplyToCommand(info, "More than one client matched");
             return;
         }
 
@@ -55,7 +56,7 @@ public class BaseCommands : BasePlugin, IPluginConfig<Config>
 
         if (!AdminManager.CanPlayerTarget(player, target))
         {
-            info.ReplyToCommand(Config.Tag + Localizer["Unable to target"]);
+            SendMessageToReplyToCommand(info, "Unable to target");
             return;
         }
 
@@ -71,6 +72,8 @@ public class BaseCommands : BasePlugin, IPluginConfig<Config>
         {
             SendMessageToAllPlayers(HudDestination.Chat, "Kicked", adminname, targetname);
         }
+
+        target.Disconnect(NetworkDisconnectionReason.NETWORK_DISCONNECT_KICKED);
     }
 
     [ConsoleCommand("css_changemap")]
@@ -79,7 +82,7 @@ public class BaseCommands : BasePlugin, IPluginConfig<Config>
     [CommandHelper(minArgs: 1, usage: "<map>")]
     public void Command_Map(CCSPlayerController? player, CommandInfo info)
     {
-        string arg = info.GetArg(0);
+        string arg = info.GetArg(1);
 
         if (!Server.IsMapValid(arg))
         {
@@ -89,7 +92,7 @@ public class BaseCommands : BasePlugin, IPluginConfig<Config>
                 return;
             }
 
-            info.ReplyToCommand(Config.Tag + Localizer["Map was not found", arg]);
+            SendMessageToReplyToCommand(info, "Map was not found", arg);
             return;
         }
 
@@ -102,7 +105,7 @@ public class BaseCommands : BasePlugin, IPluginConfig<Config>
     [CommandHelper(minArgs: 1, usage: "<map>")]
     public void Command_WsMap(CCSPlayerController? player, CommandInfo info)
     {
-        string arg = info.GetArg(0);
+        string arg = info.GetArg(1);
         string mapCommand;
 
         if (!ulong.TryParse(arg, out ulong workshopMapId))
@@ -146,19 +149,19 @@ public class BaseCommands : BasePlugin, IPluginConfig<Config>
     [CommandHelper(minArgs: 1, usage: "<cvar> <value>")]
     public void Command_Cvar(CCSPlayerController? player, CommandInfo info)
     {
-        string cvarname = info.GetArg(1);
+        string[] args = info.ArgString.Split(' ', StringSplitOptions.RemoveEmptyEntries);
 
-        ConVar? cvar = ConVar.Find(cvarname);
+        ConVar? cvar = ConVar.Find(args[0]);
 
         if (cvar == null)
         {
-            info.ReplyToCommand(Config.Tag + Localizer["Cvar is not found", cvarname]);
+            SendMessageToReplyToCommand(info, "Cvar is not found", args[0]);
             return;
         }
 
         if (cvar.Name.Equals("sv_cheats") && !AdminManager.PlayerHasPermissions(player, "@css/cheats"))
         {
-            info.ReplyToCommand(Config.Tag + Localizer["You don't have permissions to change sv_cheats"]);
+            SendMessageToReplyToCommand(info, "You don't have permissions to change sv_cheats");
             return;
         }
 
@@ -168,13 +171,13 @@ public class BaseCommands : BasePlugin, IPluginConfig<Config>
         {
             value = GetCvarStringValue(cvar);
 
-            info.ReplyToCommand(Config.Tag + Localizer["Cvar value", cvar.Name, value]);
+            SendMessageToReplyToCommand(info, "Cvar value", cvar.Name, value);
             return;
         }
 
-        value = info.GetArg(2);
+        value = string.Join(' ', args[1..]);
 
-        Server.ExecuteCommand($"{cvarname} {value}");
+        Server.ExecuteCommand($"{args[0]} {value}");
 
         string adminname = player?.PlayerName ?? Localizer["Console"];
 
@@ -208,12 +211,12 @@ public class BaseCommands : BasePlugin, IPluginConfig<Config>
 
             if (targetResult.Players.Count == 0)
             {
-                info.ReplyToCommand(Config.Tag + Localizer["No matching client"]);
+                SendMessageToReplyToCommand(info, "No matching client");
                 return;
             }
             else if (targetResult.Players.Count > 1)
             {
-                info.ReplyToCommand(Config.Tag + Localizer["More than one client matched"]);
+                SendMessageToReplyToCommand(info, "More than one client matched");
                 return;
             }
 
@@ -221,7 +224,7 @@ public class BaseCommands : BasePlugin, IPluginConfig<Config>
 
             if (!AdminManager.CanPlayerTarget(player, target))
             {
-                info.ReplyToCommand(Config.Tag + Localizer["Unable to target"]);
+                SendMessageToReplyToCommand(info, "Unable to target");
                 return;
             }
 
@@ -268,11 +271,11 @@ public class BaseCommands : BasePlugin, IPluginConfig<Config>
 
         if (workshop)
         {
-            SendMessageToAllPlayers(HudDestination.Chat, "Changing map", adminname, map);
+            SendMessageToAllPlayers(HudDestination.Chat, "Changing wsmap", adminname, map);
         }
         else
         {
-            SendMessageToAllPlayers(HudDestination.Chat, "Changing wsmap", adminname, map);
+            SendMessageToAllPlayers(HudDestination.Chat, "Changing map", adminname, map);
         }
     }
 
