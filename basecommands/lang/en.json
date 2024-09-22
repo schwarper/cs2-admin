@@ -1,0 +1,26 @@
+{
+  "Console": "Console",
+  "Unknown": "Unknown",
+  "No matching client": "{white}No matching client was found.",
+  "More than one client matched": "{white}More than one client matched the given pattern.",
+  "Unable to target": "{white}You cannot target this player.",
+  "Map was not found": "{white}Map {green}{0} {white}was not found.",
+  "Cvar is not found": "{white}No such cvar [{red}{0}{white}] found.",
+  "You don't have permissions to change sv_cheats": "{white}You don't have the authority to change the {blue}sv_cheats {white}cvar.",
+
+  "Kicked": "{blue}{0} {white}kicked '{green}{1}{white}'",
+  "Kicked reason": "{blue}{0} {white}kicked '{green}{1}{white}' (reason = {green}{2}{white})",
+  "Sent Rcon": "{blue}{0} {white}sent the command {green}{1} {white}via rcon.",
+  "Cvar value": "{white}Cvar {blue}{0} {white}is {blue}{1}{white}.",
+  "Cvar changed": "{blue}{0} {white}changed the cvar {green}{1} {white}to {green}{2}{white}.",
+  "Executed config": "{blue}{0} {white}executed the file {green}{1}{white}.",
+  "Restarted Round": "{blue}{0}{white}, restarted round.",
+  "Changing map": "{blue}{0} {white}changed the map to {green}{1}{white}.",
+  "Changing wsmap": "{blue}{0} {white}changed the map to workshop {green}{1}{white}.",
+  "css_who<title>": "[------] Information about {0} [------]",
+  "css_who<steamid>": "[------] SteamID: {0}",
+  "css_who<ip>": "[------] IP Address: {0}",
+  "css_who<permission>": "[------] Permissions: {0}",
+  "css_who<immunitylevel>": "[------] Immunity Level: {0}",
+  "css_who<all>": "[------] [{0}] [{1}] [{2}] [{3}] [{4}]"
+}

@@ -1,0 +1,23 @@
+{
+  "Console": "Panel",
+  "No matching client": "{white}Eşleşen bir oyuncu bulunamadı.",
+  "More than one client matched": "{white}Verilen biçim düzeniyle birden fazla alıcı eşleşti.",
+  "Unable to target": "{white}Bu oyuncuyu hedefleyemezsiniz.",
+  "Invalid SteamID specified": "{white}Geçersiz bir SteamID belirttiniz.",
+  "Already banned": "{blue}{0} {white} zaten yasaklı.",
+  "Not already banned": "{blue}{0} {white}zaten yasaklı değil.",
+  "Permabanned": "{blue}{0} {white}kalıcı olarak '{green}{1}{white}' yasakladı.",
+  "Permabanned reason": "{blue}{0} {white}kalıcı olarak '{green}{1}{white}' yasakladı. (nedeni = {green}{3}{white})",
+  "Banned": "{blue}{0} {white}{2} dakikalığına '{green}{1}{white}' yasakladı.",
+  "Banned reason": "{blue}{0} {white}{2} dakikalığına '{green}{1}{white}' yasakladı. (nedeni = {green}{3}{white})",
+  "Removed bans matching": "{blue}{0} {white}yasağı kaldırdı. (filtre '{green}{1}{white}').",
+
+  "Discord ban title": "Yasaklanma",
+  "Discord unban title": "Yasak kaldırma",
+  "Discord admin field name": "🥷 Admin",
+  "Discord player field name": "🧝🏼‍♂️ Oyuncu",
+  "Discord duration field name": "⏳ Süre",
+  "Discord end field name": "⌛ Bitiş süresi",
+  "Discord reason field name": "🗒️ Nedeni",
+  "Discord duration name perma": "Süresiz"
+}

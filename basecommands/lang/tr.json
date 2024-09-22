@@ -1,0 +1,26 @@
+{
+  "Console": "Konsol",
+  "Unknown": "Bilinmiyor",
+  "No matching client": "{white}Eşleşen bir oyuncu bulunamadı.",
+  "More than one client matched": "{white}Verilen biçim düzeniyle birden fazla alıcı eşleşti.",
+  "Unable to target": "{white}Bu oyuncuyu hedefleyemezsiniz.",
+  "Map was not found": "{white}Harita {green}{0} {white}bulunamadı.",
+  "Cvar is not found": "{white}Böyle bir cvar [{red}{0}{white}] bulunamadı.",
+  "You don't have permissions to change sv_cheats": "{white}sv_cheats {blue}cvar{white} değerini değiştirme yetkiniz yok.",
+
+  "Kicked": "{blue}{0} {white}oyuncuyu '{green}{1}{white}' sunucudan attı.",
+  "Kicked reason": "{blue}{0} {white}oyuncuyu '{green}{1}{white}' sunucudan attı. (nedeni = {green}{2}{white})",
+  "Sent Rcon": "{blue}{0} {white}rcon üzerinden {green}{1} {white}komutunu gönderdi.",
+  "Cvar value": "{white}Cvar {blue}{0} {white}değeri {blue}{1}{white}.",
+  "Cvar changed": "{blue}{0} {white}cvar {green}{1}{white} değerini {green}{2}{white} olarak değiştirdi.",
+  "Executed config": "{blue}{0} {green}{1}{white} {white}dosyasını çalıştırdı.",
+  "Restarted Round": "{blue}{0}{white}, turu yeniden başlattı.",
+  "Changing map": "{blue}{0} {white}haritayı {green}{1}{white} olarak değiştirdi.",
+  "Changing wsmap": "{blue}{0} {white}haritayı {green}{1}{white} idli topluluk sunucusu olarak değiştirdi.",
+  "css_who<title>": "[------] {0} Hakkında Bilgiler [------]",
+  "css_who<steamid>": "[------] SteamID: {0}",
+  "css_who<ip>": "[------] IP Adresi: {0}",
+  "css_who<permission>": "[------] Yetkileri: {0}",
+  "css_who<immunitylevel>": "[------] Dokunulmazlık Seviyesi: {0}",
+  "css_who<all>": "[------] [{0}] [{1}] [{2}] [{3}] [{4}]"
+}

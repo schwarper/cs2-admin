@@ -1,0 +1,15 @@
+{
+  "Console": "Panel",
+
+  "Vote is not in progress": "{white}Zaten aktif bir oylama yok.",
+  "You haven't voted yet": "{white}Henüz oy vermemişsiniz.",
+  "css_revote": "{white}Oyunuz silindi. Tekrardan oy verebilirsiniz.",
+  "css_cancelvote": "{blue}{0}{white} oylamayı durdurdu.",
+
+  "css_vote": "{blue}{0}{white}, {green}{1} {white}için oylama başlattı.",
+  "css_vote<title>": "{0} için oy ver",
+  "css_vote<results>": "{blue}{0} {white}için oylama sonuçları",
+  "css_vote<resultsanswer>": "{blue}{0} {white}- {green}{1} {white}oy",
+  "css_vote<optiontext>": "{0} - {1} oy",
+  "css_vote<inprogress>": "{white}Zaten bir oylama var. Oylamanın bitmesini bekleyin."
+}

@@ -1,0 +1,23 @@
+{
+  "Console": "Console",
+  "No matching client": "{white}No matching client was found.",
+  "More than one client matched": "{white}More than one client matched the given pattern.",
+  "Unable to target": "{white}You cannot target this player.",
+  "Invalid SteamID specified": "{white}You have specified an invalid Steam ID",
+  "Already banned": "{blue}{0} {white}is already banned.",
+  "Not already banned": "{blue}{0} {white}is not already banned.",
+  "Permabanned": "{blue}{0} {white}permanently banned '{green}{1}{white}'.",
+  "Permabanned reason": "{blue}{0} {white}permanently banned '{green}{1}{white}' (reason = {green}{3}{white})",
+  "Banned": "{blue}{0} {white}banned '{green}{1}{white}' for {green}{2} {white}minutes.",
+  "Banned reason": "{blue}{0} {white}banned '{green}{1}{white}' for {green}{2} {white}minutes. (reason = {green}{3}{white})",
+  "Removed bans matching": "{blue}{0} {white}removed ban (filter '{green}{1}{white}').",
+
+  "Discord ban title": "Ban",
+  "Discord unban title": "Unban",
+  "Discord admin field name": "🧑‍⚖️ Admin",
+  "Discord player field name": "🧑 Player",
+  "Discord duration field name": "⏳ Time",
+  "Discord end field name": "⏳ End Time",
+  "Discord reason field name": "📜 Reason",
+  "Discord duration name perma": "Permanent"
+}

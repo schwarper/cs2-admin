@@ -1,0 +1,11 @@
+{
+  "Console": "Console",
+  "No matching client": "{white}There is no matching client.",
+  "More than one client matched": "{white}There are multiple clients that match.",
+
+  "css_say": "{red}[ALL] {blue}{0}{white}: {green}{1}",
+  "css_csay": "{0}: {1}",
+  "css_hsay": "{0}: {1}",
+  "css_asay": "{red}[ADMINS] {blue}{0}{white}: {green}{1}",
+  "css_psay": "{white}[{blue}{0} {white}-> {blue}{1}{white}]: {green}{2}"
+}
