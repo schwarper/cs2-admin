@@ -179,66 +179,54 @@ public static class Library
 
         Utilities.SetStateChanged(playerPawn, "CBaseModelEntity", "m_clrRender");
     }
-    public static void Strip(this CCSPlayerController player, List<gear_slot_t> slotList)
+    public static void Strip(this CCSPlayerPawn playerPawn, HashSet<gear_slot_t> slotsList)
     {
-        CPlayer_WeaponServices? weaponServices = player.PlayerPawn.Value?.WeaponServices;
+        NetworkedVector<CHandle<CBasePlayerWeapon>>? weapons = playerPawn.WeaponServices?.MyWeapons;
 
-        if (weaponServices == null)
+        if (weapons?.Count is not > 0)
         {
             return;
         }
 
-        List<CCSWeaponBase?> allWeapons = weaponServices.MyWeapons
-            .Where(w => w.IsValid && w.Value != null)
-            .Select(w => w?.Value?.As<CCSWeaponBase>())
-            .Where(wb => wb?.VData != null)
-            .ToList();
-
-        List<CCSWeaponBase?> weaponsToStrip = allWeapons
-            .Where(wb => wb?.VData != null && slotList.Contains(wb.VData.GearSlot))
-            .ToList();
-
-        if (allWeapons.Count == 0 || weaponsToStrip.Count == 0)
+        if (slotsList.Count == GlobalSlotDictionary.Count)
         {
+            playerPawn.ItemServices?.As<CCSPlayer_ItemServices>().RemoveWeapons();
             return;
         }
 
-        List<CCSWeaponBase?> remainingWeapons = allWeapons.Except(weaponsToStrip).ToList();
+        bool removeActiveWeapon = false;
+        CBasePlayerWeapon? activeWeapon = playerPawn.WeaponServices?.ActiveWeapon.Value;
 
-        List<gear_slot_t> slots = new List<gear_slot_t>
+        foreach (CBasePlayerWeapon? weapon in weapons.Select(w => w.Value))
         {
-            gear_slot_t.GEAR_SLOT_RIFLE,
-            gear_slot_t.GEAR_SLOT_PISTOL,
-            gear_slot_t.GEAR_SLOT_KNIFE,
-            gear_slot_t.GEAR_SLOT_GRENADES,
-            gear_slot_t.GEAR_SLOT_C4
-        }.Except(slotList).ToList();
-
-        foreach (gear_slot_t slot in slots)
-        {
-            if (remainingWeapons.Any(i => i?.VData?.GearSlot == slot))
+            if (weapon?.As<CCSWeaponBase>().VData?.GearSlot is not gear_slot_t slot || !slotsList.Contains(slot))
             {
-                player.ExecuteClientCommand($"slot{slots.IndexOf(slot) + 1}");
-                break;
+                continue;
             }
-        }
 
-        if (!remainingWeapons.Any(i => i?.VData != null && slots.Contains(i.VData.GearSlot)))
-        {
-            player.RemoveWeapons();
-            return;
-        }
-
-        Server.NextFrame(() =>
-        {
-            foreach (CCSWeaponBase? weapon in weaponsToStrip)
+            if (weapon == activeWeapon)
             {
-                if (weapon != null && weapon.IsValid)
+                removeActiveWeapon = true;
+                continue;
+            }
+
+            playerPawn.RemovePlayerItem(weapon);
+            weapon.Remove();
+        }
+
+        if (removeActiveWeapon)
+        {
+            Server.NextWorldUpdate(() =>
+            {
+                if (activeWeapon?.IsValid != true)
                 {
-                    Utilities.RemoveItemByDesignerName(player, weapon.DesignerName);
+                    return;
                 }
-            }
-        });
+
+                playerPawn.ItemServices?.As<CCSPlayer_ItemServices>().DropActivePlayerWeapon(activeWeapon);
+                activeWeapon.Remove();
+            });
+        }
     }
 
     public static void Beacon(this CCSPlayerController player)
@@ -379,6 +367,7 @@ public static class Library
             playerPawn.BlindUntilTime = Server.CurrentTime - 1;
         }
     }
+
     public static void CopyLastCoord(this CCSPlayerController player)
     {
         Vector? absOrigin = player.PlayerPawn.Value?.AbsOrigin;

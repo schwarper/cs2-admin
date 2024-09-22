@@ -52,6 +52,11 @@ public class FunCommands : BasePlugin, IPluginConfig<Config>
 
         Instance.AddTimer(0.1f, () =>
         {
+            if (!player.IsValid)
+            {
+                return;
+            }
+
             CsTeam team = player.Team;
 
             if (team == CsTeam.CounterTerrorist)
@@ -376,8 +381,7 @@ public class FunCommands : BasePlugin, IPluginConfig<Config>
             return;
         }
 
-        List<gear_slot_t> slotList = [];
-        string slot = string.Empty;
+        HashSet<gear_slot_t> slotsList = [];
 
         if (args.Length > 1)
         {
@@ -385,30 +389,30 @@ public class FunCommands : BasePlugin, IPluginConfig<Config>
             {
                 if (GlobalSlotDictionary.TryGetValue(c, out gear_slot_t value))
                 {
-                    slotList.Add(value);
-                    slot += c;
+                    slotsList.Add(value);
                 }
             }
         }
 
-        if (slotList.Count == 0)
+        if (slotsList.Count == 0)
         {
-            slotList = [gear_slot_t.GEAR_SLOT_RIFLE, gear_slot_t.GEAR_SLOT_PISTOL, gear_slot_t.GEAR_SLOT_GRENADES, gear_slot_t.GEAR_SLOT_C4];
-            slot = "1245";
+            slotsList = [gear_slot_t.GEAR_SLOT_RIFLE, gear_slot_t.GEAR_SLOT_PISTOL, gear_slot_t.GEAR_SLOT_GRENADES, gear_slot_t.GEAR_SLOT_C4];
         }
 
-        foreach (CCSPlayerController target in players)
+        foreach (CCSPlayerPawn? targetPawn in players.Select(p => p.PlayerPawn.Value))
         {
-            target.Strip(slotList);
+            targetPawn?.Strip(slotsList);
         }
+
+        string slotListStr = string.Join(", ", slotsList.Select(slot => slot.ToString().Replace("GEAR_SLOT_", "")));
 
         if (players.Count == 1)
         {
-            SendMessageToAllPlayers(HudDestination.Chat, "css_strip<player>", adminname, targetname, slot);
+            SendMessageToAllPlayers(HudDestination.Chat, "css_strip<player>", adminname, targetname, slotListStr);
         }
         else
         {
-            SendMessageToAllPlayers(HudDestination.Chat, "css_strip<multiple>", adminname, targetname, slot);
+            SendMessageToAllPlayers(HudDestination.Chat, "css_strip<multiple>", adminname, targetname, slotListStr);
         }
     }
 

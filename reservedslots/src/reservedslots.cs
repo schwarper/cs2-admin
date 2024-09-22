@@ -3,6 +3,7 @@ using CounterStrikeSharp.API.Core;
 using CounterStrikeSharp.API.Core.Attributes.Registration;
 using CounterStrikeSharp.API.Modules.Cvars;
 using CounterStrikeSharp.API.ValveConstants.Protobuf;
+using System.Collections.Concurrent;
 using static CounterStrikeSharp.API.Core.Listeners;
 using static CounterStrikeSharp.API.Modules.Admin.AdminManager;
 
@@ -22,6 +23,8 @@ public class ReservedSlots : BasePlugin
     public FakeConVar<int> css_reserve_kicktype = new("css_reserve_kicktype", "How to select a client to kick (if appropriate)", 0);
     public ConVar sv_visiblemaxplayers = null!;
     private const string playerdesignername = "cs_player_controller";
+
+    public ConcurrentDictionary<CCSPlayerController, double> GlobalPlayerTime = [];
 
     private enum KickType
     {
@@ -78,6 +81,8 @@ public class ReservedSlots : BasePlugin
         {
             return HookResult.Continue;
         }
+
+        GlobalPlayerTime.TryAdd(player, Server.CurrentTime);
 
         int reserved = css_reserved_slots.Value;
 
@@ -162,6 +167,7 @@ public class ReservedSlots : BasePlugin
 
         CheckHiddenSlots();
         AdminsList.Remove(player);
+        GlobalPlayerTime.TryRemove(player, out _);
 
         return HookResult.Continue;
     }
@@ -260,7 +266,7 @@ public class ReservedSlots : BasePlugin
                 }
                 else if (type == KickType.Kick_HighestTime)
                 {
-                    value = -player.CreateTime;
+                    value = (float)-GlobalPlayerTime[player];
                 }
                 else
                 {
