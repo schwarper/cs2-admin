@@ -140,8 +140,6 @@ css_reserve_kicktype <0|1|2>
 /*
   - This controls how a client is selected to be kicked (only relevant to css_reserve_type 1/2)
 
-  - Clients with reserve slot access or the override 'css_reskick_immunity' are always immune to being kicked. Spectating clients are chosen before playing clients.
-
   - 0 - Highest Ping
   - 1 - Highest Connection Time
   - 2 - Random Player
