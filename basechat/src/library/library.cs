@@ -16,7 +16,7 @@ public static class Library
         using (new WithTemporaryCulture(player.GetLanguage()))
         {
             LocalizedString message = Instance.Localizer[messageKey, args];
-            VirtualFunctions.ClientPrint(player.Handle, destination, Instance.Config.Tag + message, 0, 0, 0, 0);
+            VirtualFunctions.ClientPrint(player.Handle, destination, message, 0, 0, 0, 0);
         }
     }
 
@@ -33,7 +33,7 @@ public static class Library
                 continue;
             }
 
-            SendMessageToPlayer(target, HudDestination.Chat, messageKey, args);
+            SendMessageToPlayer(target, destination, messageKey, args);
         }
     }
 

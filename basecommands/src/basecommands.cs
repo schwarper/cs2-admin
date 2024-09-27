@@ -19,7 +19,7 @@ public class BaseCommands : BasePlugin, IPluginConfig<Config>
     public override string ModuleAuthor => "schwarper";
     public override string ModuleDescription => "Basic Admin Commands";
 
-    public static BaseCommands Instance = new();
+    public static BaseCommands Instance { get; set; } = new();
     public Config Config { get; set; } = new Config();
 
     public override void Load(bool hotReload)
@@ -29,7 +29,7 @@ public class BaseCommands : BasePlugin, IPluginConfig<Config>
 
     public void OnConfigParsed(Config config)
     {
-        config.Tag = StringExtensions.ReplaceColorTags(config.Tag);
+        config.Tag = config.Tag.ReplaceColorTags();
         Config = config;
     }
 
@@ -85,14 +85,14 @@ public class BaseCommands : BasePlugin, IPluginConfig<Config>
     {
         string arg = info.GetArg(1);
 
+        if (Config.WorkshopMapName.TryGetValue(arg, out ulong workshopMapId))
+        {
+            ExecuteMapCommand(player, arg, $"host_workshop_map {workshopMapId}", true);
+            return;
+        }
+
         if (!Server.IsMapValid(arg))
         {
-            if (Config.WorkshopMapName.TryGetValue(arg, out ulong workshopMapId))
-            {
-                ExecuteMapCommand(player, arg, $"host_workshop_map {workshopMapId}", true);
-                return;
-            }
-
             SendMessageToReplyToCommand(info, "Map was not found", arg);
             return;
         }
@@ -204,7 +204,7 @@ public class BaseCommands : BasePlugin, IPluginConfig<Config>
     [CommandHelper(minArgs: 0, usage: "<#userid|name or empty for all>")]
     public void Command_Who(CCSPlayerController? player, CommandInfo info)
     {
-        Action<string> targetConsolePrint = (player != null) ? player.PrintToConsole : Server.PrintToConsole;
+        Action<string> targetConsolePrint = player != null ? player.PrintToConsole : Server.PrintToConsole;
 
         if (info.ArgString.Length > 0)
         {
@@ -284,7 +284,7 @@ public class BaseCommands : BasePlugin, IPluginConfig<Config>
     {
         AdminData? data = AdminManager.GetPlayerAdminData(player);
 
-        string permissionflags = (data == null) ? "none" :
+        string permissionflags = data == null ? "none" :
             data.GetAllFlags().Contains("@css/root") ? "root" :
             string.Join(",", data.GetAllFlags()).Replace("@css/", "");
 

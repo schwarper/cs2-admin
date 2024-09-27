@@ -401,7 +401,7 @@ public class FunCommands : BasePlugin, IPluginConfig<Config>
 
         foreach (CCSPlayerPawn? targetPawn in players.Select(p => p.PlayerPawn.Value))
         {
-            targetPawn?.Strip(slotsList);
+            Server.NextFrame(() => targetPawn?.Strip(slotsList));
         }
 
         string slotListStr = string.Join(", ", slotsList.Select(slot => slot.ToString().Replace("GEAR_SLOT_", "")));

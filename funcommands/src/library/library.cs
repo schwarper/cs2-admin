@@ -181,7 +181,7 @@ public static class Library
     }
     public static void Strip(this CCSPlayerPawn playerPawn, HashSet<gear_slot_t> slotsList)
     {
-        NetworkedVector<CHandle<CBasePlayerWeapon>>? weapons = playerPawn.WeaponServices?.MyWeapons;
+        var weapons = playerPawn.WeaponServices?.MyWeapons.ToList();
 
         if (weapons?.Count is not > 0)
         {
@@ -194,38 +194,18 @@ public static class Library
             return;
         }
 
-        bool removeActiveWeapon = false;
-        CBasePlayerWeapon? activeWeapon = playerPawn.WeaponServices?.ActiveWeapon.Value;
-
-        foreach (CBasePlayerWeapon? weapon in weapons.Select(w => w.Value))
+        foreach (var weapon in weapons)
         {
-            if (weapon?.As<CCSWeaponBase>().VData?.GearSlot is not gear_slot_t slot || !slotsList.Contains(slot))
+            if (weapon.Value?.IsValid is not true ||
+                !weapon.Value.VisibleinPVS ||
+                weapon.Value.As<CCSWeaponBase>().VData?.GearSlot is not gear_slot_t slot ||
+                !slotsList.Contains(slot)
+                )
             {
                 continue;
             }
 
-            if (weapon == activeWeapon)
-            {
-                removeActiveWeapon = true;
-                continue;
-            }
-
-            playerPawn.RemovePlayerItem(weapon);
-            weapon.Remove();
-        }
-
-        if (removeActiveWeapon)
-        {
-            Server.NextWorldUpdate(() =>
-            {
-                if (activeWeapon?.IsValid != true)
-                {
-                    return;
-                }
-
-                playerPawn.ItemServices?.As<CCSPlayer_ItemServices>().DropActivePlayerWeapon(activeWeapon);
-                activeWeapon.Remove();
-            });
+            weapon.Value.AddEntityIOEvent("Kill", weapon.Value, null, "", 0.1f);
         }
     }
 
