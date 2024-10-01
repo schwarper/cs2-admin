@@ -37,18 +37,23 @@ public static class Library
         }
     }
 
-    public static void SendMessageToReplyToCommand(CommandInfo info, string messageKey, params object[] args)
+    public static void SendMessageToReplyToCommand(CommandInfo info, bool addTag, string messageKey, params object[] args)
     {
-        if (info.CallingPlayer == null)
+        var player = info.CallingPlayer;
+
+        if (player == null)
         {
             Server.PrintToConsole(Instance.Config.Tag + Instance.Localizer[messageKey, args]);
         }
         else
         {
-            SendMessageToPlayer(info.CallingPlayer,
-                info.CallingContext == CommandCallingContext.Console ? HudDestination.Console : HudDestination.Chat,
-                messageKey,
-                args);
+            var destination = info.CallingContext == CommandCallingContext.Console ? HudDestination.Console : HudDestination.Chat;
+
+            using (new WithTemporaryCulture(player.GetLanguage()))
+            {
+                LocalizedString message = Instance.Localizer[messageKey, args];
+                VirtualFunctions.ClientPrint(player.Handle, destination, (addTag == true ? Instance.Config.Tag : string.Empty) + message, 0, 0, 0, 0);
+            }
         }
     }
 }
