@@ -14,6 +14,8 @@ namespace BaseCommands;
 
 public static class Library
 {
+    public static readonly List<string> ValidMaps = [];
+
     public static string GetCvarStringValue(ConVar cvar)
     {
         ConVarType cvartype = cvar.Type;
@@ -78,6 +80,21 @@ public static class Library
                 info.CallingContext == CommandCallingContext.Console ? HudDestination.Console : HudDestination.Chat,
                 messageKey,
                 args);
+        }
+    }
+
+    public static void LoadValidMaps()
+    {
+        ValidMaps.Clear();
+
+        string path = Path.Combine(Server.GameDirectory, "csgo", "maps");
+
+        var files = Directory.GetFiles(path, "*.vpk").ToList();
+
+        foreach (var file in files)
+        {
+            string fileNameWithoutExtension = Path.GetFileNameWithoutExtension(file);
+            ValidMaps.Add(fileNameWithoutExtension);
         }
     }
 }

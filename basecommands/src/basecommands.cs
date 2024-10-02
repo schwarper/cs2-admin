@@ -25,6 +25,7 @@ public class BaseCommands : BasePlugin, IPluginConfig<Config>
     public override void Load(bool hotReload)
     {
         Instance = this;
+        LoadValidMaps();
     }
 
     public void OnConfigParsed(Config config)
@@ -85,14 +86,14 @@ public class BaseCommands : BasePlugin, IPluginConfig<Config>
     {
         string arg = info.GetArg(1);
 
-        if (Config.WorkshopMapName.TryGetValue(arg, out ulong workshopMapId))
+        if (!ValidMaps.Contains(arg))
         {
-            ExecuteMapCommand(player, arg, $"host_workshop_map {workshopMapId}", true);
-            return;
-        }
+            if (Config.WorkshopMapName.TryGetValue(arg, out ulong workshopMapId))
+            {
+                ExecuteMapCommand(player, arg, $"host_workshop_map {workshopMapId}", true);
+                return;
+            }
 
-        if (!Server.IsMapValid(arg))
-        {
             SendMessageToReplyToCommand(info, "Map was not found", arg);
             return;
         }
