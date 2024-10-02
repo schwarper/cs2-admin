@@ -15,7 +15,7 @@ namespace AntiFlood;
 public class AntiFlood : BasePlugin, IPluginConfig<Config>
 {
     public override string ModuleName => "Anti-Flood";
-    public override string ModuleVersion => "0.0.1";
+    public override string ModuleVersion => "1.3";
     public override string ModuleAuthor => "schwarper";
     public override string ModuleDescription => "Protects against chat flooding";
 

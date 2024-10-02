@@ -17,7 +17,7 @@ namespace FunCommands;
 public class FunCommands : BasePlugin, IPluginConfig<Config>
 {
     public override string ModuleName => "Fun Commands";
-    public override string ModuleVersion => "0.0.1";
+    public override string ModuleVersion => "1.3";
     public override string ModuleAuthor => "schwarper";
     public override string ModuleDescription => "Fun Commands";
 
