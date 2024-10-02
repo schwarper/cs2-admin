@@ -2,6 +2,7 @@
 using CounterStrikeSharp.API.Core;
 using CounterStrikeSharp.API.Core.Translations;
 using CounterStrikeSharp.API.Modules.Commands;
+using CounterStrikeSharp.API.Modules.Entities;
 using CounterStrikeSharp.API.Modules.Memory;
 using CounterStrikeSharp.API.Modules.Utils;
 using Microsoft.Extensions.Localization;
@@ -26,14 +27,14 @@ public static class Library
 
         for (int i = 0; i < Server.MaxPlayers; i++)
         {
-            CCSPlayerController? target = Utilities.GetEntityFromIndex<CCSPlayerController>(i + 1);
+            CCSPlayerController? player = Utilities.GetEntityFromIndex<CCSPlayerController>(i + 1);
 
-            if (target?.DesignerName != playerdesignername)
+            if (player?.IsValid is not true || player.IsBot || player.DesignerName != playerdesignername)
             {
                 continue;
             }
 
-            SendMessageToPlayer(target, destination, messageKey, args);
+            SendMessageToPlayer(player, destination, messageKey, args);
         }
     }
 

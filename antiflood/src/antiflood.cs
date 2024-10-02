@@ -42,7 +42,7 @@ public class AntiFlood : BasePlugin, IPluginConfig<Config>
             {
                 CCSPlayerController? player = Utilities.GetEntityFromIndex<CCSPlayerController>(i + 1);
 
-                if (player?.DesignerName != playerdesignername)
+                if (player?.IsValid is not true || player.IsBot || player.DesignerName != playerdesignername)
                 {
                     continue;
                 }

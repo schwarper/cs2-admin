@@ -246,7 +246,7 @@ public class ReservedSlots : BasePlugin
         {
             CCSPlayerController? player = Utilities.GetEntityFromIndex<CCSPlayerController>(i + 1);
 
-            if (player?.DesignerName != playerdesignername || player.IsBot)
+            if (player?.IsValid is not true || player.IsBot || player.DesignerName != playerdesignername)
             {
                 continue;
             }
@@ -308,7 +308,7 @@ public class ReservedSlots : BasePlugin
         {
             CCSPlayerController? player = Utilities.GetEntityFromIndex<CCSPlayerController>(i + 1);
 
-            if (player?.DesignerName != playerdesignername || player.IsBot)
+            if (player?.IsValid is not true || player.IsBot || player.DesignerName != playerdesignername)
             {
                 continue;
             }
