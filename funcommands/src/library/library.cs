@@ -188,27 +188,54 @@ public static class Library
             return;
         }
 
-        if (slotsList.Count == GlobalSlotDictionary.Count)
+        if (playerPawn.ItemServices?.Handle is not nint Handle)
         {
-            playerPawn.ItemServices?.As<CCSPlayer_ItemServices>().RemoveWeapons();
             return;
         }
 
-        foreach (var weapon in weapons)
+        if (slotsList.Count == GlobalSlotDictionary.Count)
         {
-            if (weapon.Value?.IsValid is not true ||
-                !weapon.Value.VisibleinPVS ||
-                weapon.Value.As<CCSWeaponBase>().VData?.GearSlot is not gear_slot_t slot ||
+            VirtualFunction.CreateVoid<nint>(Handle, GameData.GetOffset("CCSPlayer_ItemServices_RemoveWeapons"))(Handle);
+            return;
+        }
+
+        var activeWeapon = playerPawn.WeaponServices!.ActiveWeapon.Value;
+        bool removeActiveWeapon = false;
+
+        foreach (var weapon in weapons.Select(w => w.Value))
+        {
+            if (weapon?.IsValid is not true ||
+                !weapon.VisibleinPVS ||
+                weapon.As<CCSWeaponBase>().VData?.GearSlot is not gear_slot_t slot ||
                 !slotsList.Contains(slot)
                 )
             {
                 continue;
             }
 
-            weapon.Value.AddEntityIOEvent("Kill", weapon.Value, null, "", 0.1f);
+            if (activeWeapon == weapon)
+            {
+                removeActiveWeapon = true;
+                continue;
+            }
+
+            weapon.AddEntityIOEvent("Kill", weapon);
+        }
+
+        if (removeActiveWeapon)
+        {
+            Instance.AddTimer(0.1f, () =>
+            {
+                if (activeWeapon?.IsValid is not true)
+                {
+                    return;
+                }
+
+                VirtualFunction.CreateVoid<nint, nint>(Handle, GameData.GetOffset("CCSPlayer_ItemServices_DropActivePlayerWeapon"))(Handle, activeWeapon.Handle);
+                activeWeapon.AddEntityIOEvent("Kill", activeWeapon, delay: 0.1f);
+            });
         }
     }
-
     public static void Beacon(this CCSPlayerController player)
     {
         Vector? absOrigin = player.PlayerPawn.Value?.AbsOrigin;
@@ -461,7 +488,6 @@ public static class Library
             Utilities.SetStateChanged(beam, "CBeam", "m_vecEndPos");
         }
     }
-
     public static readonly Dictionary<string, CsItem> GlobalWeaponDictionary = new()
     {
         { "zeus", CsItem.Taser },
