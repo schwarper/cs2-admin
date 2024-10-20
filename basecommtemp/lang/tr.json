@@ -1,0 +1,34 @@
+{
+  "all": "bütün oyuncular",
+  "bots": "botlar",
+  "humans": "insanlar",
+  "alive": "yaşayan oyuncular",
+  "dead": "ölü oyuncular",
+  "notme": "kendisi hariç bütün oyuncular",
+  "ct": "ct takımındaki oyuncular",
+  "t": "t takımındaki oyuncular",
+  "spec": "izleyici takımındaki oyuncular",
+  "Console": "Panel",
+
+  "No matching client": "{white}Eşleşen bir oyuncu bulunamadı.",
+  "More than one client matched": "{white}Verilen biçim düzeniyle birden fazla alıcı eşleşti.",
+  "Unable to target": "{white}Bu oyuncuyu hedefleyemezsiniz.",
+
+  "You are gagged temp": "{white}Geçici olarak yazı yazamazsınız. \u2029 {white}Yasaklanma süresi: {blue}{0} {white}dakika \u2029 {white}Yasaklanma atıldığı gün: {blue}{1} \u2029 {white}Yasaklanmanın kalkacağı gün: {blue}{2}",
+  "Is already punished Mute": "{green}{0} {white}zaten mikrofon yasaklı.",
+  "Is already punished Gag": "{green}{0} {white}zaten yazı yazma yasaklı.",
+  "Is not already punished Unmute": "{green}{0} {white}zaten mikrofon yasaklı değil.",
+  "Is not already punished Ungag": "{green}{0} {white}zaten yazı yazma yasaklı değil.",
+
+  "Perma Mute": "{blue}{0} {white}kalıcı olarak '{green}{1}{white}' mikrofonunu yasakladı.",
+  "Perma Mute reason": "{blue}{0} {white}kalıcı olarak '{green}{1}{white}' mikrofonunu yasakladı. (nedeni = {green}{3}{white})",
+  "Mute": "{blue}{0} {white}{2} dakikalığına '{green}{1}{white}' mikrofonunu yasakladı.",
+  "Mute reason": "{blue}{0} {white}{2} dakikalığına '{green}{1}{white}' mikrofonunu yasakladı. (nedeni = {green}{3}{white})",
+  "Unmute": "{blue}{0} {white}mikrofon yasağı kaldırdı. (filtre '{green}{1}{white}').",
+
+  "Perma Gag": "{blue}{0} {white}kalıcı olarak '{green}{1}{white}' yazı yazmasını yasakladı.",
+  "Perma Gag reason": "{blue}{0} {white}kalıcı olarak '{green}{1}{white}' yazı yazmasını yasakladı. (nedeni = {green}{3}{white})",
+  "Gag": "{blue}{0} {white}{2} dakikalığına '{green}{1}{white}' yazı yazmasını yasakladı.",
+  "Gag reason": "{blue}{0} {white}{2} dakikalığına '{green}{1}{white}' yazı yazmasını yasakladı. (nedeni = {green}{3}{white})",
+  "Ungag": "{blue}{0} {white}yazı yazma yasağı kaldırdı. (filtre '{green}{1}{white}')."
+}

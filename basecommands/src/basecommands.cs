@@ -234,10 +234,15 @@ public class BaseCommands : BasePlugin, IPluginConfig<Config>
             return;
         }
 
-        List<CCSPlayerController> players = Utilities.GetPlayers();
-
-        foreach (CCSPlayerController target in players)
+        for (int i = 0; i < Server.MaxPlayers; i++)
         {
+            CCSPlayerController? target = Utilities.GetEntityFromIndex<CCSPlayerController>(i + 1);
+
+            if (target?.IsValid is not true || target.IsBot || target.DesignerName != playerdesignername)
+            {
+                continue;
+            }
+
             if (!AdminManager.CanPlayerTarget(player, target))
             {
                 continue;

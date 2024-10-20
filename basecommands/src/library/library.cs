@@ -14,6 +14,7 @@ namespace BaseCommands;
 
 public static class Library
 {
+    public const string playerdesignername = "cs_player_controller";
     public static readonly List<string> ValidMaps = [];
 
     public static string GetCvarStringValue(ConVar cvar)
@@ -53,8 +54,6 @@ public static class Library
 
     public static void SendMessageToAllPlayers(HudDestination destination, string messageKey, params object[] args)
     {
-        const string playerdesignername = "cs_player_controller";
-
         for (int i = 0; i < Server.MaxPlayers; i++)
         {
             CCSPlayerController? player = Utilities.GetEntityFromIndex<CCSPlayerController>(i + 1);
@@ -64,7 +63,7 @@ public static class Library
                 continue;
             }
 
-            SendMessageToPlayer(player, HudDestination.Chat, messageKey, args);
+            SendMessageToPlayer(player, destination, messageKey, args);
         }
     }
 

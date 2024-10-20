@@ -7,13 +7,13 @@ using CounterStrikeSharp.API.Modules.Commands.Targeting;
 using CounterStrikeSharp.API.Modules.Memory;
 using CounterStrikeSharp.API.Modules.Utils;
 using Microsoft.Extensions.Localization;
-using static BaseBans.BaseBans;
+using static BaseCommTemp.BaseCommTemp;
 
-namespace BaseBans;
+namespace BaseCommTemp;
 
 public static class Library
 {
-    private static readonly HttpClient _httpClient = new();
+    public const string playerdesignername = "cs_player_controller";
 
     public static bool ProcessTargetString(
         CCSPlayerController? player,
@@ -40,65 +40,18 @@ public static class Library
             return false;
         }
 
-        targetResult.Players.RemoveAll(target => !AdminManager.CanPlayerTarget(player, target));
+        var target = targetResult.Players[0];
 
-        if (targetResult.Players.Count == 0)
+        if (!AdminManager.CanPlayerTarget(player, target))
         {
             SendMessageToReplyToCommand(info, "Unable to target");
             return false;
         }
 
-        players = targetResult.Players;
-        adminname = player?.PlayerName ?? Instance.Localizer["Console"];
         targetname = targetResult.Players[0].PlayerName;
+        adminname = player?.PlayerName ?? Instance.Localizer["Console"];
+        players = [player];
         return true;
-    }
-
-    public static bool SteamIDTryParse(string id, out ulong steamId)
-    {
-        steamId = 0;
-
-        if (id.Length != 17)
-        {
-            return false;
-        }
-
-        if (!ulong.TryParse(id, out steamId))
-        {
-            return false;
-        }
-
-        const ulong minSteamID = 76561197960265728;
-        return steamId >= minSteamID;
-    }
-
-    public static async Task<string> GetPlayerNameFromSteamID(ulong steamID)
-    {
-        try
-        {
-            using HttpResponseMessage response = await _httpClient.GetAsync($"https://steamcommunity.com/profiles/{steamID}/?xml=1");
-            response.EnsureSuccessStatusCode();
-
-            string xmlContent = await response.Content.ReadAsStringAsync();
-
-            System.Xml.XmlDocument xmlDoc = new();
-            xmlDoc.LoadXml(xmlContent);
-
-            System.Xml.XmlNode? nameNode = xmlDoc.SelectSingleNode("//steamID");
-
-            string? name = nameNode?.InnerText.Trim();
-
-            if (string.IsNullOrWhiteSpace(name))
-            {
-                return steamID.ToString();
-            }
-
-            return name;
-        }
-        catch (Exception)
-        {
-            return steamID.ToString();
-        }
     }
 
     public static void SendMessageToPlayer(CCSPlayerController player, HudDestination destination, string messageKey, params object[] args)
@@ -112,8 +65,6 @@ public static class Library
 
     public static void SendMessageToAllPlayers(HudDestination destination, string messageKey, params object[] args)
     {
-        const string playerdesignername = "cs_player_controller";
-
         for (int i = 0; i < Server.MaxPlayers; i++)
         {
             CCSPlayerController? player = Utilities.GetEntityFromIndex<CCSPlayerController>(i + 1);

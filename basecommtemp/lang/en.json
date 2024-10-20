@@ -1,0 +1,34 @@
+{
+  "all": "all players",
+  "bots": "bots",
+  "humans": "humans",
+  "alive": "alive players",
+  "dead": "dead players",
+  "notme": "all players except self",
+  "ct": "ct players",
+  "t": "t players",
+  "spec": "spec players",
+  "Console": "Console",
+
+  "No matching client": "{white}No matching client was found.",
+  "More than one client matched": "{white}More than one client matched the given pattern.",
+  "Unable to target": "{white}You cannot target this player.",
+
+  "You are gagged temp": "{white}You are temporarily gagged. \u2029 {white}Gag duration: {blue}{0} {white}minutes \u2029 {white}Gag time: {blue}{1} \u2029 {white}Ungag time: {blue}{2}",
+  "Is already punished Mute": "{green}{0} {white}is already muted.",
+  "Is already punished Gag": "{green}{0} {white}is already gagged.",
+  "Is not already punished Unmute": "{green}{0} {white}is not muted.",
+  "Is not already punished Ungag": "{green}{0} {white}is not gagged.",
+
+  "Perma Mute": "{blue}{0} {white}permanently muted '{green}{1}{white}'.",
+  "Perma Mute reason": "{blue}{0} {white}permanently muted '{green}{1}{white}'. (reason = {green}{3}{white})",
+  "Mute": "{blue}{0} {white}muted '{green}{1}{white}' for {2} minutes.",
+  "Mute reason": "{blue}{0} {white}muted '{green}{1}{white}' for {2} minutes. (reason = {green}{3}{white})",
+  "Unmute": "{blue}{0} {white}unmuted. (filter '{green}{1}{white}').",
+
+  "Perma Gag": "{blue}{0} {white}permanently gagged '{green}{1}{white}'.",
+  "Perma Gag reason": "{blue}{0} {white}permanently gagged '{green}{1}{white}'. (reason = {green}{3}{white})",
+  "Gag": "{blue}{0} {white}gagged '{green}{1}{white}' for {2} minutes.",
+  "Gag reason": "{blue}{0} {white}gagged '{green}{1}{white}' for {2} minutes. (reason = {green}{3}{white})",
+  "Ungag": "{blue}{0} {white}ungagged. (filter '{green}{1}{white}')."
+}

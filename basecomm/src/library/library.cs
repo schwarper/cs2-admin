@@ -106,7 +106,7 @@ public static class Library
                 continue;
             }
 
-            SendMessageToPlayer(player, HudDestination.Chat, messageKey, args);
+            SendMessageToPlayer(player, destination, messageKey, args);
         }
     }
 

@@ -122,11 +122,6 @@ public class BaseVotes : BasePlugin, IPluginConfig<Config>
 
         ResetVote();
 
-        foreach (CCSPlayerController target in Utilities.GetPlayers())
-        {
-            MenuManager.CloseActiveMenu(target);
-        }
-
         SendMessageToAllPlayers(HudDestination.Chat, "css_cancelvote", player.PlayerName);
     }
 
@@ -139,22 +134,18 @@ public class BaseVotes : BasePlugin, IPluginConfig<Config>
 
         foreach (string option in options)
         {
-            try
+            GlobalVoteAnswers.Add(option, 0);
+
+            menu.AddMenuOption(Localizer["css_vote<optiontext>", option, 0], (p, o) =>
             {
-                GlobalVoteAnswers.Add(option, 0);
-
-                menu.AddMenuOption(Localizer["css_vote<optiontext>", option, 0], (p, o) =>
+                if (GlobalVoteInProgress && !GlobalVotePlayers.ContainsKey(p))
                 {
-                    if (GlobalVoteInProgress && !GlobalVotePlayers.ContainsKey(p))
-                    {
-                        GlobalVotePlayers.Add(p, (option, o));
-                        GlobalVoteAnswers[option]++;
+                    GlobalVotePlayers.Add(p, (option, o));
+                    GlobalVoteAnswers[option]++;
 
-                        o.Text = Localizer["css_vote<optiontext>", option, GlobalVoteAnswers[option]];
-                    }
-                });
-            }
-            catch (Exception) { };
+                    o.Text = Localizer["css_vote<optiontext>", option, GlobalVoteAnswers[option]];
+                }
+            });
         }
 
         return menu;
@@ -169,14 +160,7 @@ public class BaseVotes : BasePlugin, IPluginConfig<Config>
             SendMessageToAllPlayers(HudDestination.Chat, "css_vote<resultsanswer>", kvp.Key, kvp.Value);
         }
 
-        GlobalVoteAnswers.Clear();
-        GlobalVotePlayers.Clear();
-        GlobalMenu = null;
-
-        foreach (CCSPlayerController target in Utilities.GetPlayers())
-        {
-            MenuManager.CloseActiveMenu(target);
-        }
+        ResetVote();
     }
 
     private void ResetVote()
@@ -185,5 +169,22 @@ public class BaseVotes : BasePlugin, IPluginConfig<Config>
         GlobalVotePlayers.Clear();
         GlobalTimer?.Kill();
         GlobalMenu = null;
+
+        CloseActiveMenuForAll();
+    }
+
+    private static void CloseActiveMenuForAll()
+    {
+        for (int i = 0; i < Server.MaxPlayers; i++)
+        {
+            CCSPlayerController? target = Utilities.GetEntityFromIndex<CCSPlayerController>(i + 1);
+
+            if (target?.IsValid is not true || target.IsBot || target.DesignerName != playerdesignername)
+            {
+                continue;
+            }
+
+            MenuManager.CloseActiveMenu(target);
+        }
     }
 }

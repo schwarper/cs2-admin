@@ -13,7 +13,7 @@
   "No matching client": "{white}No matching client was found.",
   "More than one client matched": "{white}More than one client matched the given pattern.",
   "Unable to target": "{white}You cannot target this player.",
-  "You are gagged": "{white}Geçici olarak yazı yazamazsınız.",
+  "You are gagged": "{white}You are temporarily gagged.",
 
   "css_mute<player>": "{blue}{0} {white}muted {green}{1}{white}.",
   "css_mute<multiple>": "{blue}{0} {white}muted {green}{1}{white}.",

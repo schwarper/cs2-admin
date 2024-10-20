@@ -26,13 +26,13 @@ public class BaseComm : BasePlugin, IPluginConfig<Config>
         Instance = this;
 
         AddCommandListener("say", Command_Say, HookMode.Pre);
-        AddCommandListener("say_team", Command_Say, HookMode.Pre);
+        AddCommandListener("say_team", Command_SayTeam, HookMode.Pre);
     }
 
     public override void Unload(bool hotReload)
     {
         RemoveCommandListener("say", Command_Say, HookMode.Pre);
-        RemoveCommandListener("say_team", Command_Say, HookMode.Pre);
+        RemoveCommandListener("say_team", Command_SayTeam, HookMode.Pre);
     }
 
     public void OnConfigParsed(Config config)
@@ -41,7 +41,17 @@ public class BaseComm : BasePlugin, IPluginConfig<Config>
         Config = config;
     }
 
-    public HookResult Command_Say(CCSPlayerController? player, CommandInfo info)
+    private HookResult Command_Say(CCSPlayerController? player, CommandInfo info)
+    {
+        return Command_Say_Handler(player, info);
+    }
+
+    private HookResult Command_SayTeam(CCSPlayerController? player, CommandInfo info)
+    {
+        return Command_Say_Handler(player, info);
+    }
+
+    public HookResult Command_Say_Handler(CCSPlayerController? player, CommandInfo info)
     {
         if (player == null)
         {
@@ -57,8 +67,8 @@ public class BaseComm : BasePlugin, IPluginConfig<Config>
 
         if (PlayerGagList.Contains(player))
         {
-            VirtualFunctions.ClientPrint(player.Handle, HudDestination.Chat, Config.Tag + Localizer["You are gagged"], 0, 0, 0, 0);
-            return HookResult.Handled;
+            SendMessageToPlayer(player, HudDestination.Chat, "You are gagged");
+            return HookResult.Stop;
         }
 
         return HookResult.Continue;
