@@ -13,7 +13,7 @@
   "No matching client": "{white}Eşleşen bir oyuncu bulunamadı.",
   "More than one client matched": "{white}Verilen biçim düzeniyle birden fazla alıcı eşleşti.",
   "Unable to target": "{white}Bu oyuncuyu hedefleyemezsiniz.",
-  "You are gagged": "{white}You are gagged temporarily.",
+  "You are gagged": "{white}Geçici olarak yazı yazamazsınız.",
 
   "css_mute<player>": "{blue}{0}{white}, {green}{1} {white}adlı oyuncunun mikrofonunu susturdu.",
   "css_mute<multiple>": "{blue}{0}{white}, {green}{1}ın {white}mikrofonunu susturdu.",

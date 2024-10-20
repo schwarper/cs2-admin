@@ -32,7 +32,7 @@ public class BaseAdmin : BasePlugin, IPluginConfig<Config>
     }
 
     [ConsoleCommand("css_addadmin")]
-    [RequiresPermissions("@css/ban")]
+    [RequiresPermissions("@css/root")]
     [CommandHelper(minArgs: 2, "<steamid> <group> <immunity>", whoCanExecute: CommandUsage.CLIENT_AND_SERVER)]
     public void Command_Addadmin(CCSPlayerController? player, CommandInfo info)
     {
@@ -101,7 +101,7 @@ public class BaseAdmin : BasePlugin, IPluginConfig<Config>
     }
 
     [ConsoleCommand("css_removeadmin")]
-    [RequiresPermissions("@css/ban")]
+    [RequiresPermissions("@css/root")]
     [CommandHelper(minArgs: 1, "<steamid>", whoCanExecute: CommandUsage.CLIENT_AND_SERVER)]
     public void Command_Removeadmin(CCSPlayerController? player, CommandInfo info)
     {
