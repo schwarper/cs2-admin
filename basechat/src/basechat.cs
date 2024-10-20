@@ -1,10 +1,11 @@
-using CounterStrikeSharp.API;
+﻿using CounterStrikeSharp.API;
 using CounterStrikeSharp.API.Core;
 using CounterStrikeSharp.API.Core.Attributes.Registration;
 using CounterStrikeSharp.API.Core.Translations;
 using CounterStrikeSharp.API.Modules.Admin;
 using CounterStrikeSharp.API.Modules.Commands;
 using CounterStrikeSharp.API.Modules.Commands.Targeting;
+using CounterStrikeSharp.API.Modules.Cvars;
 using CounterStrikeSharp.API.Modules.Utils;
 using static BaseChat.Library;
 
@@ -19,10 +20,18 @@ public class BaseChat : BasePlugin, IPluginConfig<Config>
 
     public static BaseChat Instance { get; set; } = new BaseChat();
     public Config Config { get; set; } = new Config();
+    public FakeConVar<bool> css_chat_mode = new("css_chat_mode", "Allows player's to send messages to admin chat.", true);
 
     public override void Load(bool hotReload)
     {
         Instance = this;
+
+        AddCommandListener("say_team", Command_SayTeam, HookMode.Pre);
+    }
+
+    public override void Unload(bool hotReload)
+    {
+        RemoveCommandListener("say_team", Command_SayTeam, HookMode.Pre);
     }
 
     public void OnConfigParsed(Config config)
@@ -72,24 +81,8 @@ public class BaseChat : BasePlugin, IPluginConfig<Config>
     {
         string adminname = player?.PlayerName ?? Localizer["Console"];
         string message = info.ArgString;
-        const string playerdesignername = "cs_player_controller";
 
-        for (int i = 0; i < Server.MaxPlayers; i++)
-        {
-            CCSPlayerController? target = Utilities.GetEntityFromIndex<CCSPlayerController>(i + 1);
-
-            if (target?.DesignerName != playerdesignername)
-            {
-                continue;
-            }
-
-            if (!AdminManager.PlayerHasPermissions(target.AuthorizedSteamID, "@css/chat"))
-            {
-                continue;
-            }
-
-            SendMessageToPlayer(target, HudDestination.Chat, "css_asay", adminname, message);
-        }
+        SendMessageToAdmins(adminname, message);
     }
 
     [ConsoleCommand("css_psay")]
@@ -120,5 +113,31 @@ public class BaseChat : BasePlugin, IPluginConfig<Config>
 
         SendMessageToReplyToCommand(info, false, "css_psay", adminname, targetname, message);
         SendMessageToPlayer(target, HudDestination.Chat, "css_psay", adminname, targetname, message);
+    }
+
+    public HookResult Command_SayTeam(CCSPlayerController? player, CommandInfo info)
+    {
+        if (!css_chat_mode.Value)
+        {
+            return HookResult.Continue;
+        }
+
+        string arg = info.ArgString.Trim('"');
+
+        if (!arg.StartsWith('@') || arg.Length <= 1 || arg[1] != ' ')
+        {
+            return HookResult.Continue;
+        }
+
+        string username = player?.PlayerName ?? Localizer["Console"];
+        string message = arg[2..].Trim();
+
+        if (string.IsNullOrWhiteSpace(message))
+        {
+            return HookResult.Continue;
+        }
+
+        SendMessageToAdmins(username, message);
+        return HookResult.Stop;
     }
 }

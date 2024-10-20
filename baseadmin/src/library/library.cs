@@ -29,15 +29,6 @@ public static class Library
         return steamId >= minSteamID;
     }
 
-    public static void SendMessageToPlayer(CCSPlayerController player, HudDestination destination, string messageKey, params object[] args)
-    {
-        using (new WithTemporaryCulture(player.GetLanguage()))
-        {
-            LocalizedString message = Instance.Localizer[messageKey, args];
-            VirtualFunctions.ClientPrint(player.Handle, destination, message, 0, 0, 0, 0);
-        }
-    }
-
     public static void SendMessageToReplyToCommand(CommandInfo info, bool addTag, string messageKey, params object[] args)
     {
         var player = info.CallingPlayer;
