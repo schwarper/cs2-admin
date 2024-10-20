@@ -1,0 +1,7 @@
+{
+  "Invalid SteamID specified": "{white}You have specified an invalid Steam ID.",
+  "Admin already exists": "{white}Admin already exists.",
+  "Admin does not exist": "{white}Admin does not exist.",
+  "Admin has been added": "{white}Admin has been added.",
+  "Admin has been removed": "{white}Admin has been removed."
+}

@@ -1,0 +1,7 @@
+{
+  "Invalid SteamID specified": "{white}Geçersiz bir SteamID belirttiniz.",
+  "Admin already exists": "{white}Böyle bir admin zaten bulunmaktadır.",
+  "Admin does not exist": "{white}Böyle bir admin zaten bulunmamaktadır.",
+  "Admin has been added": "{white}Admin başarıyla eklendi",
+  "Admin has been removed": "{white}Admin başarıyla silindi."
+}
