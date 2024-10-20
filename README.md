@@ -11,6 +11,7 @@ Remake of [the admin plugins made by Alliedmodders for CSGO](https://github.com/
 
 # Plugins
 - [Anti-Flood](#anti-flood)
+- [Basic Admin](#base-admin)
 - [Basic Ban Commands](#basic-ban-commands)
 - [Basic Chat](#basic-chat)
 - [Basic Comm Control](#basic-comm-control)
@@ -26,83 +27,111 @@ Remake of [the admin plugins made by Alliedmodders for CSGO](https://github.com/
 css_flood_duration 0.75 - Amount of duration allowed between chat messages
 ```
 
+# Base Admin
+```js
+♦ css_addadmin <steamid> <group> <immunity> [ Default perm is @css/root ]
+♦ css_removeadmin <steamid> [ Default perm is @css/root ]
+```
+
 # Basic Ban Commands
 ```js
-♦ css_ban <#userid|name> <minutes|0> [reason]
-♦ css_unban <steamid>
-♦ css_addban <duration> <steamid> [reason]
+♦ css_ban <#userid|name> <minutes|0> [reason] [ Default perm is @css/ban ]
+♦ css_unban <steamid> [ Default perm is @css/unban ]
+♦ css_addban <duration> <steamid> [reason] [ Default perm is @css/root ]
 ```
 
 # Basic Chat
 ```js
-♦ css_say <message> - sends message to all players
-♦ css_csay <message> - sends centered message to all players
-♦ css_hsay <message> - <message>  - sends hud message to all players
-♦ css_asay <message> - <message> - sends message to admins
-♦ css_chat <message> - <message> - sends message to admins
-♦ css_psay <#userid|name> <message> - sends public message
+css_chat_mode false - enables say_team @. Default is false.
+
+♦ say_team @ text - sends message to admins [ Everyone can use this ]
+♦ css_say <message> - sends message to all players [ Default perm is @css/chat ]
+♦ css_csay <message> - sends centered message to all players [ Default perm is @css/chat ]
+♦ css_hsay <message> - <message> - sends hud message to all players [ Default perm is @css/chat ]
+♦ css_asay <message> - <message> - sends message to admins [ Default perm is @css/chat ]
+♦ css_chat <message> - <message> - sends message to admins [ Default perm is @css/chat ]
+♦ css_psay <#userid|name> <message> - sends public message [ Default perm is @css/chat ]
 ```
 
 # Basic Comm Control
 ```js
-♦ css_mute <#userid|name|all @ commands> - Removes a player's ability to use voice.
-♦ css_unmute <#userid|name|all @ commands> - Restores a player's ability to use voice.
-♦ css_gag <#userid|name|all @ commands> - Removes a player's ability to use chat.
-♦ css_ungag <#userid|name|all @ commands> - Restores a player's ability to use chat.
-♦ css_silence <#userid|name|all @ commands> - Removes a player's ability to use voice or chat.
-♦ css_unsilence <#userid|name|all @ commands> - Restores a player's ability to use voice and chat.
+♦ css_mute <#userid|name|all @ commands> - Removes a player's ability to use voice. [ Default perm is @css/chat ]
+♦ css_unmute <#userid|name|all @ commands> - Restores a player's ability to use voice. [ Default perm is @css/chat ]
+♦ css_gag <#userid|name|all @ commands> - Removes a player's ability to use chat. [ Default perm is @css/chat ]
+♦ css_ungag <#userid|name|all @ commands> - Restores a player's ability to use chat. [ Default perm is @css/chat ]
+♦ css_silence <#userid|name|all @ commands> - Removes a player's ability to use voice or chat. [ Default perm is @css/chat ]
+♦ css_unsilence <#userid|name|all @ commands> - Restores a player's ability to use voice and chat. [ Default perm is @css/chat ]
 ```
 
 # Basic Commands
 ```js
-♦ css_kick <#userid|name> [reason]
-♦ css_changemap <map>
-♦ css_map <map>
-♦ css_workshop <map>
-♦ css_wsmap <map>
-♦ css_rcon <args>
-♦ css_cvar <cvar> <value>
-♦ css_exec <exec>
-♦ css_who <#userid|name or empty for all>
+♦ css_kick <#userid|name> [reason] [ Default perm is @css/kick ]
+♦ css_changemap <map> [ Default perm is @css/map ]
+♦ css_map <map> [ Default perm is @css/map ]
+♦ css_workshop <map> [ Default perm is @css/map ]
+♦ css_wsmap <map> [ Default perm is @css/map ]
+♦ css_rcon <args> [ Default perm is @css/rcon ]
+♦ css_cvar <cvar> <value> [ Default perm is @css/cvar ]
+♦ css_exec <exec> [ Default perm is @css/config ]
+♦ css_who <#userid|name or empty for all> [ Default perm is @css/generic ]
+```
+
+# Basic Temp Comm Control
+```js
+♦ css_smute <#userid|name> <time> <reason> - Imposes a timed mute [ Default perm is @css/chat ]
+♦ css_tmute <#userid|name> <time> <reason> - Imposes a timed mute [ Default perm is @css/chat ]
+♦ css_sunmute <#userid|name> - Unmute timed mute [ Default perm is @css/chat ]
+♦ css_tunmute <#userid|name> - Unmute timed mute [ Default perm is @css/chat ]
+♦ css_gag <#userid|name> <time> - Imposes a timed gag [ Default perm is @css/chat ]
+♦ css_gag <#userid|name> <time> - Imposes a timed gag [ Default perm is @css/chat ]
+♦ css_ungag <#userid|name> - Ungag timed gag [ Default perm is @css/chat ]
+♦ css_ungag <#userid|name> - Ungag timed gag [ Default perm is @css/chat ]
 ```
 
 # Basic Votes
 ```js
-♦ css_vote <question> [... Options ...]
+♦ css_vote <question> [... Options ...] [ Default perm is @css/generic ]
 ♦ css_revote
-♦ css_cancelvote
+♦ css_cancelvote [ Default perm is @css/generic ]
 ```
 
 # Fun Commands
 ```js
-♦ css_freeze <#userid|name|all @ commands> <time>
-♦ css_unfreeze <#userid|name|all @ commands>
-♦ css_gravity <gravity>
-♦ css_revive <#userid|name|all @ commands>
-♦ css_respawn <#userid|name|all @ commands>
-♦ css_noclip <#userid|name|all @ commands> <value>
-♦ css_weapon <#userid|name|all @ commands> <weapon>
-♦ css_strip <#userid|name|all @ commands>
-♦ css_sethp <team> <health> - Sets team players' spawn health
-♦ css_hp <#userid|name|all @ commands> <health>
-♦ css_speed <#userid|name|all @ commands> <value>
-♦ css_god <#userid|name|all @ commands> <value>
-♦ css_team <#userid|name|all @ commands> <value>
-♦ css_swap <#userid|name>
-♦ css_bury <#userid|name|all @ commands>
-♦ css_unbury <#userid|name|all @ commands>
-♦ css_clean - Clean weapons on the ground
-♦ css_goto - <#userid|name> - Teleport player to a player's position
-♦ css_bring - <#userid|name|all @ commands> - Teleport players to a player's position
-♦ css_hrespawn - <#userid|name> - Respawns a player in his last known death position.
-♦ css_1up - <#userid|name> - Respawns a player in his last known death position.
-♦ css_glow <#userid|name|all @ commands> <color>
-♦ css_color <#userid|name|all @ commands> <color>
-♦ css_beacon <#userid|name|all @ commands> <value>
-♦ css_shake <#userid|name|all @ commands> <time>
-♦ css_unshake <#userid|name|all @ commands>
-♦ css_blind <#userid|name|all @ commands> <time>
-♦ css_unblind <#userid|name|all @ commands>
+♦ css_freeze <#userid|name|all @ commands> <time> [ Default perm is @css/slay ]
+♦ css_unfreeze <#userid|name|all @ commands> [ Default perm is @css/slay ]
+♦ css_gravity <gravity> [ Default perm is @css/slay ]
+♦ css_revive <#userid|name|all @ commands> [ Default perm is @css/cheats ]
+♦ css_respawn <#userid|name|all @ commands> [ Default perm is @css/cheats ]
+♦ css_noclip <#userid|name|all @ commands> <value> [ Default perm is @css/cheats ]
+♦ css_weapon <#userid|name|all @ commands> <weapon> [ Default perm is @css/cheats ]
+♦ css_strip <#userid|name|all @ commands> [ Default perm is @css/cheats ]
+♦ css_sethp <team> <health> - Sets team players' spawn health [ Default perm is @css/cheats ]
+♦ css_hp <#userid|name|all @ commands> <health> [ Default perm is @css/cheats ]
+♦ css_speed <#userid|name|all @ commands> <value> [ Default perm is @css/cheats ]
+♦ css_god <#userid|name|all @ commands> <value> [ Default perm is @css/cheats ]
+♦ css_team <#userid|name|all @ commands> <value> [ Default perm is @css/kick ]
+♦ css_swap <#userid|name> [ Default perm is @css/kick ]
+♦ css_bury <#userid|name|all @ commands> [ Default perm is @css/slay ]
+♦ css_unbury <#userid|name|all @ commands> [ Default perm is @css/slay ]
+♦ css_clean - Clean weapons on the ground [ Default perm is @css/slay ]
+♦ css_goto - <#userid|name> - Teleport player to a player's position [ Default perm is @css/slay ]
+♦ css_bring - <#userid|name|all @ commands> - Teleport players to a player's position [ Default perm is @css/slay ]
+♦ css_hrespawn - <#userid|name> - Respawns a player in his last known death position. [ Default perm is @css/slay ]
+♦ css_1up - <#userid|name> - Respawns a player in his last known death position. [ Default perm is @css/slay ]
+♦ css_glow <#userid|name|all @ commands> <color> [ Default perm is @css/slay ]
+♦ css_color <#userid|name|all @ commands> <color> [ Default perm is @css/slay ]
+♦ css_beacon <#userid|name|all @ commands> <value> [ Default perm is @css/slay ]
+♦ css_shake <#userid|name|all @ commands> <time> [ Default perm is @css/slay ]
+♦ css_unshake <#userid|name|all @ commands> [ Default perm is @css/slay ]
+♦ css_blind <#userid|name|all @ commands> <time> [ Default perm is @css/slay ]
+♦ css_unblind <#userid|name|all @ commands> [ Default perm is @css/slay ]
+```
+
+# Player Commands
+```js
+♦ css_slap <#userid|name|all @ commands> <damage> [ Default perm is @css/slay ]
+♦ css_slay <#userid|name|all @ commands> [ Default perm is @css/slay ]
+♦ css_rename <#userid|name> <newname> [ Default perm is @css/slay ]
 ```
 
 # Reserved Slots
