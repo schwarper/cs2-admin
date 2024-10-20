@@ -8,11 +8,15 @@
 	</PropertyGroup>
 
 	<ItemGroup>
-		<PackageReference Include="CounterStrikeSharp.API" Version="1.0.264" />
+		<PackageReference Include="CounterStrikeSharp.API" Version="1.0.282" />
 		<PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
 	</ItemGroup>
 
 	<ItemGroup>
 		<None Update="lang\**\*.*" CopyToOutputDirectory="PreserveNewest" />
 	</ItemGroup>
+
+	<Target Name="CopyNuGetAssemblies" AfterTargets="Build">
+		<Copy SourceFiles="../Newtonsoft.Json.dll" DestinationFolder="$(OutputPath)" SkipUnchangedFiles="true" />
+	</Target>
 </Project>

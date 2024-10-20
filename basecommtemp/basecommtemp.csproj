@@ -8,7 +8,7 @@
 	</PropertyGroup>
 
 	<ItemGroup>
-		<PackageReference Include="CounterStrikeSharp.API" Version="1.0.264" />
+		<PackageReference Include="CounterStrikeSharp.API" Version="1.0.282" />
 		<PackageReference Include="Dapper" Version="2.1.35" />
 		<PackageReference Include="MySqlConnector" Version="2.3.7" />
 	</ItemGroup>
@@ -16,4 +16,9 @@
 	<ItemGroup>
 		<None Update="lang\**\*.*" CopyToOutputDirectory="PreserveNewest" />
 	</ItemGroup>
+
+	<Target Name="CopyNuGetAssemblies" AfterTargets="Build">
+		<Copy SourceFiles="../MySqlConnector.dll" DestinationFolder="$(OutputPath)" SkipUnchangedFiles="true" />
+		<Copy SourceFiles="../Dapper.dll" DestinationFolder="$(OutputPath)" SkipUnchangedFiles="true" />
+	</Target>
 </Project>

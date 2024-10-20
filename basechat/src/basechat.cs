@@ -1,5 +1,4 @@
-﻿using CounterStrikeSharp.API;
-using CounterStrikeSharp.API.Core;
+﻿using CounterStrikeSharp.API.Core;
 using CounterStrikeSharp.API.Core.Attributes.Registration;
 using CounterStrikeSharp.API.Core.Translations;
 using CounterStrikeSharp.API.Modules.Admin;
@@ -14,7 +13,7 @@ namespace BaseChat;
 public class BaseChat : BasePlugin, IPluginConfig<Config>
 {
     public override string ModuleName => "Basic Chat";
-    public override string ModuleVersion => "1.3";
+    public override string ModuleVersion => "1.4";
     public override string ModuleAuthor => "schwarper";
     public override string ModuleDescription => "Basic Communication Commands";
 

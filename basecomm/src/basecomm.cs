@@ -4,7 +4,6 @@ using CounterStrikeSharp.API.Core.Attributes.Registration;
 using CounterStrikeSharp.API.Core.Translations;
 using CounterStrikeSharp.API.Modules.Admin;
 using CounterStrikeSharp.API.Modules.Commands;
-using CounterStrikeSharp.API.Modules.Memory;
 using CounterStrikeSharp.API.Modules.Utils;
 using static BaseComm.Library;
 
@@ -13,7 +12,7 @@ namespace BaseComm;
 public class BaseComm : BasePlugin, IPluginConfig<Config>
 {
     public override string ModuleName => "Basic Comm Control";
-    public override string ModuleVersion => "1.3";
+    public override string ModuleVersion => "1.4";
     public override string ModuleAuthor => "schwarper";
     public override string ModuleDescription => "Provides methods of controlling communication.";
 

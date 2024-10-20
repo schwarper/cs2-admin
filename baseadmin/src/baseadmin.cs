@@ -4,9 +4,7 @@ using CounterStrikeSharp.API.Core.Attributes.Registration;
 using CounterStrikeSharp.API.Core.Translations;
 using CounterStrikeSharp.API.Modules.Admin;
 using CounterStrikeSharp.API.Modules.Commands;
-using CounterStrikeSharp.API.Modules.Entities;
 using Newtonsoft.Json.Linq;
-using System.Collections.Generic;
 using static BaseAdmin.Library;
 
 namespace BaseAdmin;
@@ -14,7 +12,7 @@ namespace BaseAdmin;
 public class BaseAdmin : BasePlugin, IPluginConfig<Config>
 {
     public override string ModuleName => "Base Admin";
-    public override string ModuleVersion => "1.3";
+    public override string ModuleVersion => "1.4";
     public override string ModuleAuthor => "schwarper";
     public override string ModuleDescription => "Allows to add & remove admin";
 

@@ -1,6 +1,4 @@
-﻿using CounterStrikeSharp.API;
-using CounterStrikeSharp.API.Core;
-using Dapper;
+﻿using Dapper;
 using MySqlConnector;
 using System.Data.Common;
 using static BaseCommTemp.BaseCommTemp;
