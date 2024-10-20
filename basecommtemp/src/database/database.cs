@@ -73,22 +73,14 @@ public static class Database
 
         foreach (var result in results)
         {
-            try
+            PlayerTemporaryPunishList.Add(new PunishInfo()
             {
-                PlayerTemporaryPunishList.Add(new PunishInfo()
-                {
-                    SteamID = steamid,
-                    PunishName = result.status,
-                    Duration = result.duration,
-                    Created = ((MySqlDateTime)result.created).GetDateTime(),
-                    End = ((MySqlDateTime)result.end).GetDateTime()
-                });
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine(ex.ToString());
-            }
-            
+                SteamID = steamid,
+                PunishName = result.status,
+                Duration = result.duration,
+                Created = ((MySqlDateTime)result.created).GetDateTime(),
+                End = ((MySqlDateTime)result.end).GetDateTime()
+            });
         }
     }
 
