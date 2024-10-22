@@ -13,7 +13,7 @@ namespace BaseChat;
 public class BaseChat : BasePlugin, IPluginConfig<Config>
 {
     public override string ModuleName => "Basic Chat";
-    public override string ModuleVersion => "1.4";
+    public override string ModuleVersion => "1.5";
     public override string ModuleAuthor => "schwarper";
     public override string ModuleDescription => "Basic Communication Commands";
 

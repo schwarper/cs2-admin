@@ -12,7 +12,7 @@ namespace BaseComm;
 public class BaseComm : BasePlugin, IPluginConfig<Config>
 {
     public override string ModuleName => "Basic Comm Control";
-    public override string ModuleVersion => "1.4";
+    public override string ModuleVersion => "1.5";
     public override string ModuleAuthor => "schwarper";
     public override string ModuleDescription => "Provides methods of controlling communication.";
 
