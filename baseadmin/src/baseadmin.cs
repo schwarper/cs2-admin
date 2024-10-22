@@ -1,4 +1,4 @@
-using CounterStrikeSharp.API;
+﻿using CounterStrikeSharp.API;
 using CounterStrikeSharp.API.Core;
 using CounterStrikeSharp.API.Core.Attributes.Registration;
 using CounterStrikeSharp.API.Core.Translations;
@@ -17,6 +17,7 @@ public class BaseAdmin : BasePlugin, IPluginConfig<Config>
     public override string ModuleDescription => "Allows to add & remove admin";
 
     public readonly string AdminFile = Path.Combine(Server.GameDirectory, "csgo", "addons", "counterstrikesharp", "configs", "admins.json");
+    public readonly string AdminGroupsFile = Path.Combine(Server.GameDirectory, "csgo", "addons", "counterstrikesharp", "configs", "admin_groups.json");
     public static BaseAdmin Instance { get; set; } = new();
     public Config Config { get; set; } = new Config();
 
@@ -37,67 +38,36 @@ public class BaseAdmin : BasePlugin, IPluginConfig<Config>
     public void Command_Addadmin(CCSPlayerController? player, CommandInfo info)
     {
         string[] args = info.ArgString.Split(' ', StringSplitOptions.RemoveEmptyEntries);
+        string steamIdText = args[0];
 
-        if (!SteamIDTryParse(args[0], out ulong steamId))
+        if (!SteamIDTryParse(steamIdText, out _))
         {
             SendMessageToReplyToCommand(info, true, "Invalid SteamID specified");
             return;
         }
 
-        Console.WriteLine(args.Length);
-
-        if (args.Length < 3 || !int.TryParse(args[2], out var immunity))
+        if (ReadText(AdminFile, out JObject jsonObject))
         {
-            immunity = 0;
-        }
-
-        try
-        {
-            dynamic newItem = new
+            if (jsonObject[steamIdText] != null)
             {
-                identity = $"{steamId}",
-                immunity,
-                groups = new[] { $"#{args[1]}" }
-            };
-
-            string updatedJson;
-
-            if (File.Exists(AdminFile))
-            {
-                string text = File.ReadAllText(AdminFile);
-
-                JObject jsonObject = JObject.Parse(text);
-
-                if (jsonObject[$"[{steamId}]"] != null)
-                {
-                    SendMessageToReplyToCommand(info, true, "Admin already exists");
-                    return;
-                }
-
-                jsonObject[$"[{steamId}]"] = JToken.FromObject(newItem);
-
-                updatedJson = jsonObject.ToString();
+                SendMessageToReplyToCommand(info, true, "Admin already exists");
+                return;
             }
-            else
-            {
-                JObject jsonObject = new()
-                {
-                    [steamId] = JToken.FromObject(newItem)
-                };
-
-                updatedJson = jsonObject.ToString();
-            }
-
-            File.WriteAllText(AdminFile, updatedJson);
-
-            Server.ExecuteCommand("css_admins_reload");
-
-            SendMessageToReplyToCommand(info, true, "Admin has been added");
         }
-        catch (Exception ex)
+
+        int immunity = args.Length >= 3 && int.TryParse(args[2], out var parsedImmunity) ? parsedImmunity : 0;
+        string group = NormalizeGroup(args[1]);
+
+        var newItem = new
         {
-            Console.WriteLine("[cs2-admin] Error reading file: " + ex.Message);
-        }
+            identity = steamIdText,
+            immunity,
+            groups = new[] { group }
+        };
+
+        jsonObject[steamIdText] = JToken.FromObject(newItem);
+        WriteJsonToFile(AdminFile, jsonObject);
+        SendMessageToReplyToCommand(info, true, "Admin has been added");
     }
 
     [ConsoleCommand("css_removeadmin")]
@@ -105,41 +75,79 @@ public class BaseAdmin : BasePlugin, IPluginConfig<Config>
     [CommandHelper(minArgs: 1, "<steamid>", whoCanExecute: CommandUsage.CLIENT_AND_SERVER)]
     public void Command_Removeadmin(CCSPlayerController? player, CommandInfo info)
     {
-        string[] args = info.ArgString.Split(' ', StringSplitOptions.RemoveEmptyEntries);
-
-        if (!SteamIDTryParse(args[0], out ulong steamId))
+        if (!SteamIDTryParse(info.GetArg(1), out ulong steamId))
         {
             SendMessageToReplyToCommand(info, true, "Invalid SteamID specified");
             return;
         }
 
-        if (File.Exists(AdminFile))
+        string steamIdText = steamId.ToString();
+
+        if (!ReadText(AdminFile, out JObject jsonObject) || jsonObject[steamIdText] == null)
         {
-            try
+            SendMessageToReplyToCommand(info, true, "Admin does not exist");
+            return;
+        }
+
+        jsonObject.Remove(steamIdText);
+        WriteJsonToFile(AdminFile, jsonObject);
+        SendMessageToReplyToCommand(info, true, "Admin has been removed");
+    }
+
+    [ConsoleCommand("css_addgroup")]
+    [RequiresPermissions("@css/root")]
+    [CommandHelper(minArgs: 2, "<group> <flags> <immunity>", whoCanExecute: CommandUsage.CLIENT_AND_SERVER)]
+    public void Command_Addgroup(CCSPlayerController? player, CommandInfo info)
+    {
+        string[] args = info.ArgString.Split(' ', StringSplitOptions.RemoveEmptyEntries);
+        string group = NormalizeGroup(args[0]);
+
+        if (ReadText(AdminGroupsFile, out JObject jsonObject))
+        {
+            if (jsonObject[group] != null)
             {
-                string text = File.ReadAllText(AdminFile);
-
-                JObject jsonObject = JObject.Parse(text);
-
-                if (jsonObject[$"[{steamId}]"] != null)
-                {
-                    jsonObject.Remove($"[{steamId}]");
-                    string updatedJson = jsonObject.ToString();
-                    File.WriteAllText(AdminFile, updatedJson);
-
-                    Server.ExecuteCommand("css_admins_reload");
-                    SendMessageToReplyToCommand(info, true, "Admin has been removed");
-                }
-                else
-                {
-                    SendMessageToReplyToCommand(info, true, "Admin does not exist");
-                }
-
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine("[cs2-admin] Error reading or writing file: " + ex.Message);
+                SendMessageToReplyToCommand(info, true, "Admin group already exists");
+                return;
             }
         }
+
+        int immunity = args.Length >= 3 && int.TryParse(args[2], out var parsedImmunity) ? parsedImmunity : 0;
+
+        var flags = args[1]
+         .Split(',', StringSplitOptions.RemoveEmptyEntries)
+         .Select(flag => flag.Trim().StartsWith("@css/") ? flag.Trim() : "@css/" + flag.Trim())
+         .ToList();
+
+
+        var newItem = new
+        {
+            flags,
+            immunity
+        };
+
+        jsonObject[group] = JToken.FromObject(newItem);
+        WriteJsonToFile(AdminGroupsFile, jsonObject);
+        SendMessageToReplyToCommand(info, true, "Admin group has been added");
+    }
+
+    [ConsoleCommand("css_removegroup")]
+    [RequiresPermissions("@css/root")]
+    [CommandHelper(minArgs: 1, "<group>", whoCanExecute: CommandUsage.CLIENT_AND_SERVER)]
+    public void Command_Removegroup(CCSPlayerController? player, CommandInfo info)
+    {
+        var group = NormalizeGroup(info.GetArg(1));
+
+        if (ReadText(AdminGroupsFile, out JObject jsonObject))
+        {
+            if (jsonObject[group] == null)
+            {
+                SendMessageToReplyToCommand(info, true, "Admin group does not exist");
+                return;
+            }
+        }
+
+        jsonObject.Remove(group);
+        WriteJsonToFile(AdminGroupsFile, jsonObject);
+        SendMessageToReplyToCommand(info, true, "Admin group has been removed");
     }
 }
