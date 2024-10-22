@@ -31,6 +31,17 @@ css_flood_duration 0.75 - Amount of duration allowed between chat messages
 ```js
 ♦ css_addadmin <steamid> <group> <immunity> [ Default perm is @css/root ]
 ♦ css_removeadmin <steamid> [ Default perm is @css/root ]
+♦ css_addgroup <group> <flags> <immunity> [ Default perm is @css/root ]
+♦ css_removegroup <group>  [ Default perm is @css/root ]
+
+Usage:
+css_addgroup GroupName ban,unban,kick 10: Adds #GroupName and gives @css/ban, @css/unban, @css/kick permissions and 10 immunity level.
+css_addgroup GroupName2 ban,unban,kick: Adds #GroupName2 as a group and gives @css/ban, @css/unban, @css/kick permissions.
+css_removegroup GroupName2: Removes #GroupName2 group.
+
+css_addadmin 76561199165718810 GroupName 10: Gives #GroupName to 76561199165718810 SteamID and 10 immunity level.
+css_addadmin 76561199165718810 GroupName2: Gives #GroupName2 to 76561199165718810 SteamID.
+css_removeadmin 76561199165718810: Removes 76561199165718810 SteamID.
 ```
 
 # Basic Ban Commands
