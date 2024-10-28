@@ -14,7 +14,7 @@ public class BaseAdmin : BasePlugin, IPluginConfig<Config>
     public override string ModuleName => "Base Admin";
     public override string ModuleVersion => "1.6";
     public override string ModuleAuthor => "schwarper";
-    public override string ModuleDescription => "Allows to add & remove admin";
+    public override string ModuleDescription => "Basic Admin Manager Plugin";
 
     public readonly string AdminFile = Path.Combine(Server.GameDirectory, "csgo", "addons", "counterstrikesharp", "configs", "admins.json");
     public readonly string AdminGroupsFile = Path.Combine(Server.GameDirectory, "csgo", "addons", "counterstrikesharp", "configs", "admin_groups.json");

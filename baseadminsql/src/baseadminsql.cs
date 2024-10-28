@@ -12,7 +12,7 @@ public class BaseAdminSql : BasePlugin, IPluginConfig<Config>
     public override string ModuleName => "Base Admin SQL";
     public override string ModuleVersion => "1.6";
     public override string ModuleAuthor => "schwarper";
-    public override string ModuleDescription => "Basic Admin Manager Plugin";
+    public override string ModuleDescription => "(SQL) Basic Admin Manager Plugin";
 
     public static BaseAdminSql Instance { get; set; } = new();
     public Config Config { get; set; } = new Config();
