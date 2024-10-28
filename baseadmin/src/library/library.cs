@@ -1,4 +1,5 @@
 ﻿using CounterStrikeSharp.API;
+using CounterStrikeSharp.API.Core;
 using CounterStrikeSharp.API.Core.Translations;
 using CounterStrikeSharp.API.Modules.Commands;
 using CounterStrikeSharp.API.Modules.Memory;
@@ -31,7 +32,7 @@ public static class Library
 
     public static void SendMessageToReplyToCommand(CommandInfo info, bool addTag, string messageKey, params object[] args)
     {
-        CounterStrikeSharp.API.Core.CCSPlayerController? player = info.CallingPlayer;
+        CCSPlayerController? player = info.CallingPlayer;
 
         if (player == null)
         {

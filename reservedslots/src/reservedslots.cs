@@ -12,7 +12,7 @@ namespace ReservedSlots;
 public class ReservedSlots : BasePlugin
 {
     public override string ModuleName => "Reserved Slots";
-    public override string ModuleVersion => "1.5";
+    public override string ModuleVersion => "1.6";
     public override string ModuleAuthor => "schwarper";
     public override string ModuleDescription => "Provides basic reserved slots";
 

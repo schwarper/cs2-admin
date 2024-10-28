@@ -13,7 +13,7 @@ namespace BaseCommTemp;
 public class BaseCommTemp : BasePlugin, IPluginConfig<Config>
 {
     public override string ModuleName => "Basic Temp Comm Control";
-    public override string ModuleVersion => "1.5";
+    public override string ModuleVersion => "1.6";
     public override string ModuleAuthor => "schwarper";
     public override string ModuleDescription => "Provides methods of controlling communication.";
 

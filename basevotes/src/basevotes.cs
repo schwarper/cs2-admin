@@ -14,7 +14,7 @@ namespace BaseVotes;
 public class BaseVotes : BasePlugin, IPluginConfig<Config>
 {
     public override string ModuleName => "Basic Votes";
-    public override string ModuleVersion => "1.5";
+    public override string ModuleVersion => "1.6";
     public override string ModuleAuthor => "schwarper";
     public override string ModuleDescription => "Basic Vote Commands";
 

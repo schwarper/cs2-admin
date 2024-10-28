@@ -12,7 +12,7 @@ namespace BaseAdmin;
 public class BaseAdmin : BasePlugin, IPluginConfig<Config>
 {
     public override string ModuleName => "Base Admin";
-    public override string ModuleVersion => "1.5";
+    public override string ModuleVersion => "1.6";
     public override string ModuleAuthor => "schwarper";
     public override string ModuleDescription => "Allows to add & remove admin";
 
