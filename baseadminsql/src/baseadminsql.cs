@@ -1,35 +1,56 @@
-﻿using CounterStrikeSharp.API;
-using CounterStrikeSharp.API.Core;
+﻿using CounterStrikeSharp.API.Core;
 using CounterStrikeSharp.API.Core.Attributes.Registration;
 using CounterStrikeSharp.API.Core.Translations;
 using CounterStrikeSharp.API.Modules.Admin;
 using CounterStrikeSharp.API.Modules.Commands;
-using Newtonsoft.Json.Linq;
-using static BaseAdmin.Library;
+using static BaseAdminSql.Library;
 
-namespace BaseAdmin;
+namespace BaseAdminSql;
 
-public class BaseAdmin : BasePlugin, IPluginConfig<Config>
+public class BaseAdminSql : BasePlugin, IPluginConfig<Config>
 {
-    public override string ModuleName => "Base Admin";
+    public override string ModuleName => "Base Admin SQL";
     public override string ModuleVersion => "1.5";
     public override string ModuleAuthor => "schwarper";
-    public override string ModuleDescription => "Allows to add & remove admin";
+    public override string ModuleDescription => "Basic Admin Manager Plugin";
 
-    public readonly string AdminFile = Path.Combine(Server.GameDirectory, "csgo", "addons", "counterstrikesharp", "configs", "admins.json");
-    public readonly string AdminGroupsFile = Path.Combine(Server.GameDirectory, "csgo", "addons", "counterstrikesharp", "configs", "admin_groups.json");
-    public static BaseAdmin Instance { get; set; } = new();
+    public static BaseAdminSql Instance { get; set; } = new();
     public Config Config { get; set; } = new Config();
 
     public override void Load(bool hotReload)
     {
         Instance = this;
+
+        AddCommandListener("css_admins_reload", OnAdminsReload, HookMode.Post);
+        AddCommandListener("css_groups_reload", OnGroupsReload, HookMode.Post);
     }
 
-    public void OnConfigParsed(Config config)
+    public override void Unload(bool hotReload)
     {
-        config.Tag = config.Tag.ReplaceColorTags();
+        RemoveCommandListener("css_admins_reload", OnAdminsReload, HookMode.Post);
+        RemoveCommandListener("css_groups_reload", OnGroupsReload, HookMode.Post);
+    }
+
+    public async void OnConfigParsed(Config config)
+    {
+        await Database.CreateDatabaseAsync(config);
+        await Database.LoadGroups();
+        await Database.LoadAdmins();
+
+        config.Tag = StringExtensions.ReplaceColorTags(config.Tag);
         Config = config;
+    }
+
+    public static HookResult OnAdminsReload(CCSPlayerController? player, CommandInfo info)
+    {
+        Task.Run(Database.LoadAdmins);
+        return HookResult.Continue;
+    }
+
+    public static HookResult OnGroupsReload(CCSPlayerController? player, CommandInfo info)
+    {
+        Task.Run(Database.LoadGroups);
+        return HookResult.Continue;
     }
 
     [ConsoleCommand("css_addadmin")]
@@ -40,33 +61,23 @@ public class BaseAdmin : BasePlugin, IPluginConfig<Config>
         string[] args = info.ArgString.Split(' ', StringSplitOptions.RemoveEmptyEntries);
         string steamIdText = args[0];
 
-        if (!SteamIDTryParse(steamIdText, out _))
+        if (!SteamIDTryParse(steamIdText, out ulong steamId))
         {
             SendMessageToReplyToCommand(info, true, "Invalid SteamID specified");
             return;
         }
 
-        if (ReadText(AdminFile, out JObject jsonObject))
+        if (AdminManagerEx.IsAdminExist(steamId))
         {
-            if (jsonObject[steamIdText] != null)
-            {
-                SendMessageToReplyToCommand(info, true, "Admin already exists");
-                return;
-            }
+            SendMessageToReplyToCommand(info, true, "Admin already exists");
+            return;
         }
 
-        int immunity = args.Length >= 3 && int.TryParse(args[2], out int parsedImmunity) ? parsedImmunity : 0;
-        string group = NormalizeGroup(args[1]);
+        uint immunity = args.Length >= 3 && uint.TryParse(args[2], out uint parsedImmunity) ? parsedImmunity : 0;
 
-        var newItem = new
-        {
-            identity = steamIdText,
-            immunity,
-            groups = new[] { group }
-        };
+        HashSet<string> groups = [NormalizeGroup(args[1])];
 
-        jsonObject[steamIdText] = JToken.FromObject(newItem);
-        WriteJsonToFile(AdminFile, jsonObject);
+        Task.Run(() => Database.AddAdmin(steamId, [], groups, immunity));
         SendMessageToReplyToCommand(info, true, "Admin has been added");
     }
 
@@ -81,16 +92,13 @@ public class BaseAdmin : BasePlugin, IPluginConfig<Config>
             return;
         }
 
-        string steamIdText = steamId.ToString();
-
-        if (!ReadText(AdminFile, out JObject jsonObject) || jsonObject[steamIdText] == null)
+        if (!AdminManagerEx.IsAdminExist(steamId))
         {
             SendMessageToReplyToCommand(info, true, "Admin does not exist");
             return;
         }
 
-        jsonObject.Remove(steamIdText);
-        WriteJsonToFile(AdminFile, jsonObject);
+        Task.Run(() => Database.RemoveAdmin(steamId));
         SendMessageToReplyToCommand(info, true, "Admin has been removed");
     }
 
@@ -102,31 +110,20 @@ public class BaseAdmin : BasePlugin, IPluginConfig<Config>
         string[] args = info.ArgString.Split(' ', StringSplitOptions.RemoveEmptyEntries);
         string group = NormalizeGroup(args[0]);
 
-        if (ReadText(AdminGroupsFile, out JObject jsonObject))
+        if (AdminManagerEx.IsGroupExist(group))
         {
-            if (jsonObject[group] != null)
-            {
-                SendMessageToReplyToCommand(info, true, "Admin group already exists");
-                return;
-            }
+            SendMessageToReplyToCommand(info, true, "Admin group already exists");
+            return;
         }
 
-        int immunity = args.Length >= 3 && int.TryParse(args[2], out int parsedImmunity) ? parsedImmunity : 0;
+        uint immunity = args.Length >= 3 && uint.TryParse(args[2], out uint parsedImmunity) ? parsedImmunity : 0;
 
-        List<string> flags = args[1]
+        HashSet<string> flags = args[1]
          .Split(',', StringSplitOptions.RemoveEmptyEntries)
          .Select(flag => flag.Trim().StartsWith("@css/") ? flag.Trim() : "@css/" + flag.Trim())
-         .ToList();
+         .ToHashSet();
 
-
-        var newItem = new
-        {
-            flags,
-            immunity
-        };
-
-        jsonObject[group] = JToken.FromObject(newItem);
-        WriteJsonToFile(AdminGroupsFile, jsonObject);
+        Task.Run(() => Database.AddGroup(group, flags, immunity));
         SendMessageToReplyToCommand(info, true, "Admin group has been added");
     }
 
@@ -137,17 +134,13 @@ public class BaseAdmin : BasePlugin, IPluginConfig<Config>
     {
         string group = NormalizeGroup(info.GetArg(1));
 
-        if (ReadText(AdminGroupsFile, out JObject jsonObject))
+        if (!AdminManagerEx.IsGroupExist(group))
         {
-            if (jsonObject[group] == null)
-            {
-                SendMessageToReplyToCommand(info, true, "Admin group does not exist");
-                return;
-            }
+            SendMessageToReplyToCommand(info, true, "Admin group does not exist");
+            return;
         }
 
-        jsonObject.Remove(group);
-        WriteJsonToFile(AdminGroupsFile, jsonObject);
+        Task.Run(() => Database.RemoveGroup(group));
         SendMessageToReplyToCommand(info, true, "Admin group has been removed");
     }
 }

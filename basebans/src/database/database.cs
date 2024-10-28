@@ -93,9 +93,9 @@ public static class Database
             adminname VARCHAR(128) NOT NULL,
             reason VARCHAR(128),
             duration INT NOT NULL,
-            created DateTime NOT NULL,
+            created DATETIME DEFAULT CURRENT_TIMESTAMP NOT NULL,
             end DateTime NOT NULL,
-            status ENUM('ACTIVE', 'UNBANNED', 'EXPIRED') NOT NULL
+            status ENUM('ACTIVE', 'UNBANNED', 'EXPIRED') DEFAULT 'ACTIVE' NOT NULL
         );
     ";
 

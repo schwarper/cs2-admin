@@ -40,7 +40,7 @@ public static class Library
             return false;
         }
 
-        var target = targetResult.Players[0];
+        CCSPlayerController target = targetResult.Players[0];
 
         if (!AdminManager.CanPlayerTarget(player, target))
         {

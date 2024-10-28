@@ -88,9 +88,9 @@ public static class Library
 
         string path = Path.Combine(Server.GameDirectory, "csgo", "maps");
 
-        var files = Directory.GetFiles(path, "*.vpk").ToList();
+        List<string> files = Directory.GetFiles(path, "*.vpk").ToList();
 
-        foreach (var file in files)
+        foreach (string? file in files)
         {
             string fileNameWithoutExtension = Path.GetFileNameWithoutExtension(file);
             ValidMaps.Add(fileNameWithoutExtension);

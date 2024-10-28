@@ -48,7 +48,7 @@ public class BaseCommTemp : BasePlugin, IPluginConfig<Config>
                     continue;
                 }
 
-                var steamid = player.SteamID;
+                ulong steamid = player.SteamID;
                 Task.Run(() => Database.LoadPlayer(steamid));
             }
         }
@@ -82,7 +82,7 @@ public class BaseCommTemp : BasePlugin, IPluginConfig<Config>
             return HookResult.Continue;
         }
 
-        var steamid = player.SteamID;
+        ulong steamid = player.SteamID;
         Task.Run(() => Database.LoadPlayer(steamid));
         return HookResult.Continue;
     }
@@ -139,7 +139,7 @@ public class BaseCommTemp : BasePlugin, IPluginConfig<Config>
     {
         string[] args = info.ArgString.Split(' ', StringSplitOptions.RemoveEmptyEntries);
 
-        if (!ProcessTargetString(player, info, args[0], out var players, out string adminname, out string targetname))
+        if (!ProcessTargetString(player, info, args[0], out List<CCSPlayerController>? players, out string adminname, out string targetname))
         {
             return;
         }
@@ -214,7 +214,7 @@ public class BaseCommTemp : BasePlugin, IPluginConfig<Config>
     {
         string[] args = info.ArgString.Split(' ', StringSplitOptions.RemoveEmptyEntries);
 
-        if (!ProcessTargetString(player, info, args[0], out var players, out string adminname, out string targetname))
+        if (!ProcessTargetString(player, info, args[0], out List<CCSPlayerController>? players, out string adminname, out string targetname))
         {
             return;
         }

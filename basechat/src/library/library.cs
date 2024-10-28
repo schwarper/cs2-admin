@@ -60,7 +60,7 @@ public static class Library
 
     public static void SendMessageToReplyToCommand(CommandInfo info, bool addTag, string messageKey, params object[] args)
     {
-        var player = info.CallingPlayer;
+        CCSPlayerController? player = info.CallingPlayer;
 
         if (player == null)
         {
@@ -68,7 +68,7 @@ public static class Library
         }
         else
         {
-            var destination = info.CallingContext == CommandCallingContext.Console ? HudDestination.Console : HudDestination.Chat;
+            HudDestination destination = info.CallingContext == CommandCallingContext.Console ? HudDestination.Console : HudDestination.Chat;
 
             using (new WithTemporaryCulture(player.GetLanguage()))
             {

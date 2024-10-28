@@ -1,0 +1,11 @@
+{
+  "Invalid SteamID specified": "{white}Geçersiz bir SteamID belirttiniz.",
+  "Admin already exists": "{white}Böyle bir admin zaten bulunmaktadır.",
+  "Admin does not exist": "{white}Böyle bir admin zaten bulunmamaktadır.",
+  "Admin has been added": "{white}Admin başarıyla eklendi",
+  "Admin has been removed": "{white}Admin başarıyla silindi.",
+  "Admin group already exists": "{white}Böyle bir admin grubu zaten bulunmaktadır.",
+  "Admin group does not exist": "{white}Böyle bir admin grubu zaten bulunmamaktadır.",
+  "Admin group has been added": "{white}Admin grubu başarıyla eklendi",
+  "Admin group has been removed": "{white}Admin grubu başarıyla silindi."
+}

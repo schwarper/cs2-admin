@@ -181,7 +181,7 @@ public static class Library
     }
     public static void Strip(this CCSPlayerPawn playerPawn, HashSet<gear_slot_t> slotsList)
     {
-        var weapons = playerPawn.WeaponServices?.MyWeapons.ToList();
+        List<CHandle<CBasePlayerWeapon>>? weapons = playerPawn.WeaponServices?.MyWeapons.ToList();
 
         if (weapons?.Count is not > 0)
         {
@@ -199,10 +199,10 @@ public static class Library
             return;
         }
 
-        var activeWeapon = playerPawn.WeaponServices!.ActiveWeapon.Value;
+        CBasePlayerWeapon? activeWeapon = playerPawn.WeaponServices!.ActiveWeapon.Value;
         bool removeActiveWeapon = false;
 
-        foreach (var weapon in weapons.Select(w => w.Value))
+        foreach (CBasePlayerWeapon? weapon in weapons.Select(w => w.Value))
         {
             if (weapon?.IsValid is not true ||
                 !weapon.VisibleinPVS ||

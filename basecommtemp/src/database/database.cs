@@ -69,7 +69,7 @@ public static class Database
 
         IEnumerable<dynamic> results = await connection.QueryAsync(SelectCommsSql, new { steamid });
 
-        foreach (var result in results)
+        foreach (dynamic result in results)
         {
             PlayerTemporaryPunishList.Add(new PunishInfo()
             {
@@ -119,8 +119,8 @@ public static class Database
             adminname VARCHAR(128) NOT NULL,
             reason VARCHAR(128),
             duration INT NOT NULL,
-            created DateTime NOT NULL,
-            end DateTime NOT NULL,
+            created DATETIME DEFAULT CURRENT_TIMESTAMP NOT NULL,
+            end DATETIME NOT NULL,
             status ENUM('GAG', 'MUTE', 'UNGAGGED', 'UNMUTED', 'EXPIRED') NOT NULL
         );
     ";

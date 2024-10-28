@@ -4,10 +4,9 @@ using CounterStrikeSharp.API.Modules.Commands;
 using CounterStrikeSharp.API.Modules.Memory;
 using CounterStrikeSharp.API.Modules.Utils;
 using Microsoft.Extensions.Localization;
-using Newtonsoft.Json.Linq;
-using static BaseAdmin.BaseAdmin;
+using static BaseAdminSql.BaseAdminSql;
 
-namespace BaseAdmin;
+namespace BaseAdminSql;
 
 public static class Library
 {
@@ -49,36 +48,8 @@ public static class Library
         }
     }
 
-    public static bool ReadText(string filename, out JObject jsonObject)
-    {
-        jsonObject = [];
-
-        if (File.Exists(filename))
-        {
-            try
-            {
-                string text = File.ReadAllText(filename);
-                jsonObject = JObject.Parse(text);
-                return true;
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"[cs2-admin] Error parsing file: {ex.Message}");
-                return false;
-            }
-        }
-
-        return false;
-    }
-
     public static string NormalizeGroup(string group)
     {
         return group[0] != '#' ? '#' + group : group;
-    }
-
-    public static void WriteJsonToFile(string filePath, JObject jsonObject)
-    {
-        File.WriteAllText(filePath, jsonObject.ToString());
-        Server.ExecuteCommand(filePath.Contains("admins") ? "css_admins_reload" : "css_groups_reload");
     }
 }
