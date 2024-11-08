@@ -129,7 +129,7 @@ public class AdminHelp : BasePlugin, IPluginConfig<Config>
             return true;
         }
 
-        List<BaseRequiresPermissions> permissionsToCheck = new();
+        List<BaseRequiresPermissions> permissionsToCheck = [];
 
         if (AdminManager.CommandIsOverriden(name))
         {
