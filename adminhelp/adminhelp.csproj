@@ -1,0 +1,22 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+	<PropertyGroup>
+		<TargetFramework>net8.0</TargetFramework>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<Nullable>enable</Nullable>
+		<OutputPath>$(ProjectDir)..\BuildOutput\adminhelp\</OutputPath>
+		<AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<PackageReference Include="CounterStrikeSharp.API" Version="1.0.282" />
+		<PackageReference Include="Source2Framework.SDK" Version="[1.0.7,)" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<None Update="lang\**\*.*" CopyToOutputDirectory="PreserveNewest" />
+	</ItemGroup>
+
+	<Target Name="CopyNuGetAssemblies" AfterTargets="Build">
+		<Copy SourceFiles="../Source2Framework.SDK.dll" DestinationFolder="$(OutputPath)" SkipUnchangedFiles="true" />
+	</Target>
+</Project>

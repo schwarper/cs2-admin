@@ -15,7 +15,7 @@ namespace BaseCommands;
 public class BaseCommands : BasePlugin, IPluginConfig<Config>
 {
     public override string ModuleName => "Basic Commands";
-    public override string ModuleVersion => "1.6";
+    public override string ModuleVersion => "1.7";
     public override string ModuleAuthor => "schwarper";
     public override string ModuleDescription => "Basic Admin Commands";
 
@@ -238,7 +238,7 @@ public class BaseCommands : BasePlugin, IPluginConfig<Config>
         {
             CCSPlayerController? target = Utilities.GetEntityFromIndex<CCSPlayerController>(i + 1);
 
-            if (target?.IsValid is not true || target.IsBot || target.DesignerName != playerdesignername)
+            if (target?.IsValid is not true || target.IsBot || target.DesignerName != playerdesignername || target.Connected != PlayerConnectedState.PlayerConnected)
             {
                 continue;
             }

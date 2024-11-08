@@ -15,7 +15,7 @@ namespace AntiFlood;
 public class AntiFlood : BasePlugin, IPluginConfig<Config>
 {
     public override string ModuleName => "Anti-Flood";
-    public override string ModuleVersion => "1.6";
+    public override string ModuleVersion => "1.7";
     public override string ModuleAuthor => "schwarper";
     public override string ModuleDescription => "Protects against chat flooding";
 
@@ -42,7 +42,7 @@ public class AntiFlood : BasePlugin, IPluginConfig<Config>
             {
                 CCSPlayerController? player = Utilities.GetEntityFromIndex<CCSPlayerController>(i + 1);
 
-                if (player?.IsValid is not true || player.IsBot || player.DesignerName != playerdesignername)
+                if (player?.IsValid is not true || player.IsBot || player.DesignerName != playerdesignername || player.Connected != PlayerConnectedState.PlayerConnected)
                 {
                     continue;
                 }

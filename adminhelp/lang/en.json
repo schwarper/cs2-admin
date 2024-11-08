@@ -1,0 +1,8 @@
+{
+  "Unable to get command manager": "Unable to get command manager.",
+  "Unable to get command definitions": "Unable to get command definitions.",
+  "See console for output": "{white}See console for output.",
+  "No commands available or no matching results found": "No commands available or no matching results found.",
+  "No description available": "No description available",
+  "Type css_help to see more commands": "Type css_help {0} to see more commands"
+}

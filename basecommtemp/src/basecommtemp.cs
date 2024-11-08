@@ -13,7 +13,7 @@ namespace BaseCommTemp;
 public class BaseCommTemp : BasePlugin, IPluginConfig<Config>
 {
     public override string ModuleName => "Basic Temp Comm Control";
-    public override string ModuleVersion => "1.6";
+    public override string ModuleVersion => "1.7";
     public override string ModuleAuthor => "schwarper";
     public override string ModuleDescription => "Provides methods of controlling communication.";
 
@@ -43,7 +43,7 @@ public class BaseCommTemp : BasePlugin, IPluginConfig<Config>
             {
                 CCSPlayerController? player = Utilities.GetEntityFromIndex<CCSPlayerController>(i + 1);
 
-                if (player?.IsValid is not true || player.IsBot || player.DesignerName != playerdesignername)
+                if (player?.IsValid is not true || player.IsBot || player.DesignerName != playerdesignername || player.Connected != PlayerConnectedState.PlayerConnected)
                 {
                     continue;
                 }

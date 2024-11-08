@@ -1,0 +1,8 @@
+{
+  "Unable to get command manager": "Komut yöneticisi alınamadı",
+  "Unable to get command definitions": "Komut tanımları alınamadı",
+  "See console for output": "{white}Lütfen konsolu kontrol edin",
+  "No commands available or no matching results found": "Kullanılabilir komut yok veya eşleşen sonuç bulunamadı",
+  "No description available": "Açıklama bulunamadı",
+  "Type css_help to see more commands": "Daha fazla komut görmek için css_help {0} yazın"
+}

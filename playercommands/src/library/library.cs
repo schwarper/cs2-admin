@@ -187,7 +187,7 @@ public static class Library
         {
             CCSPlayerController? player = Utilities.GetEntityFromIndex<CCSPlayerController>(i + 1);
 
-            if (player?.IsValid is not true || player.IsBot || player.DesignerName != playerdesignername)
+            if (player?.IsValid is not true || player.IsBot || player.DesignerName != playerdesignername || player.Connected != PlayerConnectedState.PlayerConnected)
             {
                 continue;
             }

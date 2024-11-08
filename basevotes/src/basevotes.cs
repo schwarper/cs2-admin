@@ -14,7 +14,7 @@ namespace BaseVotes;
 public class BaseVotes : BasePlugin, IPluginConfig<Config>
 {
     public override string ModuleName => "Basic Votes";
-    public override string ModuleVersion => "1.6";
+    public override string ModuleVersion => "1.7";
     public override string ModuleAuthor => "schwarper";
     public override string ModuleDescription => "Basic Vote Commands";
 
@@ -179,7 +179,7 @@ public class BaseVotes : BasePlugin, IPluginConfig<Config>
         {
             CCSPlayerController? target = Utilities.GetEntityFromIndex<CCSPlayerController>(i + 1);
 
-            if (target?.IsValid is not true || target.IsBot || target.DesignerName != playerdesignername)
+            if (target?.IsValid is not true || target.IsBot || target.DesignerName != playerdesignername || target.Connected != PlayerConnectedState.PlayerConnected)
             {
                 continue;
             }
