@@ -1,5 +1,9 @@
 ## CS2-ADMIN
 
+> [!IMPORTANT]  
+> The plugins are set up so that they can be used individually. You do not need to install others to use a plugin.
+>
+
 If you want to donate or need a help about plugin, you can contact me in discord private/server
 
 Discord nickname: schwarper
@@ -10,6 +14,7 @@ Discord link : [Discord server](https://discord.gg/4zQfUzjk36)
 Remake of [the admin plugins made by Alliedmodders for CSGO](https://github.com/alliedmodders/sourcemod/tree/master/plugins).
 
 # Plugins
+- [Admin Help]($admin-help)
 - [Anti-Flood](#anti-flood)
 - [Basic Admin](#base-admin)
 - [Basic Ban Commands](#basic-ban-commands)
@@ -21,6 +26,11 @@ Remake of [the admin plugins made by Alliedmodders for CSGO](https://github.com/
 - [Player Commands](#player-commands)
 - [Reserved Slots](#reserved-slots)
 
+# Admin-Help
+```js
+css_help - Displays commands and descriptions
+css_searchcmd - searches commands
+```
 
 # Anti-Flood
 ```js
