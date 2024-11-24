@@ -389,6 +389,8 @@ public static class Library
         player.RemoveTimer(TimerFlag.Drug);
         playerRotation.Z = 0.0f;
         player.PlayerPawn.Value!.Teleport(null, playerRotation, null);
+        player.ColorScreen(
+            Color.FromArgb(0, 0, 0, 0), 1536, 1536, FadeFlags.FADE_IN);
     }
     private static void Timer_Drug(this CCSPlayerController player)
     {
