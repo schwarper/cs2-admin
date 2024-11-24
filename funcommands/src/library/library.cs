@@ -466,7 +466,7 @@ public static class Library
 
         if (color != null)
         {
-            pawn.Glow(Color.Green);
+            pawn.Glow(color.Value);
         }
     }
     private static Vector CalculateCirclePoint(float angle, float radius, Vector mid)
