@@ -10,7 +10,7 @@ namespace BaseAdminSql;
 public class BaseAdminSql : BasePlugin, IPluginConfig<Config>
 {
     public override string ModuleName => "Base Admin SQL";
-    public override string ModuleVersion => "1.7";
+    public override string ModuleVersion => "1.8";
     public override string ModuleAuthor => "schwarper";
     public override string ModuleDescription => "(SQL) Basic Admin Manager Plugin";
 

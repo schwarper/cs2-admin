@@ -11,7 +11,7 @@ namespace PlayerCommands;
 public class PlayerCommands : BasePlugin, IPluginConfig<Config>
 {
     public override string ModuleName => "Player Commands";
-    public override string ModuleVersion => "1.7";
+    public override string ModuleVersion => "1.8";
     public override string ModuleAuthor => "schwarper";
     public override string ModuleDescription => "Misc. Player Commands";
 
