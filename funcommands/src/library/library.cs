@@ -1,4 +1,5 @@
-﻿using CounterStrikeSharp.API;
+﻿using System.Drawing;
+using CounterStrikeSharp.API;
 using CounterStrikeSharp.API.Core;
 using CounterStrikeSharp.API.Core.Translations;
 using CounterStrikeSharp.API.Modules.Admin;
@@ -10,7 +11,6 @@ using CounterStrikeSharp.API.Modules.Timers;
 using CounterStrikeSharp.API.Modules.UserMessages;
 using CounterStrikeSharp.API.Modules.Utils;
 using Microsoft.Extensions.Localization;
-using System.Drawing;
 using static CounterStrikeSharp.API.Modules.Commands.Targeting.Target;
 using static FunCommands.FunCommands;
 using Timer = CounterStrikeSharp.API.Modules.Timers.Timer;
@@ -37,15 +37,18 @@ public static class Library
     {
         Beacon,
         Freeze,
-        Shake
+        Shake,
+        Drug
     };
 
+    private static readonly Random _random = new();
     public static Dictionary<CCSPlayerController, (float X, float Y, float Z)> GlobalHRespawnPlayers { get; set; } = [];
     private static readonly Dictionary<CCSPlayerController, CEnvShake> GlobalPlayerShakes = [];
     private static readonly Dictionary<CCSPlayerController, Dictionary<TimerFlag, Timer>> PlayerTimers = [];
     private const int lines = 20;
     private const float radiusIncrement = 10.0f;
     private const float initialRadius = 20.0f;
+    private static readonly float[] g_DrugAngles = [0.0f, 5.0f, 10.0f, 15.0f, 20.0f, 25.0f, 20.0f, 15.0f, 10.0f, 5.0f, 0.0f, -5.0f, -10.0f, -15.0f, -20.0f, -25.0f, -20.0f, -15.0f, -10.0f, -5.0f];
 
     public static void AddTimer(this CCSPlayerController player, TimerFlag timerflag, Timer timer)
     {
@@ -364,6 +367,42 @@ public static class Library
         fadeMsg.SetInt("flags", flag);
         fadeMsg.SetInt("color", color.R | color.G << 8 | color.B << 16 | color.A << 24);
         fadeMsg.Send(player);
+    }
+    public static void Drug(this CCSPlayerController player, int value)
+    {
+        if (value <= 0)
+        {
+            KillDrug(player);
+            return;
+        }
+
+        Timer timer = Instance.AddTimer(1.0f, () => player.Timer_Drug(), TimerFlags.REPEAT);
+        player.AddTimer(TimerFlag.Drug, timer);
+    }
+    public static void KillDrug(this CCSPlayerController player)
+    {
+        if (player.PlayerPawn.Value?.AbsRotation is not QAngle playerRotation)
+        {
+            return;
+        }
+
+        player.RemoveTimer(TimerFlag.Drug);
+        playerRotation.Z = 0.0f;
+        player.PlayerPawn.Value!.Teleport(null, playerRotation, null);
+    }
+    private static void Timer_Drug(this CCSPlayerController player)
+    {
+        if (player.PlayerPawn.Value?.AbsRotation is not QAngle playerRotation)
+        {
+            return;
+        }
+
+        playerRotation.Z = g_DrugAngles[_random.Next(g_DrugAngles.Length)];
+        player.PlayerPawn.Value!.Teleport(null, playerRotation, null);
+        player.ColorScreen(
+            Color.FromArgb(_random.Next(256), _random.Next(256), _random.Next(256), 128),
+            255, 255, FadeFlags.FADE_OUT
+        );
     }
     public static void CopyLastCoord(this CCSPlayerController player)
     {

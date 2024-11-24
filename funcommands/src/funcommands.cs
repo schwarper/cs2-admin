@@ -1,4 +1,5 @@
 ﻿
+using System.Drawing;
 using CounterStrikeSharp.API;
 using CounterStrikeSharp.API.Core;
 using CounterStrikeSharp.API.Core.Attributes.Registration;
@@ -9,7 +10,6 @@ using CounterStrikeSharp.API.Modules.Cvars;
 using CounterStrikeSharp.API.Modules.Entities.Constants;
 using CounterStrikeSharp.API.Modules.Timers;
 using CounterStrikeSharp.API.Modules.Utils;
-using System.Drawing;
 using static FunCommands.Library;
 
 namespace FunCommands;
@@ -328,7 +328,6 @@ public class FunCommands : BasePlugin, IPluginConfig<Config>
             SendMessageToAllPlayers(HudDestination.Chat, "css_noclip<multiple>", adminname, targetname, value);
         }
     }
-
 
     [ConsoleCommand("css_weapon")]
     [ConsoleCommand("css_give")]
@@ -1009,6 +1008,35 @@ public class FunCommands : BasePlugin, IPluginConfig<Config>
         else
         {
             SendMessageToAllPlayers(HudDestination.Chat, "css_unblind<multiple>", adminname, targetname);
+        }
+    }
+
+    [ConsoleCommand("css_drug")]
+    [RequiresPermissions("@css/slay")]
+    [CommandHelper(minArgs: 2, "<#userid|name|all @ commands> [0/1]")]
+    public void Command_Drug(CCSPlayerController? player, CommandInfo info)
+    {
+        string[] args = info.ArgString.Split(' ', StringSplitOptions.RemoveEmptyEntries);
+
+        if (!ProcessTargetString(player, info, args[0], false, true, MultipleFlags.IGNORE_DEAD_PLAYERS, out List<CCSPlayerController>? players, out string adminname, out string targetname))
+        {
+            return;
+        }
+
+        _ = int.TryParse(args[1], out var value);
+
+        foreach (CCSPlayerController target in players)
+        {
+            target.Drug(value);
+        }
+
+        if (players.Count == 1)
+        {
+            SendMessageToAllPlayers(HudDestination.Chat, "css_drug<player>", adminname, targetname, value);
+        }
+        else
+        {
+            SendMessageToAllPlayers(HudDestination.Chat, "css_drug<multiple>", adminname, targetname, value);
         }
     }
 }

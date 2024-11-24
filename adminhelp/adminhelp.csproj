@@ -8,7 +8,7 @@
 	</PropertyGroup>
 
 	<ItemGroup>
-		<PackageReference Include="CounterStrikeSharp.API" Version="1.0.282" />
+		<PackageReference Include="CounterStrikeSharp.API" Version="1.0.290" />
 		<PackageReference Include="Source2Framework.SDK" Version="1.0.16" />
 	</ItemGroup>
 
