@@ -7,6 +7,7 @@ using CounterStrikeSharp.API.Modules.Commands.Targeting;
 using CounterStrikeSharp.API.Modules.Entities.Constants;
 using CounterStrikeSharp.API.Modules.Memory;
 using CounterStrikeSharp.API.Modules.Timers;
+using CounterStrikeSharp.API.Modules.UserMessages;
 using CounterStrikeSharp.API.Modules.Utils;
 using Microsoft.Extensions.Localization;
 using System.Drawing;
@@ -25,12 +26,18 @@ public static class Library
         IGNORE_ALIVE_PLAYERS
     }
 
+    public enum FadeFlags
+    {
+        FADE_IN,
+        FADE_OUT,
+        FADE_STAYOUT
+    }
+
     public enum TimerFlag
     {
         Beacon,
         Freeze,
-        Shake,
-        Blind
+        Shake
     };
 
     public static Dictionary<CCSPlayerController, (float X, float Y, float Z)> GlobalHRespawnPlayers { get; set; } = [];
@@ -52,7 +59,6 @@ public static class Library
 
         timers[timerflag] = timer;
     }
-
     public static void RemoveTimer(this CCSPlayerController player, TimerFlag timerflag)
     {
         if (PlayerTimers.TryGetValue(player, out Dictionary<TimerFlag, Timer>? timers))
@@ -69,7 +75,6 @@ public static class Library
             }
         }
     }
-
     public static void RemoveAllTimers(this CCSPlayerController player)
     {
         if (PlayerTimers.TryGetValue(player, out Dictionary<TimerFlag, Timer>? timers))
@@ -82,7 +87,6 @@ public static class Library
             PlayerTimers.Remove(player);
         }
     }
-
     public static void Freeze(this CCSPlayerController player, float value)
     {
         CCSPlayerPawn? playerPawn = player.PlayerPawn.Value;
@@ -335,46 +339,32 @@ public static class Library
             player.RemoveTimer(TimerFlag.Shake);
         }
     }
-    public static void Blind(this CCSPlayerController player, float value)
+    public static void Blind(this CCSPlayerController player, float value) => player.ColorScreen(Color.Black, value);
+    public static void UnBlind(this CCSPlayerController player) => player.ColorScreen(Color.Black, 0, 0);
+    private static void ColorScreen(this CCSPlayerController player, Color color, float hold = 0.1f, float fade = 0.2f, FadeFlags flags = FadeFlags.FADE_IN, bool withPurge = true)
     {
-        player.UnBlind();
+        var fadeMsg = UserMessage.FromPartialName("Fade");
 
-        CCSPlayerPawn? playerPawn = player.PlayerPawn.Value;
+        fadeMsg.SetInt("duration", Convert.ToInt32(fade * 512));
+        fadeMsg.SetInt("hold_time", Convert.ToInt32(hold * 512));
 
-        if (playerPawn == null)
+        var flag = flags switch
         {
-            return;
+            FadeFlags.FADE_IN => 0x0001,
+            FadeFlags.FADE_OUT => 0x0002,
+            FadeFlags.FADE_STAYOUT => 0x0008,
+            _ => 0x0001
+        };
+
+        if (withPurge)
+        {
+            flag |= 0x0010;
         }
 
-        playerPawn.FlashMaxAlpha = 255;
-        playerPawn.FlashDuration = 9999;
-        playerPawn.BlindStartTime = Server.CurrentTime;
-        playerPawn.BlindUntilTime = 9999;
-
-        Utilities.SetStateChanged(playerPawn, "CCSPlayerPawnBase", "m_flFlashMaxAlpha");
-        Utilities.SetStateChanged(playerPawn, "CCSPlayerPawnBase", "m_flFlashDuration");
-
-        if (value > 0.0)
-        {
-            Timer timer = Instance.AddTimer(value, () => player.UnBlind());
-            player.AddTimer(TimerFlag.Blind, timer);
-        }
+        fadeMsg.SetInt("flags", flag);
+        fadeMsg.SetInt("color", color.R | color.G << 8 | color.B << 16 | color.A << 24);
+        fadeMsg.Send(player);
     }
-    public static void UnBlind(this CCSPlayerController player)
-    {
-        CCSPlayerPawn? playerPawn = player.PlayerPawn.Value;
-
-        if (playerPawn == null)
-        {
-            return;
-        }
-
-        if (playerPawn.BlindUntilTime == 9999)
-        {
-            playerPawn.BlindUntilTime = Server.CurrentTime - 1;
-        }
-    }
-
     public static void CopyLastCoord(this CCSPlayerController player)
     {
         Vector? absOrigin = player.PlayerPawn.Value?.AbsOrigin;
@@ -403,7 +393,6 @@ public static class Library
 
         return new Vector(X, Y, Z);
     }
-
     public static void RemoveWeaponsOnTheGround()
     {
         IEnumerable<CCSWeaponBaseGun> entities = Utilities.FindAllEntitiesByDesignerName<CCSWeaponBaseGun>("weapon_");
