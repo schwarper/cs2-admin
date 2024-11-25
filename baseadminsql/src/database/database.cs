@@ -154,8 +154,8 @@ public static class Database
         CREATE TABLE IF NOT EXISTS baseadminsql_admins (
             id INT AUTO_INCREMENT PRIMARY KEY,
             steamid BIGINT UNSIGNED NOT NULL UNIQUE,
-            flags JSON DEFAULT '[]',
-            groups JSON DEFAULT '[]',
+            flags JSON NOT NULL,
+            `groups` JSON NOT NULL,
             immunity INT DEFAULT 0
         );
     ";
@@ -163,8 +163,8 @@ public static class Database
     private const string CreateBaseadminsqlGroupsTable = @"
         CREATE TABLE IF NOT EXISTS baseadminsql_groups (
             id INT AUTO_INCREMENT PRIMARY KEY,
-            `group` TEXT NOT NULL UNIQUE,
-            flags JSON DEFAULT '[]',
+            `group` VARCHAR(255) NOT NULL UNIQUE,
+            flags JSON NOT NULL,
             immunity INT DEFAULT 0
         );
     ";
