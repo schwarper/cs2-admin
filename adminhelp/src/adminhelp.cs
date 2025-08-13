@@ -14,7 +14,7 @@ namespace AdminHelp;
 public class AdminHelp : BasePlugin, IPluginConfig<Config>
 {
     public override string ModuleName => "Admin Help";
-    public override string ModuleVersion => "1.8";
+    public override string ModuleVersion => "1.9";
     public override string ModuleAuthor => "schwarper & KillStr3aK";
     public override string ModuleDescription => "Display command information";
 

@@ -15,7 +15,7 @@ namespace BaseCommands;
 public class BaseCommands : BasePlugin, IPluginConfig<Config>
 {
     public override string ModuleName => "Basic Commands";
-    public override string ModuleVersion => "1.8";
+    public override string ModuleVersion => "1.9";
     public override string ModuleAuthor => "schwarper";
     public override string ModuleDescription => "Basic Admin Commands";
 
