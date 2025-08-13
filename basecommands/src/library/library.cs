@@ -1,13 +1,11 @@
-﻿using CounterStrikeSharp.API;
+﻿using System.Drawing;
+using System.Numerics;
+using CounterStrikeSharp.API;
 using CounterStrikeSharp.API.Core;
 using CounterStrikeSharp.API.Core.Translations;
 using CounterStrikeSharp.API.Modules.Commands;
 using CounterStrikeSharp.API.Modules.Cvars;
-using CounterStrikeSharp.API.Modules.Memory;
 using CounterStrikeSharp.API.Modules.Utils;
-using Microsoft.Extensions.Localization;
-using System.Drawing;
-using System.Numerics;
 using static BaseCommands.BaseCommands;
 
 namespace BaseCommands;
@@ -45,11 +43,7 @@ public static class Library
 
     public static void SendMessageToPlayer(CCSPlayerController player, HudDestination destination, string messageKey, params object[] args)
     {
-        using (new WithTemporaryCulture(player.GetLanguage()))
-        {
-            LocalizedString message = Instance.Localizer[messageKey, args];
-            VirtualFunctions.ClientPrint(player.Handle, destination, Instance.Config.Tag + message, 0, 0, 0, 0);
-        }
+        player.PrintToChat(Instance.Config.Tag + Instance.Localizer.ForPlayer(player, messageKey, args));
     }
 
     public static void SendMessageToAllPlayers(HudDestination destination, string messageKey, params object[] args)

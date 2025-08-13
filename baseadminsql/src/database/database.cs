@@ -1,7 +1,7 @@
-﻿using CounterStrikeSharp.API.Modules.Admin;
+﻿using System.Text.Json;
+using CounterStrikeSharp.API.Modules.Admin;
 using Dapper;
 using MySqlConnector;
-using System.Text.Json;
 
 namespace BaseAdminSql;
 
@@ -170,7 +170,7 @@ public static class Database
     ";
 
     private const string InsertBaseadminsqlAdminsSql = @"
-        INSERT INTO baseadminsql_admins (steamid, flags, groups, immunity)
+        INSERT INTO baseadminsql_admins (steamid, flags, `groups`, immunity)
         VALUES (@steamid, @flags, @groups, @immunity);
     ";
 

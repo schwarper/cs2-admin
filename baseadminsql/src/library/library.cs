@@ -1,9 +1,6 @@
 ﻿using CounterStrikeSharp.API;
 using CounterStrikeSharp.API.Core.Translations;
 using CounterStrikeSharp.API.Modules.Commands;
-using CounterStrikeSharp.API.Modules.Memory;
-using CounterStrikeSharp.API.Modules.Utils;
-using Microsoft.Extensions.Localization;
 using static BaseAdminSql.BaseAdminSql;
 
 namespace BaseAdminSql;
@@ -38,13 +35,7 @@ public static class Library
         }
         else
         {
-            HudDestination destination = info.CallingContext == CommandCallingContext.Console ? HudDestination.Console : HudDestination.Chat;
-
-            using (new WithTemporaryCulture(player.GetLanguage()))
-            {
-                LocalizedString message = Instance.Localizer[messageKey, args];
-                VirtualFunctions.ClientPrint(player.Handle, destination, (addTag == true ? Instance.Config.Tag : string.Empty) + message, 0, 0, 0, 0);
-            }
+            info.ReplyToCommand(Instance.Config.Tag + Instance.Localizer.ForPlayer(info.CallingPlayer, messageKey, args));
         }
     }
 

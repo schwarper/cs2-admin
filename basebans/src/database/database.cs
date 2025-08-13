@@ -1,6 +1,6 @@
-﻿using Dapper;
+﻿using System.Data.Common;
+using Dapper;
 using MySqlConnector;
-using System.Data.Common;
 
 namespace BaseBans;
 

@@ -1022,7 +1022,7 @@ public class FunCommands : BasePlugin, IPluginConfig<Config>
             return;
         }
 
-        _ = int.TryParse(args[1], out var value);
+        _ = int.TryParse(args[1], out int value);
 
         foreach (CCSPlayerController target in players)
         {
