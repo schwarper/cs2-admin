@@ -1,3 +1,4 @@
+using System.Collections.Concurrent;
 using CounterStrikeSharp.API;
 using CounterStrikeSharp.API.Core;
 using CounterStrikeSharp.API.Core.Attributes.Registration;
@@ -5,17 +6,14 @@ using CounterStrikeSharp.API.Core.Translations;
 using CounterStrikeSharp.API.Modules.Admin;
 using CounterStrikeSharp.API.Modules.Commands;
 using CounterStrikeSharp.API.Modules.Cvars;
-using CounterStrikeSharp.API.Modules.Memory;
 using CounterStrikeSharp.API.Modules.Utils;
-using Microsoft.Extensions.Localization;
-using System.Collections.Concurrent;
 
 namespace AntiFlood;
 
 public class AntiFlood : BasePlugin, IPluginConfig<Config>
 {
     public override string ModuleName => "Anti-Flood";
-    public override string ModuleVersion => "1.8";
+    public override string ModuleVersion => "1.9";
     public override string ModuleAuthor => "schwarper";
     public override string ModuleDescription => "Protects against chat flooding";
 
@@ -137,10 +135,6 @@ public class AntiFlood : BasePlugin, IPluginConfig<Config>
 
     public void SendMessageToPlayer(CCSPlayerController player, HudDestination destination, string messageKey, params object[] args)
     {
-        using (new WithTemporaryCulture(player.GetLanguage()))
-        {
-            LocalizedString message = Localizer[messageKey, args];
-            VirtualFunctions.ClientPrint(player.Handle, destination, Config.Tag + message, 0, 0, 0, 0);
-        }
+        player.PrintToChat(Config.Tag + Localizer.ForPlayer(player, messageKey, args));
     }
 }

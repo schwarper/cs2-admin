@@ -1,4 +1,6 @@
-﻿using CounterStrikeSharp.API;
+﻿using System.Reflection;
+using System.Text;
+using CounterStrikeSharp.API;
 using CounterStrikeSharp.API.Core;
 using CounterStrikeSharp.API.Core.Attributes.Registration;
 using CounterStrikeSharp.API.Core.Commands;
@@ -6,15 +8,13 @@ using CounterStrikeSharp.API.Core.Translations;
 using CounterStrikeSharp.API.Modules.Admin;
 using CounterStrikeSharp.API.Modules.Commands;
 using Source2Framework.Models;
-using System.Reflection;
-using System.Text;
 
 namespace AdminHelp;
 
 public class AdminHelp : BasePlugin, IPluginConfig<Config>
 {
     public override string ModuleName => "Admin Help";
-    public override string ModuleVersion => "1.8";
+    public override string ModuleVersion => "1.9";
     public override string ModuleAuthor => "schwarper & KillStr3aK";
     public override string ModuleDescription => "Display command information";
 

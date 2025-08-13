@@ -10,7 +10,6 @@ using CounterStrikeSharp.API.Modules.Memory;
 using CounterStrikeSharp.API.Modules.Timers;
 using CounterStrikeSharp.API.Modules.UserMessages;
 using CounterStrikeSharp.API.Modules.Utils;
-using Microsoft.Extensions.Localization;
 using static CounterStrikeSharp.API.Modules.Commands.Targeting.Target;
 using static FunCommands.FunCommands;
 using Timer = CounterStrikeSharp.API.Modules.Timers.Timer;
@@ -212,7 +211,6 @@ public static class Library
         foreach (CBasePlayerWeapon? weapon in weapons.Select(w => w.Value))
         {
             if (weapon?.IsValid is not true ||
-                !weapon.VisibleinPVS ||
                 weapon.As<CCSWeaponBase>().VData?.GearSlot is not gear_slot_t slot ||
                 !slotsList.Contains(slot)
                 )
@@ -342,16 +340,24 @@ public static class Library
             player.RemoveTimer(TimerFlag.Shake);
         }
     }
-    public static void Blind(this CCSPlayerController player, float value) => player.ColorScreen(Color.Black, value);
-    public static void UnBlind(this CCSPlayerController player) => player.ColorScreen(Color.Black, 0, 0);
+    public static void Blind(this CCSPlayerController player, float value)
+    {
+        player.ColorScreen(Color.Black, value);
+    }
+
+    public static void UnBlind(this CCSPlayerController player)
+    {
+        player.ColorScreen(Color.Black, 0, 0);
+    }
+
     private static void ColorScreen(this CCSPlayerController player, Color color, float hold = 0.1f, float fade = 0.2f, FadeFlags flags = FadeFlags.FADE_IN, bool withPurge = true)
     {
-        var fadeMsg = UserMessage.FromPartialName("Fade");
+        UserMessage fadeMsg = UserMessage.FromPartialName("Fade");
 
         fadeMsg.SetInt("duration", Convert.ToInt32(fade * 512));
         fadeMsg.SetInt("hold_time", Convert.ToInt32(hold * 512));
 
-        var flag = flags switch
+        int flag = flags switch
         {
             FadeFlags.FADE_IN => 0x0001,
             FadeFlags.FADE_OUT => 0x0002,
@@ -365,7 +371,7 @@ public static class Library
         }
 
         fadeMsg.SetInt("flags", flag);
-        fadeMsg.SetInt("color", color.R | color.G << 8 | color.B << 16 | color.A << 24);
+        fadeMsg.SetInt("color", color.R | (color.G << 8) | (color.B << 16) | (color.A << 24));
         fadeMsg.Send(player);
     }
     public static void Drug(this CCSPlayerController player, int value)
@@ -436,26 +442,13 @@ public static class Library
     }
     public static void RemoveWeaponsOnTheGround()
     {
-        IEnumerable<CCSWeaponBaseGun> entities = Utilities.FindAllEntitiesByDesignerName<CCSWeaponBaseGun>("weapon_");
-
-        foreach (CCSWeaponBaseGun entity in entities)
+        IEnumerable<CBaseEntity> weapons = Utilities.FindAllEntitiesByDesignerName<CBaseEntity>("weapon_");
+        foreach (CBaseEntity weapon in weapons)
         {
-            if (!entity.IsValid)
-            {
+            if (!weapon.IsValid || weapon.OwnerEntity.Value is not null)
                 continue;
-            }
 
-            if (entity.State != CSWeaponState_t.WEAPON_NOT_CARRIED)
-            {
-                continue;
-            }
-
-            if (entity.DesignerName.StartsWith("weapon_") == false)
-            {
-                continue;
-            }
-
-            entity.Remove();
+            weapon.Remove();
         }
     }
     private static void ChangeMovetype(this CBasePlayerPawn pawn, MoveType_t movetype, Color? color)
@@ -695,11 +688,7 @@ public static class Library
 
     public static void SendMessageToPlayer(CCSPlayerController player, HudDestination destination, string messageKey, params object[] args)
     {
-        using (new WithTemporaryCulture(player.GetLanguage()))
-        {
-            LocalizedString message = Instance.Localizer[messageKey, args];
-            VirtualFunctions.ClientPrint(player.Handle, destination, Instance.Config.Tag + message, 0, 0, 0, 0);
-        }
+        player.PrintToChat(Instance.Config.Tag + Instance.Localizer.ForPlayer(player, messageKey, args));
     }
 
     public static void SendMessageToAllPlayers(HudDestination destination, string messageKey, params object[] args)

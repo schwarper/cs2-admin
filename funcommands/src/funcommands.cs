@@ -16,7 +16,7 @@ namespace FunCommands;
 public class FunCommands : BasePlugin, IPluginConfig<Config>
 {
     public override string ModuleName => "Fun Commands";
-    public override string ModuleVersion => "1.8";
+    public override string ModuleVersion => "1.9";
     public override string ModuleAuthor => "schwarper";
     public override string ModuleDescription => "Fun Commands";
 
@@ -1022,7 +1022,7 @@ public class FunCommands : BasePlugin, IPluginConfig<Config>
             return;
         }
 
-        _ = int.TryParse(args[1], out var value);
+        _ = int.TryParse(args[1], out int value);
 
         foreach (CCSPlayerController target in players)
         {

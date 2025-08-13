@@ -1,9 +1,9 @@
-﻿using CounterStrikeSharp.API;
+﻿using System.Collections.Concurrent;
+using CounterStrikeSharp.API;
 using CounterStrikeSharp.API.Core;
 using CounterStrikeSharp.API.Core.Attributes.Registration;
 using CounterStrikeSharp.API.Modules.Cvars;
 using CounterStrikeSharp.API.ValveConstants.Protobuf;
-using System.Collections.Concurrent;
 using static CounterStrikeSharp.API.Core.Listeners;
 using static CounterStrikeSharp.API.Modules.Admin.AdminManager;
 
@@ -12,7 +12,7 @@ namespace ReservedSlots;
 public class ReservedSlots : BasePlugin
 {
     public override string ModuleName => "Reserved Slots";
-    public override string ModuleVersion => "1.8";
+    public override string ModuleVersion => "1.9";
     public override string ModuleAuthor => "schwarper";
     public override string ModuleDescription => "Provides basic reserved slots";
 
@@ -260,18 +260,9 @@ public class ReservedSlots : BasePlugin
 
             if (player.Connected == PlayerConnectedState.PlayerConnected)
             {
-                if (type == KickType.Kick_HighestPing)
-                {
-                    value = player.Ping;
-                }
-                else if (type == KickType.Kick_HighestTime)
-                {
-                    value = (float)-GlobalPlayerTime[player];
-                }
-                else
-                {
-                    value = Random.Shared.Next(0, 100);
-                }
+                value = type == KickType.Kick_HighestPing
+                    ? player.Ping
+                    : type == KickType.Kick_HighestTime ? (float)-GlobalPlayerTime[player] : Random.Shared.Next(0, 100);
 
                 if (player.ObserverPawn.Value != null)
                 {
@@ -292,12 +283,7 @@ public class ReservedSlots : BasePlugin
             }
         }
 
-        if (specFound)
-        {
-            return highestSpecValuePlayer;
-        }
-
-        return highestValuePlayer;
+        return specFound ? highestSpecValuePlayer : highestValuePlayer;
     }
 
     public static int GetClientCount()
